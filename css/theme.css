@@ -1,0 +1,288 @@
+/* Futuristic Theme for MOOK Robotics Hub */
+
+/* Custom Properties - Futuristic Elements */
+:root {
+    --neon-glow: 0 0 10px rgba(0, 180, 216, 0.7), 0 0 20px rgba(0, 180, 216, 0.4);
+    --tech-line: repeating-linear-gradient(90deg, var(--border-color) 0px, var(--border-color) 4px, transparent 4px, transparent 10px);
+    --grid-bg: radial-gradient(circle, var(--primary-color) 1px, transparent 1px);
+    --circuit-pattern: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 h80 v80 h-80 z' fill='none' stroke='%2330363d' stroke-width='1'/%3E%3Cpath d='M30 10 v80 M50 10 v80 M70 10 v80 M10 30 h80 M10 50 h80 M10 70 h80' stroke='%2330363d' stroke-width='0.5'/%3E%3C/svg%3E");
+}
+
+/* Futuristic Body Effects */
+body {
+    background-image: var(--grid-bg);
+    background-size: 30px 30px;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--circuit-pattern);
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Animated Header */
+header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    animation: scanline 4s linear infinite;
+}
+
+@keyframes scanline {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Tech Decorations */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-top: 2px solid var(--primary-color);
+    border-left: 2px solid var(--primary-color);
+    opacity: 0.5;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-bottom: 2px solid var(--primary-color);
+    border-right: 2px solid var(--primary-color);
+    opacity: 0.5;
+}
+
+/* Section Tech Lines */
+section {
+    position: relative;
+}
+
+section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50px;
+    width: 100px;
+    height: 2px;
+    background-image: var(--tech-line);
+}
+
+/* Glowing elements on hover */
+.btn:hover, .robot-card:hover, .news-card:hover {
+    box-shadow: var(--neon-glow);
+}
+
+/* Tech-inspired elements */
+.highlight::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-color);
+    animation: highlightPulse 2s infinite;
+}
+
+@keyframes highlightPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Futuristic search bar */
+.search-container {
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.search-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    animation: scanline 2s linear infinite;
+}
+
+#search-input:focus + #search-btn {
+    background-color: var(--accent-color);
+}
+
+/* Robot Animation Enhancement */
+.robot-animation {
+    position: relative;
+}
+
+.robot-animation::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0, 180, 216, 0.2) 0%, transparent 60%);
+    animation: pulseBackground 4s infinite;
+}
+
+@keyframes pulseBackground {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.5; }
+}
+
+.robot-head::before, .robot-head::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    background-color: var(--accent-color);
+    border-radius: 5px;
+    top: 20px;
+}
+
+.robot-head::before {
+    left: 15px;
+    animation: blinkEye 3s infinite;
+}
+
+.robot-head::after {
+    right: 15px;
+    animation: blinkEye 3s infinite;
+}
+
+@keyframes blinkEye {
+    0%, 48%, 52%, 100% { background-color: var(--accent-color); }
+    50% { background-color: var(--primary-color); }
+}
+
+/* Assistant Avatar Enhancements */
+.avatar-circle {
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-circle::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: conic-gradient(transparent, var(--primary-color), transparent);
+    animation: rotateGradient 5s linear infinite;
+}
+
+@keyframes rotateGradient {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Form field enhancements */
+.form-group input {
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.25);
+}
+
+/* Tech-inspired loading indicator */
+.tech-loading {
+    width: 50px;
+    height: 50px;
+    margin: 20px auto;
+    position: relative;
+}
+
+.tech-loading::before, .tech-loading::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-radius: 50%;
+}
+
+.tech-loading::before {
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+}
+
+.tech-loading::after {
+    border-right-color: var(--accent-color);
+    animation: spin 1.5s linear infinite reverse;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Glowing text for AI interaction */
+.assistant-header h3 {
+    position: relative;
+    display: inline-block;
+}
+
+.assistant-header h3::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    animation: scanline 2s infinite linear;
+}
+
+/* Footer enhancements */
+.footer-content {
+    position: relative;
+}
+
+.footer-content::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+}
+
+/* Card hover effects */
+.robot-card:hover .robot-image .placeholder,
+.news-card:hover .news-image .placeholder {
+    background: linear-gradient(45deg, var(--background-light), var(--primary-color), var(--background-light));
+    background-size: 200% 200%;
+    animation: gradientMove 3s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
