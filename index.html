@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOOK Robotics Hub - Interactive Robotics Encyclopedia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
+                <svg width="50" height="50" viewBox="0 0 50 50" class="logo-svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                    <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
+                    <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
+                </svg>
+                <span>MOOK Robotics Hub</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="robots/index.html">Encyclopedia</a>
+                <a href="#news">News</a>
+                <a href="#about">About</a>
+            </div>
+            <div class="nav-auth">
+                <button id="login-btn" class="btn btn-primary">Login</button>
+                <button id="signup-btn" class="btn btn-outline">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Discover the World of <span class="highlight">Robotics</span></h1>
+                <p>Your interactive guide to past, present, and future robotic innovations</p>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search for robots, technologies, or news...">
+                    <button id="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="hero-cta">
+                    <button class="btn btn-primary btn-large">Explore Encyclopedia</button>
+                    <button class="btn btn-outline btn-large">Latest News</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <!-- Placeholder for hero image or animation -->
+                <div class="robot-animation">
+                    <div class="robot-head"></div>
+                    <div class="robot-body"></div>
+                    <div class="robot-arm left"></div>
+                    <div class="robot-arm right"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured-robots">
+            <h2>Featured <span class="highlight">Robots</span></h2>
+            <div class="robot-cards">
+                <div class="robot-card">
+                    <div class="robot-image">
+                        <!-- Placeholder image -->
+                        <div class="placeholder"></div>
+                    </div>
+                    <h3>Atlas</h3>
+                    <p>Humanoid robot designed for mobility and manipulation</p>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+                <div class="robot-card">
+                    <div class="robot-image">
+                        <!-- Placeholder image -->
+                        <div class="placeholder"></div>
+                    </div>
+                    <h3>Spot</h3>
+                    <p>Agile mobile robot that navigates terrain with unprecedented mobility</p>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+                <div class="robot-card">
+                    <div class="robot-image">
+                        <!-- Placeholder image -->
+                        <div class="placeholder"></div>
+                    </div>
+                    <h3>Sophia</h3>
+                    <p>Advanced humanoid robot with expressive face and conversational AI</p>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+            </div>
+            <button class="btn btn-outline btn-large explore-all">Explore All Robots</button>
+        </section>
+
+        <section class="ai-assistant-section">
+            <div class="assistant-container">
+                <div class="assistant-avatar">
+                    <div class="avatar-circle">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+                <div class="assistant-content">
+                    <h2>Meet <span class="highlight">MOOK</span>, Your Robotics Guide</h2>
+                    <p>Have questions about robotics? Need guidance navigating our encyclopedia? MOOK is here to help!</p>
+                    <button id="activate-assistant" class="btn btn-primary">Ask MOOK</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="news-section">
+            <h2>Latest in <span class="highlight">Robotics</span></h2>
+            <div class="news-container">
+                <div class="news-card">
+                    <div class="news-image">
+                        <div class="placeholder"></div>
+                    </div>
+                    <div class="news-content">
+                        <h3>Advances in Soft Robotics</h3>
+                        <p class="news-date">April 10, 2025</p>
+                        <p>New materials enable robots with unprecedented flexibility and adaptability...</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <div class="news-image">
+                        <div class="placeholder"></div>
+                    </div>
+                    <div class="news-content">
+                        <h3>Robots in Healthcare</h3>
+                        <p class="news-date">April 5, 2025</p>
+                        <p>How medical robots are transforming surgery and patient care...</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <div class="news-image">
+                        <div class="placeholder"></div>
+                    </div>
+                    <div class="news-content">
+                        <h3>AI Revolution in Robotics</h3>
+                        <p class="news-date">March 28, 2025</p>
+                        <p>The latest advancements in robot intelligence and decision-making...</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-outline btn-large view-all-news">View All News</button>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>MOOK Robotics Hub</h3>
+                <p>Your interactive guide to the world of robotics</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="robots/index.html">Encyclopedia</a></li>
+                    <li><a href="#news">News</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
+                    <li><a href="#contact">Contact Form</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#signup">Sign Up</a></li>
+                    <li><a href="#my-account">My Account</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Login to <span class="highlight">MOOK</span></h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary btn-full">Login</button>
+                    <p class="form-text">Don't have an account? <a href="#" id="switch-to-signup">Sign up</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Create <span class="highlight">Account</span></h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-name">Name</label>
+                    <input type="text" id="signup-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" required>
+                </div>
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                    <p class="form-text">Already have an account? <a href="#" id="switch-to-login">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div id="assistant-modal" class="modal">
+        <div class="modal-content assistant-modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="assistant-header">
+                <div class="assistant-avatar-small">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>MOOK Assistant</h3>
+            </div>
+            <div class="assistant-chat">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message assistant">
+                        <p>Hello! I'm MOOK, your robotics guide. How can I help you today?</p>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="assistant-input" placeholder="Ask me anything about robotics...">
+                    <button id="send-message"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ai-assistant.js"></script>
+</body>
+</html>
