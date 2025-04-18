@@ -1,0 +1,355 @@
+/* Encyclopedia Styles for MOOK Robotics Hub */
+
+/* Encyclopedia Hero */
+.encyclopedia-hero {
+    background: linear-gradient(to right, rgba(13, 17, 23, 0.9), rgba(13, 17, 23, 0.7)), url('../images/encyclopedia-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.encyclopedia-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.encyclopedia-hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.encyclopedia-hero .search-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Filters Section */
+.encyclopedia-filters {
+    background-color: var(--background-light);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-end;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+#reset-filters {
+    height: 38px;
+    margin-bottom: 0;
+}
+
+/* Results Message and Filter Status */
+.results-message, .filter-status {
+    text-align: center;
+    padding: 1rem;
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.results-message.no-results, .filter-status.no-results {
+    color: var(--warning-color);
+}
+
+/* Robots Container */
+.robots-container {
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.robots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* Robot Card */
+.robot-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.robot-card:hover, .robot-card.hover {
+    transform: translateY(-5px);
+    box-shadow: var(--glow);
+    border-color: var(--primary-color);
+}
+
+.robot-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.robot-details {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.robot-details h3 {
+    margin-top: 0;
+    margin-bottom: 0.3rem;
+    font-size: 1.5rem;
+}
+
+.robot-manufacturer {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.robot-description {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.robot-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+}
+
+.robot-year, .robot-category {
+    background-color: rgba(0, 180, 216, 0.1);
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    color: var(--primary-color);
+}
+
+.robot-category {
+    background-color: rgba(94, 96, 206, 0.1);
+    color: var(--secondary-color);
+}
+
+/* Search Highlight */
+.highlight-search {
+    background-color: rgba(0, 180, 216, 0.2);
+    color: var(--primary-color);
+    padding: 0 2px;
+    border-radius: 3px;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.page-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius);
+    background-color: var(--background-light);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.page-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-link:hover:not(.active) {
+    background-color: var(--background-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.page-link.next {
+    width: auto;
+    padding: 0 1rem;
+}
+
+.page-link.next i {
+    margin-left: 0.5rem;
+}
+
+.page-ellipsis {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    color: var(--text-secondary);
+}
+
+/* Submit Robot Section */
+.submit-robot {
+    background-color: var(--background-light);
+    padding: 4rem 2rem;
+    margin-top: 3rem;
+}
+
+.submit-content {
+    display: flex;
+    max-width: 1000px;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.submit-info {
+    flex: 1;
+    padding-right: 2rem;
+}
+
+.submit-info h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.submit-info p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.submit-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.robot-illustration {
+    position: relative;
+    width: 200px;
+    height: 250px;
+}
+
+.robot-head-icon {
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    width: 100px;
+    height: 80px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50% 50% 10px 10px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.robot-head-icon::before, .robot-head-icon::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    top: 30px;
+}
+
+.robot-head-icon::before {
+    left: 20px;
+}
+
+.robot-head-icon::after {
+    right: 20px;
+}
+
+.robot-body-icon {
+    position: absolute;
+    top: 110px;
+    left: 40px;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+    border-radius: 20px;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+/* Submit Robot Modal */
+#submit-robot-modal .modal-content {
+    max-width: 600px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .encyclopedia-hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .filter-container {
+        flex-direction: column;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .submit-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .submit-info {
+        padding-right: 0;
+        margin-bottom: 2rem;
+    }
+    
+    .page-ellipsis, .pagination .page-link:not(.active):not(.next) {
+        display: none;
+    }
+    
+    .pagination .page-link.active {
+        display: flex;
+    }
+}
