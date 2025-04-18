@@ -1,185 +1,183 @@
-/**
- * MOOK Robotics Hub - AI Assistant
- * 
- * This file contains the functionality for the AI assistant chatbot
- * that helps users navigate the robotics encyclopedia.
- */
+// AI Assistant JavaScript for MOOK Robotics Hub
+// This file handles the AI assistant functionality
 
-document.addEventListener('DOMContentLoaded', function() {
-    initAIAssistant();
-});
+import { assistantService } from './database.js';
 
-/**
- * Initialize the AI assistant functionality
- */
-function initAIAssistant() {
-    const assistantInput = document.getElementById('assistant-input');
-    const sendMessageBtn = document.getElementById('send-message');
-    const chatMessages = document.getElementById('chat-messages');
-    
-    if (assistantInput && sendMessageBtn && chatMessages) {
-        // Send message on button click
-        sendMessageBtn.addEventListener('click', function() {
-            sendMessage();
-        });
-        
-        // Send message on Enter key
-        assistantInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+// DOM Elements
+const activateAssistantBtn = document.getElementById('activate-assistant');
+const assistantModal = document.getElementById('assistant-modal');
+const closeAssistantBtn = assistantModal ? assistantModal.querySelector('.close-modal') : null;
+const chatMessages = document.getElementById('chat-messages');
+const assistantInput = document.getElementById('assistant-input');
+const sendMessageBtn = document.getElementById('send-message');
+
+// Predefined responses
+let assistantResponses = [];
+
+// Initialize assistant
+async function initializeAssistant() {
+    try {
+        // Load predefined responses from the database
+        assistantResponses = await assistantService.getResponses();
+        console.log("Assistant initialized with responses:", assistantResponses.length);
+    } catch (error) {
+        console.error("Error initializing assistant:", error);
+        // Fallback to local responses if database fails
+        assistantResponses = [
+            {
+                keyword: "about",
+                response: "MOOK Robotics Hub is an interactive encyclopedia dedicated to all things robotics. We provide information on various robots, from industrial to humanoid, with detailed specifications, features, and media content."
+            },
+            {
+                keyword: "navigation",
+                response: "You can navigate our site using the main menu at the top. The 'Encyclopedia' section contains all our robot entries, or you can use the search bar to find specific robots or topics."
+            },
+            {
+                keyword: "account",
+                response: "Creating an account allows you to save your favorite robots, receive updates on new entries, and customize your experience. Simply click the 'Sign Up' button in the top right corner."
+            },
+            {
+                keyword: "contact",
+                response: "You can contact us through the 'Contact' link in the footer, or email us directly at info@mookrobotics.com."
             }
-        });
+        ];
     }
 }
 
-/**
- * Send a message to the AI assistant
- */
-function sendMessage() {
-    const assistantInput = document.getElementById('assistant-input');
-    const chatMessages = document.getElementById('chat-messages');
-    
-    const message = assistantInput.value.trim();
-    
-    if (message) {
-        // Add user message to chat
-        appendMessage('user', message);
-        
-        // Clear input field
-        assistantInput.value = '';
-        
-        // Process message and generate response
-        processMessage(message);
+// Show/Hide assistant modal
+function showAssistantModal() {
+    if (assistantModal) {
+        assistantModal.style.display = 'flex';
+        document.body.classList.add('modal-open');
     }
 }
 
-/**
- * Add a message to the chat window
- * @param {string} sender - 'user' or 'assistant'
- * @param {string} message - The message text
- */
-function appendMessage(sender, message) {
-    const chatMessages = document.getElementById('chat-messages');
+function hideAssistantModal() {
+    if (assistantModal) {
+        assistantModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+}
+
+// Add a message to the chat
+function addMessage(text, isUser = false) {
+    if (!chatMessages) return;
     
-    // Create message element
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message', sender);
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+    messageDiv.classList.add(isUser ? 'user' : 'assistant');
     
-    const paragraph = document.createElement('p');
-    paragraph.textContent = message;
+    const messagePara = document.createElement('p');
+    messagePara.textContent = text;
     
-    messageElement.appendChild(paragraph);
-    chatMessages.appendChild(messageElement);
+    messageDiv.appendChild(messagePara);
+    chatMessages.appendChild(messageDiv);
     
     // Scroll to bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Log user questions for improvement
+    if (isUser) {
+        // We'll get the response in the processUserInput function
+    }
 }
 
-/**
- * Process the user message and generate a response
- * @param {string} message - The user's message
- */
-function processMessage(message) {
-    // In a production environment, this would likely make an API call to a real AI service
-    // For demo purposes, we'll use a simple rule-based system
+// Process user input and generate response
+async function processUserInput(userText) {
+    // Trim whitespace
+    const text = userText.trim();
     
-    // Convert message to lowercase for easier matching
-    const lowerMessage = message.toLowerCase();
+    if (!text) return;
     
-    // Add typing indicator
-    showTypingIndicator();
+    // Add user message to chat
+    addMessage(text, true);
     
-    // Simulate AI processing delay
+    // Generate response
+    let response = "I'm sorry, I don't have information about that yet. Can I help you with something else?";
+    let matched = false;
+    
+    // Match against predefined responses
+    for (const item of assistantResponses) {
+        if (text.toLowerCase().includes(item.keyword.toLowerCase())) {
+            response = item.response;
+            matched = true;
+            break;
+        }
+    }
+    
+    // If no match found, try to give a helpful general response
+    if (!matched) {
+        if (text.toLowerCase().includes('robot')) {
+            response = "You can find detailed information about various robots in our encyclopedia section. Would you like me to help you navigate there?";
+        } else if (text.toLowerCase().includes('login') || text.toLowerCase().includes('sign')) {
+            response = "You can login or sign up by clicking the respective buttons in the top right corner of the page.";
+        } else if (text.toLowerCase().includes('search')) {
+            response = "You can use the search bar at the top of the page to find specific robots or topics.";
+        }
+    }
+    
+    // Simulate typing delay
     setTimeout(() => {
-        let response;
+        addMessage(response);
         
-        // Generate response based on keywords
-        if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-            response = "Hello! I'm MOOK, your robotics guide. How can I help you today?";
+        // Log the conversation
+        try {
+            assistantService.logQuestion(text, response);
+        } catch (error) {
+            console.error("Error logging conversation:", error);
         }
-        else if (lowerMessage.includes('what is') || lowerMessage.includes("what's")) {
-            if (lowerMessage.includes('robot')) {
-                response = "A robot is a machine capable of carrying out a complex series of actions automatically, especially one programmable by a computer.";
-            } else if (lowerMessage.includes('robotics')) {
-                response = "Robotics is an interdisciplinary branch of engineering and science that includes mechanical engineering, electronic engineering, computer science, and others. It deals with the design, construction, operation, and use of robots.";
-            } else {
-                response = "I'd be happy to explain that for you. Could you provide more details about what you're looking for?";
+    }, 1000);
+    
+    return response;
+}
+
+// Event Listeners
+if (activateAssistantBtn) {
+    activateAssistantBtn.addEventListener('click', () => {
+        showAssistantModal();
+        initializeAssistant();
+    });
+}
+
+if (closeAssistantBtn) {
+    closeAssistantBtn.addEventListener('click', hideAssistantModal);
+}
+
+// Close modal when clicking outside
+if (assistantModal) {
+    assistantModal.addEventListener('click', (e) => {
+        if (e.target === assistantModal) {
+            hideAssistantModal();
+        }
+    });
+}
+
+// Handle send message button
+if (sendMessageBtn && assistantInput) {
+    sendMessageBtn.addEventListener('click', () => {
+        const userText = assistantInput.value;
+        if (userText.trim()) {
+            processUserInput(userText);
+            assistantInput.value = ''; // Clear input
+        }
+    });
+}
+
+// Handle enter key in input
+if (assistantInput) {
+    assistantInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const userText = assistantInput.value;
+            if (userText.trim()) {
+                processUserInput(userText);
+                assistantInput.value = ''; // Clear input
             }
         }
-        else if (lowerMessage.includes('help') || lowerMessage.includes('guide') || lowerMessage.includes('assist')) {
-            response = "I can help you explore our robotics encyclopedia, find information about specific robots, or learn about robotics technologies. What are you interested in?";
-        }
-        else if (lowerMessage.includes('popular') || lowerMessage.includes('famous') || lowerMessage.includes('best')) {
-            response = "Some popular robots include Boston Dynamics' Spot and Atlas, Honda's ASIMO, NASA's Perseverance rover, and SoftBank's Pepper. Would you like more information about any of these?";
-        }
-        else if (lowerMessage.includes('category') || lowerMessage.includes('type')) {
-            response = "Robots can be categorized in many ways, including by application (industrial, service, medical), by movement method (wheeled, legged, flying), or by level of autonomy. What type of robots are you interested in?";
-        }
-        else if (lowerMessage.includes('future') || lowerMessage.includes('upcoming')) {
-            response = "The future of robotics is exciting! Trends include advanced AI integration, soft robotics, human-robot collaboration, and robots becoming more accessible. Is there a specific future technology you'd like to know more about?";
-        }
-        else if (lowerMessage.includes('thank')) {
-            response = "You're welcome! If you have any other questions about robotics, feel free to ask anytime.";
-        }
-        else {
-            // If no keyword matches, use a default response
-            response = "That's an interesting question about robotics. I'd recommend exploring our encyclopedia for more detailed information. Is there a specific topic you'd like to know more about?";
-        }
-        
-        // Remove typing indicator
-        hideTypingIndicator();
-        
-        // Add assistant response to chat
-        appendMessage('assistant', response);
-    }, 1000); // Simulate 1-second response delay
+    });
 }
 
-/**
- * Show a typing indicator
- */
-function showTypingIndicator() {
-    const chatMessages = document.getElementById('chat-messages');
-    
-    // Create typing indicator
-    const typingIndicator = document.createElement('div');
-    typingIndicator.classList.add('message', 'assistant', 'typing-indicator');
-    
-    const dots = document.createElement('div');
-    dots.classList.add('typing-dots');
-    dots.innerHTML = '<span></span><span></span><span></span>';
-    
-    typingIndicator.appendChild(dots);
-    chatMessages.appendChild(typingIndicator);
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+// Initialize the assistant when the page loads
+document.addEventListener('DOMContentLoaded', initializeAssistant);
 
-/**
- * Hide the typing indicator
- */
-function hideTypingIndicator() {
-    const typingIndicator = document.querySelector('.typing-indicator');
-    
-    if (typingIndicator) {
-        typingIndicator.remove();
-    }
-}
-
-/**
- * Add animation for the assistant avatar 
- */
-document.addEventListener('DOMContentLoaded', function() {
-    const avatarCircle = document.querySelector('.avatar-circle');
-    
-    if (avatarCircle) {
-        // Add pulse animation when hovering over avatar
-        avatarCircle.addEventListener('mouseenter', function() {
-            this.classList.add('pulse');
-        });
-        
-        avatarCircle.addEventListener('mouseleave', function() {
-            this.classList.remove('pulse');
-        });
-    }
-});
+// Export for use in other modules
+export { processUserInput };
