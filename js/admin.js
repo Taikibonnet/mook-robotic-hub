@@ -9,10 +9,25 @@ const robotsTableBody = document.getElementById('robots-table-body');
 const newsTable = document.getElementById('news-table');
 const newsTableBody = document.getElementById('news-table-body');
 const initDbBtn = document.getElementById('init-db-btn');
-const addNewsBtns = document.querySelectorAll('.add-news-btn');
 
-// DOM Elements - Add/Edit News Modal
-const newsModal = document.getElementById('news-modal');
+// DOM Elements - Add/Edit Robot Form
+const robotForm = document.getElementById('robot-form');
+const robotNameInput = document.getElementById('robot-name');
+const robotDescriptionInput = document.getElementById('robot-description');
+const robotManufacturerInput = document.getElementById('robot-manufacturer');
+const robotYearInput = document.getElementById('robot-year');
+const robotCategoryInput = document.getElementById('robot-category');
+const robotFeaturedCheckbox = document.getElementById('robot-featured');
+const robotContentEditor = document.getElementById('robot-content');
+const robotMainImageInput = document.getElementById('robot-main-image');
+const robotGalleryInput = document.getElementById('robot-gallery');
+const robotVideoInput = document.getElementById('robot-video');
+const robotSpecificationsContainer = document.getElementById('robot-specifications');
+const addSpecificationBtn = document.getElementById('add-specification');
+const robotFeaturesContainer = document.getElementById('robot-features');
+const addFeatureBtn = document.getElementById('add-feature');
+
+// DOM Elements - Add/Edit News Form
 const newsForm = document.getElementById('news-form');
 const newsTitleInput = document.getElementById('news-title');
 const newsAuthorInput = document.getElementById('news-author');
@@ -20,22 +35,15 @@ const newsCategoryInput = document.getElementById('news-category');
 const newsPublishDateInput = document.getElementById('news-publish-date');
 const newsContentEditor = document.getElementById('news-content');
 const newsImageInput = document.getElementById('news-image');
-const newsImagePreview = document.getElementById('news-image-preview');
-const newsFormTitle = document.getElementById('news-form-title');
-const newsSubmitBtn = document.getElementById('news-submit-btn');
-const newsCancelBtn = document.getElementById('news-cancel-btn');
-
-// DOM Elements - Navigation
-const adminNavLinks = document.querySelectorAll('.admin-nav a');
-const adminSections = document.querySelectorAll('.admin-section');
 
 // Current item being edited
+let currentRobotId = null;
 let currentNewsId = null;
 
 // Initialize admin dashboard
 async function initializeAdminDashboard() {
     // Check if user is authorized
-    if (!authService.isAdmin()) {
+    if (!await authService.isAdmin()) {
         // Redirect to login page if not admin
         window.location.href = '../index.html';
         return;
@@ -46,36 +54,6 @@ async function initializeAdminDashboard() {
     
     // Load news data
     await loadNewsTable();
-    
-    // Set up admin navigation
-    setupAdminNavigation();
-    
-    // Set up news modal
-    setupNewsModal();
-}
-
-// Set up admin navigation
-function setupAdminNavigation() {
-    adminNavLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all links
-            adminNavLinks.forEach(link => link.classList.remove('active'));
-            
-            // Add active class to clicked link
-            this.classList.add('active');
-            
-            // Get target section id
-            const targetId = this.getAttribute('href').substring(1);
-            
-            // Hide all sections
-            adminSections.forEach(section => section.classList.remove('active'));
-            
-            // Show target section
-            document.getElementById(targetId).classList.add('active');
-        });
-    });
 }
 
 // Load robots data into table
@@ -170,11 +148,60 @@ async function loadNewsTable() {
 
 // Edit robot
 async function editRobot(robotId) {
-    // For this static version, just show a notification
-    displayNotification("Edit robot functionality would open the robot editor page.", "info");
-    
-    // In a full implementation, this would redirect to the add-robot.html page with the robot data
-    window.location.href = `add-robot.html?id=${robotId}`;
+    try {
+        const robot = await robotService.getRobotById(robotId);
+        
+        // Store current robot ID
+        currentRobotId = robotId;
+        
+        // Fill form with robot data
+        if (robotNameInput) robotNameInput.value = robot.name || '';
+        if (robotDescriptionInput) robotDescriptionInput.value = robot.description || '';
+        if (robotManufacturerInput) robotManufacturerInput.value = robot.manufacturer || '';
+        if (robotYearInput) robotYearInput.value = robot.year || '';
+        if (robotCategoryInput) robotCategoryInput.value = robot.category || '';
+        if (robotFeaturedCheckbox) robotFeaturedCheckbox.checked = robot.featured || false;
+        
+        // Fill content editor
+        if (robotContentEditor) {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.get('robot-content').setContent(robot.content || '');
+            } else {
+                robotContentEditor.value = robot.content || '';
+            }
+        }
+        
+        // Clear image/video fields (these are file inputs, can't set values)
+        
+        // Fill specifications
+        if (robotSpecificationsContainer) {
+            robotSpecificationsContainer.innerHTML = '';
+            if (robot.specifications) {
+                Object.entries(robot.specifications).forEach(([key, value]) => {
+                    addSpecificationField(key, value);
+                });
+            }
+        }
+        
+        // Fill features
+        if (robotFeaturesContainer) {
+            robotFeaturesContainer.innerHTML = '';
+            if (robot.features && Array.isArray(robot.features)) {
+                robot.features.forEach(feature => {
+                    addFeatureField(feature);
+                });
+            }
+        }
+        
+        // Show the edit form section
+        document.getElementById('add-robot-section').scrollIntoView();
+        document.getElementById('robot-form-title').textContent = 'Edit Robot';
+        document.getElementById('robot-submit-btn').textContent = 'Update Robot';
+        
+    } catch (error) {
+        console.error("Error editing robot:", error);
+        displayNotification("Error loading robot data. Please try again.", "error");
+    }
 }
 
 // Delete robot
@@ -193,210 +220,41 @@ async function deleteRobot(robotId) {
     }
 }
 
-// Set up news modal
-function setupNewsModal() {
-    // Add event listeners to "Add News" buttons
-    addNewsBtns.forEach(btn => {
-        btn.addEventListener('click', () => showNewsModal());
-    });
-    
-    // Add event listener to news form
-    if (newsForm) {
-        newsForm.addEventListener('submit', handleNewsFormSubmit);
-    }
-    
-    // Add event listener to news cancel button
-    if (newsCancelBtn) {
-        newsCancelBtn.addEventListener('click', hideNewsModal);
-    }
-    
-    // Add event listener to news modal close button
-    if (newsModal) {
-        const closeBtn = newsModal.querySelector('.close-modal');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', hideNewsModal);
-        }
-        
-        // Close when clicking outside
-        newsModal.addEventListener('click', (e) => {
-            if (e.target === newsModal) {
-                hideNewsModal();
-            }
-        });
-    }
-    
-    // Add preview functionality for news image
-    if (newsImageInput) {
-        newsImageInput.addEventListener('change', (e) => {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    newsImagePreview.innerHTML = `
-                        <img src="${e.target.result}" alt="Image preview">
-                        <button type="button" class="btn-remove-image">Remove</button>
-                    `;
-                    
-                    // Add event listener to remove button
-                    const removeBtn = newsImagePreview.querySelector('.btn-remove-image');
-                    removeBtn.addEventListener('click', () => {
-                        newsImageInput.value = "";
-                        newsImagePreview.innerHTML = "";
-                    });
-                }
-                
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        });
-    }
-}
-
-// Show news modal for adding/editing
-function showNewsModal(newsItem = null) {
-    if (!newsModal) return;
-    
-    // Reset the form
-    resetNewsForm();
-    
-    // If editing an existing news item
-    if (newsItem) {
-        currentNewsId = newsItem.id;
-        
-        // Set form values
-        newsTitleInput.value = newsItem.title || '';
-        newsAuthorInput.value = newsItem.author || '';
-        newsCategoryInput.value = newsItem.category || '';
-        
-        // Format date for input
-        if (newsItem.publishDate) {
-            const date = new Date(newsItem.publishDate);
-            const formattedDate = date.toISOString().split('T')[0];
-            newsPublishDateInput.value = formattedDate;
-        }
-        
-        newsContentEditor.value = newsItem.content || '';
-        
-        // Show image preview if exists
-        if (newsItem.image) {
-            newsImagePreview.innerHTML = `
-                <img src="${newsItem.image}" alt="Image preview">
-                <button type="button" class="btn-remove-image">Remove</button>
-            `;
-            
-            // Add event listener to remove button
-            const removeBtn = newsImagePreview.querySelector('.btn-remove-image');
-            removeBtn.addEventListener('click', () => {
-                newsImageInput.value = "";
-                newsImagePreview.innerHTML = "";
-            });
-        }
-        
-        // Update modal title and button text
-        newsFormTitle.textContent = 'Edit News Article';
-        newsSubmitBtn.textContent = 'Update News';
-    } else {
-        currentNewsId = null;
-        newsFormTitle.textContent = 'Add News Article';
-        newsSubmitBtn.textContent = 'Add News';
-        
-        // Set today's date as default
-        const today = new Date().toISOString().split('T')[0];
-        newsPublishDateInput.value = today;
-    }
-    
-    // Show the modal
-    newsModal.style.display = 'flex';
-    document.body.classList.add('modal-open');
-}
-
-// Hide news modal
-function hideNewsModal() {
-    if (!newsModal) return;
-    
-    newsModal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-    
-    // Reset form and current news ID
-    resetNewsForm();
-    currentNewsId = null;
-}
-
-// Reset news form
-function resetNewsForm() {
-    if (!newsForm) return;
-    
-    newsForm.reset();
-    newsImagePreview.innerHTML = '';
-}
-
-// Handle news form submission
-async function handleNewsFormSubmit(e) {
-    e.preventDefault();
-    
-    try {
-        // Get form data
-        const title = newsTitleInput.value;
-        const author = newsAuthorInput.value;
-        const category = newsCategoryInput.value;
-        const publishDate = newsPublishDateInput.value;
-        const content = newsContentEditor.value;
-        
-        // Get image file and create a DataURL (as a fallback for this static version)
-        let imageUrl = '';
-        if (newsImageInput.files && newsImageInput.files[0]) {
-            const reader = new FileReader();
-            
-            // Convert to promise
-            imageUrl = await new Promise((resolve) => {
-                reader.onload = function(e) {
-                    resolve(e.target.result);
-                };
-                reader.readAsDataURL(newsImageInput.files[0]);
-            });
-        }
-        
-        // Prepare news data
-        const newsData = {
-            title,
-            author,
-            category,
-            publishDate: new Date(publishDate).toISOString(),
-            content,
-            image: imageUrl
-        };
-        
-        if (currentNewsId) {
-            // Update existing news
-            await newsService.updateNews(currentNewsId, newsData);
-            displayNotification("News article updated successfully.", "success");
-        } else {
-            // Add new news
-            await newsService.addNews(newsData);
-            displayNotification("News article added successfully.", "success");
-        }
-        
-        // Hide modal and reload news table
-        hideNewsModal();
-        await loadNewsTable();
-        
-        // If adding a new article, update the news count in the dashboard
-        const newsCountElement = document.querySelector('.stat-value:nth-of-type(2)');
-        if (newsCountElement) {
-            const allNews = await newsService.getAllNews();
-            newsCountElement.textContent = allNews.length;
-        }
-        
-    } catch (error) {
-        console.error("Error submitting news form:", error);
-        displayNotification("Error saving news article. Please try again.", "error");
-    }
-}
-
 // Edit news
 async function editNews(newsId) {
     try {
         const article = await newsService.getNewsById(newsId);
-        showNewsModal(article);
+        
+        // Store current news ID
+        currentNewsId = newsId;
+        
+        // Fill form with news data
+        if (newsTitleInput) newsTitleInput.value = article.title || '';
+        if (newsAuthorInput) newsAuthorInput.value = article.author || '';
+        if (newsCategoryInput) newsCategoryInput.value = article.category || '';
+        if (newsPublishDateInput) {
+            const date = new Date(article.publishDate);
+            // Format date as YYYY-MM-DD for input
+            const formattedDate = date.toISOString().split('T')[0];
+            newsPublishDateInput.value = formattedDate;
+        }
+        
+        // Fill content editor
+        if (newsContentEditor) {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.get('news-content').setContent(article.content || '');
+            } else {
+                newsContentEditor.value = article.content || '';
+            }
+        }
+        
+        // Clear image field (file input, can't set value)
+        
+        // Show the edit form section
+        document.getElementById('add-news-section').scrollIntoView();
+        document.getElementById('news-form-title').textContent = 'Edit News';
+        document.getElementById('news-submit-btn').textContent = 'Update News';
+        
     } catch (error) {
         console.error("Error editing news:", error);
         displayNotification("Error loading news data. Please try again.", "error");
@@ -412,18 +270,91 @@ async function deleteNews(newsId) {
     try {
         await newsService.deleteNews(newsId);
         displayNotification("News article deleted successfully.", "success");
-        await loadNewsTable();
-        
-        // Update the news count in the dashboard
-        const newsCountElement = document.querySelector('.stat-value:nth-of-type(2)');
-        if (newsCountElement) {
-            const allNews = await newsService.getAllNews();
-            newsCountElement.textContent = allNews.length;
-        }
+        loadNewsTable();
     } catch (error) {
         console.error("Error deleting news:", error);
         displayNotification("Error deleting news article. Please try again.", "error");
     }
+}
+
+// Add specification field
+function addSpecificationField(key = '', value = '') {
+    if (!robotSpecificationsContainer) return;
+    
+    const field = document.createElement('div');
+    field.classList.add('specification-field');
+    
+    field.innerHTML = `
+        <div class="spec-inputs">
+            <input type="text" class="spec-key" placeholder="Specification name" value="${key}">
+            <input type="text" class="spec-value" placeholder="Value" value="${value}">
+        </div>
+        <button type="button" class="btn-remove-spec">Remove</button>
+    `;
+    
+    field.querySelector('.btn-remove-spec').addEventListener('click', () => {
+        field.remove();
+    });
+    
+    robotSpecificationsContainer.appendChild(field);
+}
+
+// Add feature field
+function addFeatureField(feature = '') {
+    if (!robotFeaturesContainer) return;
+    
+    const field = document.createElement('div');
+    field.classList.add('feature-field');
+    
+    field.innerHTML = `
+        <div class="feature-input">
+            <input type="text" class="feature-value" placeholder="Feature" value="${feature}">
+        </div>
+        <button type="button" class="btn-remove-feature">Remove</button>
+    `;
+    
+    field.querySelector('.btn-remove-feature').addEventListener('click', () => {
+        field.remove();
+    });
+    
+    robotFeaturesContainer.appendChild(field);
+}
+
+// Get specifications from form
+function getSpecificationsFromForm() {
+    const specifications = {};
+    
+    if (!robotSpecificationsContainer) return specifications;
+    
+    const fields = robotSpecificationsContainer.querySelectorAll('.specification-field');
+    fields.forEach(field => {
+        const key = field.querySelector('.spec-key').value.trim();
+        const value = field.querySelector('.spec-value').value.trim();
+        
+        if (key && value) {
+            specifications[key] = value;
+        }
+    });
+    
+    return specifications;
+}
+
+// Get features from form
+function getFeaturesFromForm() {
+    const features = [];
+    
+    if (!robotFeaturesContainer) return features;
+    
+    const fields = robotFeaturesContainer.querySelectorAll('.feature-field');
+    fields.forEach(field => {
+        const value = field.querySelector('.feature-value').value.trim();
+        
+        if (value) {
+            features.push(value);
+        }
+    });
+    
+    return features;
 }
 
 // Display notification
@@ -444,35 +375,197 @@ function displayNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Initialize database (for demo purposes)
+// Initialize database
 async function initializeDB() {
-    displayNotification("Database initialization would normally happen here. In this static version, data is already loaded.", "info");
-    
-    // Reload tables
-    await loadRobotsTable();
-    await loadNewsTable();
+    try {
+        await initializeDatabase();
+        displayNotification("Database initialized successfully with sample data.", "success");
+        
+        // Reload tables
+        await loadRobotsTable();
+        await loadNewsTable();
+    } catch (error) {
+        console.error("Error initializing database:", error);
+        displayNotification("Error initializing database. Please try again.", "error");
+    }
 }
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize dashboard
-    initializeAdminDashboard();
+    // Check authentication
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const adminStatus = await isAdmin();
+            if (adminStatus) {
+                // User is an admin, initialize dashboard
+                initializeAdminDashboard();
+            } else {
+                // User is not an admin, redirect to home
+                window.location.href = '../index.html';
+            }
+        } else {
+            // User is not logged in, redirect to home
+            window.location.href = '../index.html';
+        }
+    });
     
     // Initialize database button
     if (initDbBtn) {
         initDbBtn.addEventListener('click', initializeDB);
     }
     
-    // Logout button
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
+    // Add specification button
+    if (addSpecificationBtn) {
+        addSpecificationBtn.addEventListener('click', () => addSpecificationField());
+    }
+    
+    // Add feature button
+    if (addFeatureBtn) {
+        addFeatureBtn.addEventListener('click', () => addFeatureField());
+    }
+    
+    // Robot form submission
+    if (robotForm) {
+        robotForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
             try {
-                await authService.logout();
-                window.location.href = '../index.html';
+                // Get form data
+                const name = robotNameInput.value;
+                const description = robotDescriptionInput.value;
+                const manufacturer = robotManufacturerInput.value;
+                const year = parseInt(robotYearInput.value) || null;
+                const category = robotCategoryInput.value;
+                const featured = robotFeaturedCheckbox.checked;
+                
+                // Get content from editor
+                let content = '';
+                if (typeof tinymce !== 'undefined' && tinymce.get('robot-content')) {
+                    content = tinymce.get('robot-content').getContent();
+                } else if (robotContentEditor) {
+                    content = robotContentEditor.value;
+                }
+                
+                // Get specifications and features
+                const specifications = getSpecificationsFromForm();
+                const features = getFeaturesFromForm();
+                
+                // Get files
+                const mainImage = robotMainImageInput.files[0] || null;
+                const galleryImages = robotGalleryInput.files.length > 0 ? Array.from(robotGalleryInput.files) : [];
+                const videoFile = robotVideoInput.files[0] || null;
+                
+                // Prepare robot data
+                const robotData = {
+                    name,
+                    description,
+                    manufacturer,
+                    year,
+                    category,
+                    featured,
+                    content,
+                    specifications,
+                    features
+                };
+                
+                if (currentRobotId) {
+                    // Update existing robot
+                    await robotService.updateRobot(currentRobotId, robotData, mainImage, galleryImages, videoFile);
+                    displayNotification("Robot updated successfully.", "success");
+                } else {
+                    // Add new robot
+                    await robotService.addRobot(robotData, mainImage, galleryImages, videoFile);
+                    displayNotification("Robot added successfully.", "success");
+                }
+                
+                // Reset form
+                robotForm.reset();
+                if (typeof tinymce !== 'undefined' && tinymce.get('robot-content')) {
+                    tinymce.get('robot-content').setContent('');
+                }
+                
+                // Clear specifications and features
+                if (robotSpecificationsContainer) robotSpecificationsContainer.innerHTML = '';
+                if (robotFeaturesContainer) robotFeaturesContainer.innerHTML = '';
+                
+                // Reset form title and button
+                document.getElementById('robot-form-title').textContent = 'Add New Robot';
+                document.getElementById('robot-submit-btn').textContent = 'Add Robot';
+                
+                // Clear current robot ID
+                currentRobotId = null;
+                
+                // Reload robots table
+                await loadRobotsTable();
+                
             } catch (error) {
-                console.error('Logout error:', error);
-                displayNotification("Error logging out. Please try again.", "error");
+                console.error("Error submitting robot form:", error);
+                displayNotification("Error saving robot. Please try again.", "error");
+            }
+        });
+    }
+    
+    // News form submission
+    if (newsForm) {
+        newsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                // Get form data
+                const title = newsTitleInput.value;
+                const author = newsAuthorInput.value;
+                const category = newsCategoryInput.value;
+                const publishDate = newsPublishDateInput.value ? new Date(newsPublishDateInput.value).toISOString() : new Date().toISOString();
+                
+                // Get content from editor
+                let content = '';
+                if (typeof tinymce !== 'undefined' && tinymce.get('news-content')) {
+                    content = tinymce.get('news-content').getContent();
+                } else if (newsContentEditor) {
+                    content = newsContentEditor.value;
+                }
+                
+                // Get image
+                const image = newsImageInput.files[0] || null;
+                
+                // Prepare news data
+                const newsData = {
+                    title,
+                    author,
+                    category,
+                    publishDate,
+                    content
+                };
+                
+                if (currentNewsId) {
+                    // Update existing news
+                    await newsService.updateNews(currentNewsId, newsData, image);
+                    displayNotification("News article updated successfully.", "success");
+                } else {
+                    // Add new news
+                    await newsService.addNews(newsData, image);
+                    displayNotification("News article added successfully.", "success");
+                }
+                
+                // Reset form
+                newsForm.reset();
+                if (typeof tinymce !== 'undefined' && tinymce.get('news-content')) {
+                    tinymce.get('news-content').setContent('');
+                }
+                
+                // Reset form title and button
+                document.getElementById('news-form-title').textContent = 'Add News Article';
+                document.getElementById('news-submit-btn').textContent = 'Add News';
+                
+                // Clear current news ID
+                currentNewsId = null;
+                
+                // Reload news table
+                await loadNewsTable();
+                
+            } catch (error) {
+                console.error("Error submitting news form:", error);
+                displayNotification("Error saving news article. Please try again.", "error");
             }
         });
     }
