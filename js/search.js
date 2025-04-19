@@ -204,7 +204,6 @@ function generatePagination(totalPages) {
             const filteredResults = filterResults(currentSearchResults, currentCategory);
             const sortedResults = sortResults(filteredResults, currentSortBy);
             displayResults(sortedResults);
-            // Scroll to top of results
             searchResultsContainer.scrollIntoView({ behavior: 'smooth' });
         }
     });
