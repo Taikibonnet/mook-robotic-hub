@@ -198,29 +198,8 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script type="module">
-        // Import Firebase 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-        
-        // Initialize Firebase with your config once you have it
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "mook-robotics-hub.firebaseapp.com",
-            projectId: "mook-robotics-hub",
-            storageBucket: "mook-robotics-hub.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            measurementId: "YOUR_MEASUREMENT_ID"
-        };
-        
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-    </script>
-    
     <!-- Application Scripts -->
     <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/search.js"></script>
 </body>
 </html>
