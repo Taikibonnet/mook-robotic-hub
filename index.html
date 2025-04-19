@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/theme.css">
-    <!-- Add a meta description for better SEO -->
-    <meta name="description" content="MOOK Robotics Hub is an interactive, futuristic online encyclopedia about robotics, featuring detailed information about various robots and the latest robotics news.">
 </head>
 <body>
     <header>
@@ -27,20 +25,12 @@
             <div class="nav-links">
                 <a href="index.html" class="active">Home</a>
                 <a href="robots/index.html">Encyclopedia</a>
-                <a href="news/index.html">News</a>
-                <a href="about.html">About</a>
+                <a href="#news">News</a>
+                <a href="#about">About</a>
             </div>
-            <div class="nav-auth" id="user-display">
+            <div class="nav-auth">
                 <button id="login-btn" class="btn btn-primary">Login</button>
                 <button id="signup-btn" class="btn btn-outline">Sign Up</button>
-            </div>
-            <!-- Theme toggle button -->
-            <div class="theme-toggle-container">
-                <input type="checkbox" id="theme-toggle" class="theme-toggle">
-                <label for="theme-toggle" class="theme-toggle-label">
-                    <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
-                </label>
             </div>
         </nav>
     </header>
@@ -53,12 +43,10 @@
                 <div class="search-container">
                     <input type="text" id="search-input" placeholder="Search for robots, technologies, or news...">
                     <button id="search-btn"><i class="fas fa-search"></i></button>
-                    <!-- Add search results container -->
-                    <div id="search-results" class="search-results" style="display: none;"></div>
                 </div>
                 <div class="hero-cta">
-                    <a href="robots/index.html" class="btn btn-primary btn-large">Explore Encyclopedia</a>
-                    <a href="news/index.html" class="btn btn-outline btn-large">Latest News</a>
+                    <button class="btn btn-primary btn-large">Explore Encyclopedia</button>
+                    <button class="btn btn-outline btn-large">Latest News</button>
                 </div>
             </div>
             <div class="hero-image">
@@ -75,13 +63,35 @@
         <section class="featured-robots">
             <h2>Featured <span class="highlight">Robots</span></h2>
             <div class="robot-cards">
-                <!-- Robot cards will be dynamically loaded here -->
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span>Loading featured robots...</span>
+                <div class="robot-card">
+                    <div class="robot-image">
+                        <!-- Placeholder image -->
+                        <div class="placeholder"></div>
+                    </div>
+                    <h3>Atlas</h3>
+                    <p>Humanoid robot designed for mobility and manipulation</p>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+                <div class="robot-card">
+                    <div class="robot-image">
+                        <!-- Placeholder image -->
+                        <div class="placeholder"></div>
+                    </div>
+                    <h3>Spot</h3>
+                    <p>Agile mobile robot that navigates terrain with unprecedented mobility</p>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+                <div class="robot-card">
+                    <div class="robot-image">
+                        <!-- Placeholder image -->
+                        <div class="placeholder"></div>
+                    </div>
+                    <h3>Sophia</h3>
+                    <p>Advanced humanoid robot with expressive face and conversational AI</p>
+                    <button class="btn btn-secondary">Learn More</button>
                 </div>
             </div>
-            <a href="robots/index.html" class="btn btn-outline btn-large explore-all">Explore All Robots</a>
+            <button class="btn btn-outline btn-large explore-all">Explore All Robots</button>
         </section>
 
         <section class="ai-assistant-section">
@@ -102,25 +112,41 @@
         <section class="news-section">
             <h2>Latest in <span class="highlight">Robotics</span></h2>
             <div class="news-container">
-                <!-- News cards will be dynamically loaded here -->
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span>Loading latest news...</span>
+                <div class="news-card">
+                    <div class="news-image">
+                        <div class="placeholder"></div>
+                    </div>
+                    <div class="news-content">
+                        <h3>Advances in Soft Robotics</h3>
+                        <p class="news-date">April 10, 2025</p>
+                        <p>New materials enable robots with unprecedented flexibility and adaptability...</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <div class="news-image">
+                        <div class="placeholder"></div>
+                    </div>
+                    <div class="news-content">
+                        <h3>Robots in Healthcare</h3>
+                        <p class="news-date">April 5, 2025</p>
+                        <p>How medical robots are transforming surgery and patient care...</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <div class="news-image">
+                        <div class="placeholder"></div>
+                    </div>
+                    <div class="news-content">
+                        <h3>AI Revolution in Robotics</h3>
+                        <p class="news-date">March 28, 2025</p>
+                        <p>The latest advancements in robot intelligence and decision-making...</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
                 </div>
             </div>
-            <a href="news/index.html" class="btn btn-outline btn-large view-all-news">View All News</a>
-        </section>
-        
-        <!-- Newsletter section -->
-        <section class="newsletter-section">
-            <div class="newsletter-container">
-                <h2>Stay Updated with <span class="highlight">MOOK</span></h2>
-                <p>Subscribe to our newsletter for the latest in robotics advancements, news, and updates to our encyclopedia.</p>
-                <form id="newsletter-form" class="newsletter-form">
-                    <input type="email" placeholder="Your email address" required>
-                    <button type="submit" class="btn btn-primary">Subscribe</button>
-                </form>
-            </div>
+            <button class="btn btn-outline btn-large view-all-news">View All News</button>
         </section>
     </main>
 
@@ -141,24 +167,23 @@
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="robots/index.html">Encyclopedia</a></li>
-                    <li><a href="news/index.html">News</a></li>
-                    <li><a href="about.html">About</a></li>
+                    <li><a href="#news">News</a></li>
+                    <li><a href="#about">About</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Contact</h3>
                 <ul>
                     <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
-                    <li><a href="contact.html">Contact Form</a></li>
+                    <li><a href="#contact">Contact Form</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Account</h3>
                 <ul>
-                    <li><a href="#" id="login-link">Login</a></li>
-                    <li><a href="#" id="signup-link">Sign Up</a></li>
-                    <li><a href="account/profile.html" id="profile-link" style="display: none;">My Account</a></li>
-                    <li><a href="admin/dashboard.html" id="admin-link" style="display: none;">Admin Dashboard</a></li>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#signup">Sign Up</a></li>
+                    <li><a href="#my-account">My Account</a></li>
                 </ul>
             </div>
         </div>
@@ -243,8 +268,8 @@
         </div>
     </div>
 
-    <!-- Application Scripts -->
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/ai-assistant.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ai-assistant.js"></script>
 </body>
 </html>
