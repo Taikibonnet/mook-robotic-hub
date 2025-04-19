@@ -1,0 +1,607 @@
+/* Base CSS for MOOK Robotics Hub
+ * This file defines global variables, resets, and base styles
+ */
+
+/* CSS Variables - Light Theme (default) */
+:root {
+    /* Core colors */
+    --primary-color: #0088cc;
+    --primary-color-dark: #006699;
+    --primary-color-light: #99ccff;
+    --primary-color-rgb: 0, 136, 204;
+
+    --accent-color: #ff6600;
+    --accent-color-light: #ffcc99;
+    --accent-color-dark: #cc5200;
+    --accent-color-rgb: 255, 102, 0;
+
+    /* Text colors */
+    --text-color: #333333;
+    --text-color-light: #666666;
+    --text-color-inverse: #ffffff;
+
+    /* Background colors */
+    --bg-color: #f8f9fa;
+    --bg-color-dark: #e9ecef;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+    --hover-color: #f0f0f0;
+
+    /* Border colors */
+    --border-color: #dddddd;
+    --border-color-dark: #bbbbbb;
+
+    /* Other */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-color-dark: rgba(0, 0, 0, 0.2);
+    --transparent: rgba(0, 0, 0, 0);
+    --background-light: rgba(255, 255, 255, 0.5);
+
+    /* Component specific variables */
+    --header-height: 80px;
+    --footer-bg: #333333;
+    --footer-text: #cccccc;
+    --border-radius: 8px;
+    --card-border-radius: 12px;
+    --button-border-radius: 30px;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+    /* Core colors - adjusted for dark theme */
+    --primary-color: #00aaff;
+    --primary-color-dark: #0088cc;
+    --primary-color-light: #66ccff;
+    --primary-color-rgb: 0, 170, 255;
+
+    --accent-color: #ff8800;
+    --accent-color-light: #ffaa44;
+    --accent-color-dark: #cc7000;
+    --accent-color-rgb: 255, 136, 0;
+
+    /* Text colors - inverted for dark theme */
+    --text-color: #e0e0e0;
+    --text-color-light: #aaaaaa;
+    --text-color-inverse: #222222;
+
+    /* Background colors - dark variants */
+    --bg-color: #121212;
+    --bg-color-dark: #1a1a1a;
+    --card-bg: #2a2a2a;
+    --input-bg: #333333;
+    --hover-color: #3a3a3a;
+
+    /* Border colors - darker variants */
+    --border-color: #444444;
+    --border-color-dark: #666666;
+
+    /* Other dark theme adjustments */
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-color-dark: rgba(0, 0, 0, 0.5);
+    --transparent: rgba(0, 0, 0, 0);
+    --background-light: rgba(40, 40, 40, 0.5);
+
+    /* Component specific variables for dark theme */
+    --footer-bg: #222222;
+    --footer-text: #aaaaaa;
+}
+
+/* CSS Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+main {
+    flex: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color-dark);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+ul, ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header & Navigation Styles */
+header {
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 10px var(--shadow-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: var(--header-height);
+    padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.logo-svg {
+    margin-right: 10px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    font-weight: 500;
+    position: relative;
+    padding: 5px 0;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after, .nav-links a.active::after {
+    width: 100%;
+}
+
+.nav-auth {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    border-radius: var(--button-border-radius);
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color-dark);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-color-dark);
+    color: white;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-large {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* Hero Section */
+.hero {
+    padding: 80px 20px;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.hero-content {
+    flex: 1;
+    min-width: 300px;
+    max-width: 600px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.hero .highlight {
+    color: var(--primary-color);
+    position: relative;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: var(--text-color-light);
+}
+
+.hero-cta {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.hero-image {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Robot Animation */
+.robot-animation {
+    width: 200px;
+    height: 300px;
+    position: relative;
+}
+
+.robot-head {
+    width: 100px;
+    height: 100px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.robot-body {
+    width: 150px;
+    height: 150px;
+    background-color: var(--primary-color);
+    border-radius: 20px;
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.robot-arm {
+    width: 30px;
+    height: 100px;
+    background-color: var(--primary-color);
+    border-radius: 15px;
+    position: absolute;
+    top: 100px;
+}
+
+.robot-arm.left {
+    left: 20px;
+    transform-origin: top center;
+    animation: waveArm 3s infinite alternate;
+}
+
+.robot-arm.right {
+    right: 20px;
+}
+
+@keyframes waveArm {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(30deg); }
+}
+
+/* Sections */
+section {
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Robot Cards */
+.robot-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.robot-card {
+    background-color: var(--card-bg);
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.robot-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px var(--shadow-color-dark);
+}
+
+.robot-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.robot-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.robot-card:hover .robot-image img {
+    transform: scale(1.05);
+}
+
+.robot-image .placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.robot-card h3 {
+    padding: 20px 20px 10px;
+    font-size: 1.4rem;
+    color: var(--primary-color);
+}
+
+.robot-card p {
+    padding: 0 20px 20px;
+    color: var(--text-color-light);
+}
+
+.robot-card .btn {
+    margin: 0 20px 20px;
+}
+
+/* News Cards */
+.news-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.news-card {
+    background-color: var(--card-bg);
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px var(--shadow-color-dark);
+}
+
+.news-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.news-card:hover .news-image img {
+    transform: scale(1.05);
+}
+
+.news-image .placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.news-content {
+    padding: 20px;
+}
+
+.news-content h3 {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.news-date {
+    color: var(--text-color-light);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.news-content p {
+    margin-bottom: 15px;
+}
+
+.read-more {
+    display: inline-block;
+    font-weight: 500;
+    color: var(--accent-color);
+}
+
+.read-more:hover {
+    color: var(--accent-color-dark);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .main-nav {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 15px 20px;
+    }
+    
+    .logo {
+        margin-bottom: 15px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+    
+    .nav-auth {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .theme-toggle-container {
+        margin: 15px 0 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-content, .hero-image {
+        text-align: center;
+        max-width: 100%;
+    }
+    
+    .hero-cta {
+        justify-content: center;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+    }
+    
+    .newsletter-form button {
+        margin-top: 10px;
+    }
+    
+    .footer-section {
+        min-width: 100%;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
