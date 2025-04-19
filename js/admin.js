@@ -1,572 +1,289 @@
-// Admin JavaScript for MOOK Robotics Hub
-// This file handles admin functionality for managing robots, news, and other content
+/**
+ * MOOK Robotics Hub - Admin Panel JavaScript
+ * 
+ * This file contains functionality for the admin dashboard and other admin pages.
+ */
 
-import { robotService, newsService, authService } from './static-services.js';
+document.addEventListener('DOMContentLoaded', function() {
+    initAdminPanel();
+    setupFileUploads();
+    setupDynamicInputs();
+});
 
-// DOM Elements - Dashboard
-const robotsTable = document.getElementById('robots-table');
-const robotsTableBody = document.getElementById('robots-table-body');
-const newsTable = document.getElementById('news-table');
-const newsTableBody = document.getElementById('news-table-body');
-const initDbBtn = document.getElementById('init-db-btn');
-
-// DOM Elements - Add/Edit Robot Form
-const robotForm = document.getElementById('robot-form');
-const robotNameInput = document.getElementById('robot-name');
-const robotDescriptionInput = document.getElementById('robot-description');
-const robotManufacturerInput = document.getElementById('robot-manufacturer');
-const robotYearInput = document.getElementById('robot-year');
-const robotCategoryInput = document.getElementById('robot-category');
-const robotFeaturedCheckbox = document.getElementById('robot-featured');
-const robotContentEditor = document.getElementById('robot-content');
-const robotMainImageInput = document.getElementById('robot-main-image');
-const robotGalleryInput = document.getElementById('robot-gallery');
-const robotVideoInput = document.getElementById('robot-video');
-const robotSpecificationsContainer = document.getElementById('robot-specifications');
-const addSpecificationBtn = document.getElementById('add-specification');
-const robotFeaturesContainer = document.getElementById('robot-features');
-const addFeatureBtn = document.getElementById('add-feature');
-
-// DOM Elements - Add/Edit News Form
-const newsForm = document.getElementById('news-form');
-const newsTitleInput = document.getElementById('news-title');
-const newsAuthorInput = document.getElementById('news-author');
-const newsCategoryInput = document.getElementById('news-category');
-const newsPublishDateInput = document.getElementById('news-publish-date');
-const newsContentEditor = document.getElementById('news-content');
-const newsImageInput = document.getElementById('news-image');
-
-// Current item being edited
-let currentRobotId = null;
-let currentNewsId = null;
-
-// Initialize admin dashboard
-async function initializeAdminDashboard() {
-    // Check if user is authorized
-    if (!await authService.isAdmin()) {
-        // Redirect to login page if not admin
-        window.location.href = '../index.html';
-        return;
+/**
+ * Initialize admin panel functionality
+ */
+function initAdminPanel() {
+    // Toggle sidebar
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+    const adminSidebar = document.querySelector('.admin-sidebar');
+    const adminMain = document.querySelector('.admin-main');
+    
+    if (toggleSidebarBtn && adminSidebar && adminMain) {
+        toggleSidebarBtn.addEventListener('click', function() {
+            adminSidebar.classList.toggle('collapsed');
+            adminMain.classList.toggle('expanded');
+        });
     }
     
-    // Load robots data
-    await loadRobotsTable();
-    
-    // Load news data
-    await loadNewsTable();
-}
-
-// Load robots data into table
-async function loadRobotsTable() {
-    if (!robotsTableBody) return;
-    
-    try {
-        const robots = await robotService.getAllRobots();
-        
-        // Clear existing rows
-        robotsTableBody.innerHTML = '';
-        
-        // Add robots to table
-        robots.forEach(robot => {
-            const row = document.createElement('tr');
+    // Admin logout
+    const logoutBtn = document.getElementById('admin-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            row.innerHTML = `
-                <td>${robot.name}</td>
-                <td>${robot.manufacturer || 'N/A'}</td>
-                <td>${robot.category || 'N/A'}</td>
-                <td>${robot.featured ? 'Yes' : 'No'}</td>
-                <td>
-                    <button class="btn-edit" data-id="${robot.id}">Edit</button>
-                    <button class="btn-delete" data-id="${robot.id}">Delete</button>
-                </td>
-            `;
-            
-            robotsTableBody.appendChild(row);
-        });
-        
-        // Add event listeners to buttons
-        document.querySelectorAll('#robots-table-body .btn-edit').forEach(btn => {
-            btn.addEventListener('click', () => editRobot(btn.dataset.id));
-        });
-        
-        document.querySelectorAll('#robots-table-body .btn-delete').forEach(btn => {
-            btn.addEventListener('click', () => deleteRobot(btn.dataset.id));
-        });
-        
-    } catch (error) {
-        console.error("Error loading robots table:", error);
-        displayNotification("Error loading robots. Please try again.", "error");
-    }
-}
-
-// Load news data into table
-async function loadNewsTable() {
-    if (!newsTableBody) return;
-    
-    try {
-        const news = await newsService.getAllNews();
-        
-        // Clear existing rows
-        newsTableBody.innerHTML = '';
-        
-        // Add news to table
-        news.forEach(article => {
-            const row = document.createElement('tr');
-            
-            // Format date
-            const date = new Date(article.publishDate);
-            const formattedDate = date.toLocaleDateString();
-            
-            row.innerHTML = `
-                <td>${article.title}</td>
-                <td>${article.author || 'N/A'}</td>
-                <td>${article.category || 'N/A'}</td>
-                <td>${formattedDate}</td>
-                <td>
-                    <button class="btn-edit" data-id="${article.id}">Edit</button>
-                    <button class="btn-delete" data-id="${article.id}">Delete</button>
-                </td>
-            `;
-            
-            newsTableBody.appendChild(row);
-        });
-        
-        // Add event listeners to buttons
-        document.querySelectorAll('#news-table-body .btn-edit').forEach(btn => {
-            btn.addEventListener('click', () => editNews(btn.dataset.id));
-        });
-        
-        document.querySelectorAll('#news-table-body .btn-delete').forEach(btn => {
-            btn.addEventListener('click', () => deleteNews(btn.dataset.id));
-        });
-        
-    } catch (error) {
-        console.error("Error loading news table:", error);
-        displayNotification("Error loading news. Please try again.", "error");
-    }
-}
-
-// Edit robot
-async function editRobot(robotId) {
-    try {
-        const robot = await robotService.getRobotById(robotId);
-        
-        // Store current robot ID
-        currentRobotId = robotId;
-        
-        // Fill form with robot data
-        if (robotNameInput) robotNameInput.value = robot.name || '';
-        if (robotDescriptionInput) robotDescriptionInput.value = robot.description || '';
-        if (robotManufacturerInput) robotManufacturerInput.value = robot.manufacturer || '';
-        if (robotYearInput) robotYearInput.value = robot.year || '';
-        if (robotCategoryInput) robotCategoryInput.value = robot.category || '';
-        if (robotFeaturedCheckbox) robotFeaturedCheckbox.checked = robot.featured || false;
-        
-        // Fill content editor
-        if (robotContentEditor) {
-            if (typeof tinymce !== 'undefined') {
-                tinymce.get('robot-content').setContent(robot.content || '');
-            } else {
-                robotContentEditor.value = robot.content || '';
-            }
-        }
-        
-        // Clear image/video fields (these are file inputs, can't set values)
-        
-        // Fill specifications
-        if (robotSpecificationsContainer) {
-            robotSpecificationsContainer.innerHTML = '';
-            if (robot.specifications) {
-                Object.entries(robot.specifications).forEach(([key, value]) => {
-                    addSpecificationField(key, value);
-                });
-            }
-        }
-        
-        // Fill features
-        if (robotFeaturesContainer) {
-            robotFeaturesContainer.innerHTML = '';
-            if (robot.features && Array.isArray(robot.features)) {
-                robot.features.forEach(feature => {
-                    addFeatureField(feature);
-                });
-            }
-        }
-        
-        // Show the edit form section
-        document.getElementById('add-robot-section').scrollIntoView();
-        document.getElementById('robot-form-title').textContent = 'Edit Robot';
-        document.getElementById('robot-submit-btn').textContent = 'Update Robot';
-        
-    } catch (error) {
-        console.error("Error editing robot:", error);
-        displayNotification("Error loading robot data. Please try again.", "error");
-    }
-}
-
-// Delete robot
-async function deleteRobot(robotId) {
-    if (!confirm("Are you sure you want to delete this robot? This action cannot be undone.")) {
-        return;
-    }
-    
-    try {
-        await robotService.deleteRobot(robotId);
-        displayNotification("Robot deleted successfully.", "success");
-        loadRobotsTable();
-    } catch (error) {
-        console.error("Error deleting robot:", error);
-        displayNotification("Error deleting robot. Please try again.", "error");
-    }
-}
-
-// Edit news
-async function editNews(newsId) {
-    try {
-        const article = await newsService.getNewsById(newsId);
-        
-        // Store current news ID
-        currentNewsId = newsId;
-        
-        // Fill form with news data
-        if (newsTitleInput) newsTitleInput.value = article.title || '';
-        if (newsAuthorInput) newsAuthorInput.value = article.author || '';
-        if (newsCategoryInput) newsCategoryInput.value = article.category || '';
-        if (newsPublishDateInput) {
-            const date = new Date(article.publishDate);
-            // Format date as YYYY-MM-DD for input
-            const formattedDate = date.toISOString().split('T')[0];
-            newsPublishDateInput.value = formattedDate;
-        }
-        
-        // Fill content editor
-        if (newsContentEditor) {
-            if (typeof tinymce !== 'undefined') {
-                tinymce.get('news-content').setContent(article.content || '');
-            } else {
-                newsContentEditor.value = article.content || '';
-            }
-        }
-        
-        // Clear image field (file input, can't set value)
-        
-        // Show the edit form section
-        document.getElementById('add-news-section').scrollIntoView();
-        document.getElementById('news-form-title').textContent = 'Edit News';
-        document.getElementById('news-submit-btn').textContent = 'Update News';
-        
-    } catch (error) {
-        console.error("Error editing news:", error);
-        displayNotification("Error loading news data. Please try again.", "error");
-    }
-}
-
-// Delete news
-async function deleteNews(newsId) {
-    if (!confirm("Are you sure you want to delete this news article? This action cannot be undone.")) {
-        return;
-    }
-    
-    try {
-        await newsService.deleteNews(newsId);
-        displayNotification("News article deleted successfully.", "success");
-        loadNewsTable();
-    } catch (error) {
-        console.error("Error deleting news:", error);
-        displayNotification("Error deleting news article. Please try again.", "error");
-    }
-}
-
-// Add specification field
-function addSpecificationField(key = '', value = '') {
-    if (!robotSpecificationsContainer) return;
-    
-    const field = document.createElement('div');
-    field.classList.add('specification-field');
-    
-    field.innerHTML = `
-        <div class="spec-inputs">
-            <input type="text" class="spec-key" placeholder="Specification name" value="${key}">
-            <input type="text" class="spec-value" placeholder="Value" value="${value}">
-        </div>
-        <button type="button" class="btn-remove-spec">Remove</button>
-    `;
-    
-    field.querySelector('.btn-remove-spec').addEventListener('click', () => {
-        field.remove();
-    });
-    
-    robotSpecificationsContainer.appendChild(field);
-}
-
-// Add feature field
-function addFeatureField(feature = '') {
-    if (!robotFeaturesContainer) return;
-    
-    const field = document.createElement('div');
-    field.classList.add('feature-field');
-    
-    field.innerHTML = `
-        <div class="feature-input">
-            <input type="text" class="feature-value" placeholder="Feature" value="${feature}">
-        </div>
-        <button type="button" class="btn-remove-feature">Remove</button>
-    `;
-    
-    field.querySelector('.btn-remove-feature').addEventListener('click', () => {
-        field.remove();
-    });
-    
-    robotFeaturesContainer.appendChild(field);
-}
-
-// Get specifications from form
-function getSpecificationsFromForm() {
-    const specifications = {};
-    
-    if (!robotSpecificationsContainer) return specifications;
-    
-    const fields = robotSpecificationsContainer.querySelectorAll('.specification-field');
-    fields.forEach(field => {
-        const key = field.querySelector('.spec-key').value.trim();
-        const value = field.querySelector('.spec-value').value.trim();
-        
-        if (key && value) {
-            specifications[key] = value;
-        }
-    });
-    
-    return specifications;
-}
-
-// Get features from form
-function getFeaturesFromForm() {
-    const features = [];
-    
-    if (!robotFeaturesContainer) return features;
-    
-    const fields = robotFeaturesContainer.querySelectorAll('.feature-field');
-    fields.forEach(field => {
-        const value = field.querySelector('.feature-value').value.trim();
-        
-        if (value) {
-            features.push(value);
-        }
-    });
-    
-    return features;
-}
-
-// Display notification
-function displayNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.classList.add('notification');
-    notification.classList.add(type);
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    // Remove after 5 seconds
-    setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => {
-            notification.remove();
-        }, 500);
-    }, 5000);
-}
-
-// Initialize database
-async function initializeDB() {
-    try {
-        await initializeDatabase();
-        displayNotification("Database initialized successfully with sample data.", "success");
-        
-        // Reload tables
-        await loadRobotsTable();
-        await loadNewsTable();
-    } catch (error) {
-        console.error("Error initializing database:", error);
-        displayNotification("Error initializing database. Please try again.", "error");
-    }
-}
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    // Check authentication
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const adminStatus = await isAdmin();
-            if (adminStatus) {
-                // User is an admin, initialize dashboard
-                initializeAdminDashboard();
-            } else {
-                // User is not an admin, redirect to home
+            if (confirm('Are you sure you want to log out?')) {
+                // Clear admin session
+                localStorage.removeItem('mookRoboticsUser');
+                
+                // Redirect to home page
                 window.location.href = '../index.html';
             }
+        });
+    }
+    
+    // Check if user is logged in as admin
+    checkAdminAuth();
+    
+    // Add any animations or special effects
+    addAdminUIEffects();
+}
+
+/**
+ * Check if user is authenticated as admin
+ */
+function checkAdminAuth() {
+    const user = JSON.parse(localStorage.getItem('mookRoboticsUser') || '{}');
+    
+    // If not logged in or not an admin, redirect
+    if (!user.email || user.isAdmin !== true) {
+        alert('You must be logged in as an administrator to access this page.');
+        window.location.href = '../index.html';
+    }
+}
+
+/**
+ * Add UI animations and effects for admin panel
+ */
+function addAdminUIEffects() {
+    // Add hover effects to stat cards
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const icon = this.querySelector('.stat-icon');
+            if (icon) {
+                icon.style.transform = 'scale(1.1) rotate(10deg)';
+                icon.style.transition = 'transform 0.3s ease';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const icon = this.querySelector('.stat-icon');
+            if (icon) {
+                icon.style.transform = '';
+            }
+        });
+    });
+    
+    // Add subtle animation to table rows
+    const tableRows = document.querySelectorAll('.admin-table tbody tr');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+        });
+    });
+}
+
+/**
+ * Set up file upload functionality
+ */
+function setupFileUploads() {
+    // File upload zones
+    const fileUploads = document.querySelectorAll('.file-upload');
+    
+    fileUploads.forEach(upload => {
+        // Highlight drop zone on drag over
+        upload.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('file-upload-active');
+        });
+        
+        upload.addEventListener('dragleave', function() {
+            this.classList.remove('file-upload-active');
+        });
+        
+        // Handle file drop
+        upload.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('file-upload-active');
+            
+            // Find the associated file input
+            const fileInput = this.querySelector('input[type="file"]');
+            if (fileInput && e.dataTransfer.files.length > 0) {
+                // Check if multiple files are allowed
+                if (fileInput.multiple) {
+                    fileInput.files = e.dataTransfer.files;
+                } else {
+                    // Only take the first file if multiple aren't allowed
+                    const tempFileList = new DataTransfer();
+                    tempFileList.items.add(e.dataTransfer.files[0]);
+                    fileInput.files = tempFileList.files;
+                }
+                
+                // Trigger change event
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        });
+    });
+    
+    // Additional images handling
+    const additionalImagesInput = document.getElementById('additional-images-input');
+    const additionalImagesPreview = document.getElementById('additional-images-preview');
+    
+    if (additionalImagesInput && additionalImagesPreview) {
+        additionalImagesInput.addEventListener('change', function() {
+            additionalImagesPreview.innerHTML = ''; // Clear existing previews
+            
+            if (this.files) {
+                const maxFiles = 5;
+                const filesCount = Math.min(this.files.length, maxFiles);
+                
+                for (let i = 0; i < filesCount; i++) {
+                    const file = this.files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const previewContainer = document.createElement('div');
+                        previewContainer.className = 'gallery-item';
+                        
+                        const previewImg = document.createElement('img');
+                        previewImg.src = e.target.result;
+                        previewImg.alt = 'Preview';
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-gallery-item';
+                        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        removeBtn.addEventListener('click', function() {
+                            previewContainer.remove();
+                            // Note: This doesn't actually remove the file from the FileList
+                            // In a real app, you'd need to use DataTransfer to create a new FileList
+                        });
+                        
+                        previewContainer.appendChild(previewImg);
+                        previewContainer.appendChild(removeBtn);
+                        additionalImagesPreview.appendChild(previewContainer);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+                
+                document.getElementById('additional-images-upload').style.display = 'none';
+                additionalImagesPreview.style.display = 'flex';
+            }
+        });
+    }
+}
+
+/**
+ * Set up dynamic input fields (for references, video URLs, etc.)
+ */
+function setupDynamicInputs() {
+    // Video URL inputs
+    setupDynamicInputField('video-urls', 'add-video-btn', 'video-url-input');
+    
+    // References
+    setupDynamicInputField('references', 'add-reference-btn', 'reference-input');
+}
+
+/**
+ * Create functionality for dynamic input fields
+ * @param {string} containerId - The ID of the container element
+ * @param {string} addBtnClass - The class name of the add button
+ * @param {string} inputClass - The class name of the input wrapper
+ */
+function setupDynamicInputField(containerId, addBtnClass, inputClass) {
+    const container = document.getElementById(containerId);
+    
+    if (container) {
+        // Add new input field
+        container.addEventListener('click', function(e) {
+            if (e.target.classList.contains(addBtnClass) || e.target.parentElement.classList.contains(addBtnClass)) {
+                const btn = e.target.classList.contains(addBtnClass) ? e.target : e.target.parentElement;
+                const inputWrapper = btn.closest('.' + inputClass);
+                
+                // Clone the input wrapper
+                const newInputWrapper = inputWrapper.cloneNode(true);
+                
+                // Clear the input value
+                const input = newInputWrapper.querySelector('input');
+                if (input) {
+                    input.value = '';
+                }
+                
+                // Change the add button to remove button for the original input
+                btn.innerHTML = '<i class="fas fa-minus"></i>';
+                btn.classList.remove(addBtnClass);
+                btn.classList.add('remove-input-btn');
+                
+                // Add the new input wrapper
+                container.appendChild(newInputWrapper);
+            }
+            
+            // Remove input field
+            if (e.target.classList.contains('remove-input-btn') || e.target.parentElement.classList.contains('remove-input-btn')) {
+                const btn = e.target.classList.contains('remove-input-btn') ? e.target : e.target.parentElement;
+                const inputWrapper = btn.closest('.' + inputClass);
+                
+                inputWrapper.remove();
+            }
+        });
+    }
+}
+
+/**
+ * Validates form data before submission
+ * @param {HTMLFormElement} form - The form to validate
+ * @returns {boolean} Whether the form is valid
+ */
+function validateForm(form) {
+    let isValid = true;
+    
+    // Get all required fields
+    const requiredFields = form.querySelectorAll('[required]');
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+            
+            // Add error styling
+            field.classList.add('input-error');
+            
+            // Find or create error message
+            let errorMsg = field.nextElementSibling;
+            if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+                errorMsg = document.createElement('p');
+                errorMsg.className = 'error-message';
+                field.parentNode.insertBefore(errorMsg, field.nextSibling);
+            }
+            
+            errorMsg.textContent = 'This field is required';
         } else {
-            // User is not logged in, redirect to home
-            window.location.href = '../index.html';
+            // Remove error styling if field is valid
+            field.classList.remove('input-error');
+            
+            // Remove error message if it exists
+            const errorMsg = field.nextElementSibling;
+            if (errorMsg && errorMsg.classList.contains('error-message')) {
+                errorMsg.remove();
+            }
         }
     });
     
-    // Initialize database button
-    if (initDbBtn) {
-        initDbBtn.addEventListener('click', initializeDB);
-    }
-    
-    // Add specification button
-    if (addSpecificationBtn) {
-        addSpecificationBtn.addEventListener('click', () => addSpecificationField());
-    }
-    
-    // Add feature button
-    if (addFeatureBtn) {
-        addFeatureBtn.addEventListener('click', () => addFeatureField());
-    }
-    
-    // Robot form submission
-    if (robotForm) {
-        robotForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            try {
-                // Get form data
-                const name = robotNameInput.value;
-                const description = robotDescriptionInput.value;
-                const manufacturer = robotManufacturerInput.value;
-                const year = parseInt(robotYearInput.value) || null;
-                const category = robotCategoryInput.value;
-                const featured = robotFeaturedCheckbox.checked;
-                
-                // Get content from editor
-                let content = '';
-                if (typeof tinymce !== 'undefined' && tinymce.get('robot-content')) {
-                    content = tinymce.get('robot-content').getContent();
-                } else if (robotContentEditor) {
-                    content = robotContentEditor.value;
-                }
-                
-                // Get specifications and features
-                const specifications = getSpecificationsFromForm();
-                const features = getFeaturesFromForm();
-                
-                // Get files
-                const mainImage = robotMainImageInput.files[0] || null;
-                const galleryImages = robotGalleryInput.files.length > 0 ? Array.from(robotGalleryInput.files) : [];
-                const videoFile = robotVideoInput.files[0] || null;
-                
-                // Prepare robot data
-                const robotData = {
-                    name,
-                    description,
-                    manufacturer,
-                    year,
-                    category,
-                    featured,
-                    content,
-                    specifications,
-                    features
-                };
-                
-                if (currentRobotId) {
-                    // Update existing robot
-                    await robotService.updateRobot(currentRobotId, robotData, mainImage, galleryImages, videoFile);
-                    displayNotification("Robot updated successfully.", "success");
-                } else {
-                    // Add new robot
-                    await robotService.addRobot(robotData, mainImage, galleryImages, videoFile);
-                    displayNotification("Robot added successfully.", "success");
-                }
-                
-                // Reset form
-                robotForm.reset();
-                if (typeof tinymce !== 'undefined' && tinymce.get('robot-content')) {
-                    tinymce.get('robot-content').setContent('');
-                }
-                
-                // Clear specifications and features
-                if (robotSpecificationsContainer) robotSpecificationsContainer.innerHTML = '';
-                if (robotFeaturesContainer) robotFeaturesContainer.innerHTML = '';
-                
-                // Reset form title and button
-                document.getElementById('robot-form-title').textContent = 'Add New Robot';
-                document.getElementById('robot-submit-btn').textContent = 'Add Robot';
-                
-                // Clear current robot ID
-                currentRobotId = null;
-                
-                // Reload robots table
-                await loadRobotsTable();
-                
-            } catch (error) {
-                console.error("Error submitting robot form:", error);
-                displayNotification("Error saving robot. Please try again.", "error");
-            }
-        });
-    }
-    
-    // News form submission
-    if (newsForm) {
-        newsForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            try {
-                // Get form data
-                const title = newsTitleInput.value;
-                const author = newsAuthorInput.value;
-                const category = newsCategoryInput.value;
-                const publishDate = newsPublishDateInput.value ? new Date(newsPublishDateInput.value).toISOString() : new Date().toISOString();
-                
-                // Get content from editor
-                let content = '';
-                if (typeof tinymce !== 'undefined' && tinymce.get('news-content')) {
-                    content = tinymce.get('news-content').getContent();
-                } else if (newsContentEditor) {
-                    content = newsContentEditor.value;
-                }
-                
-                // Get image
-                const image = newsImageInput.files[0] || null;
-                
-                // Prepare news data
-                const newsData = {
-                    title,
-                    author,
-                    category,
-                    publishDate,
-                    content
-                };
-                
-                if (currentNewsId) {
-                    // Update existing news
-                    await newsService.updateNews(currentNewsId, newsData, image);
-                    displayNotification("News article updated successfully.", "success");
-                } else {
-                    // Add new news
-                    await newsService.addNews(newsData, image);
-                    displayNotification("News article added successfully.", "success");
-                }
-                
-                // Reset form
-                newsForm.reset();
-                if (typeof tinymce !== 'undefined' && tinymce.get('news-content')) {
-                    tinymce.get('news-content').setContent('');
-                }
-                
-                // Reset form title and button
-                document.getElementById('news-form-title').textContent = 'Add News Article';
-                document.getElementById('news-submit-btn').textContent = 'Add News';
-                
-                // Clear current news ID
-                currentNewsId = null;
-                
-                // Reload news table
-                await loadNewsTable();
-                
-            } catch (error) {
-                console.error("Error submitting news form:", error);
-                displayNotification("Error saving news article. Please try again.", "error");
-            }
-        });
-    }
-});
+    return isValid;
+}
