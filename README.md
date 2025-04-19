@@ -2,30 +2,29 @@
 
 MOOK Robotics Hub is an interactive, futuristic online encyclopedia about robotics. This project aims to create an engaging platform for robotics enthusiasts to discover and learn about various robots, their specifications, features, and latest news in the field of robotics.
 
-![MOOK Robotics Hub](https://raw.githubusercontent.com/Taikibonnet/mook-robotic-hub/main/images/mook-preview.png)
-
 ## Table of Contents
 
 - [Features](#features)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-  - [Firebase Setup](#firebase-setup)
 - [Usage](#usage)
   - [User Features](#user-features)
   - [Admin Features](#admin-features)
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
+- [Adding Images](#adding-images)
+- [Customization](#customization)
+- [Future Improvements](#future-improvements)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Features
 
 - **Interactive Robot Encyclopedia**: Detailed information about various robots including specifications, features, images, and videos.
-- **User Authentication**: Account creation and login functionality for users to save favorites and receive updates.
+- **User Authentication**: Simple account system (using local storage for demo purposes).
 - **Search & Filter**: Advanced search functionality with filtering by categories and sorting options.
 - **AI Assistant**: Interactive AI guide named MOOK to help users navigate the website and answer robotics questions.
-- **Admin Dashboard**: Content management system for administrators to add, edit, and delete robot information and news articles.
 - **Responsive Design**: Mobile-friendly interface that works across devices of all sizes.
 - **Dark/Light Theme**: Toggle between dark and light modes for comfortable viewing.
 
@@ -33,9 +32,8 @@ MOOK Robotics Hub is an interactive, futuristic online encyclopedia about roboti
 
 ### Prerequisites
 
-- A GitHub account
+- A GitHub account (to fork/clone the repository)
 - Basic understanding of HTML, CSS, and JavaScript
-- Firebase account (for database and authentication)
 
 ### Installation
 
@@ -55,61 +53,12 @@ cd mook-robotic-hub
 
    Your website will be published at `https://[your-username].github.io/mook-robotic-hub/`
 
-### Firebase Setup
-
-1. **Create a Firebase project:**
-
-   - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Click "Add project" and follow the setup steps
-   - Enable Authentication, Firestore Database, and Storage
-
-2. **Set up Firebase Authentication:**
-
-   - In the Firebase console, go to Authentication > Sign-in method
-   - Enable Email/Password authentication
-
-3. **Set up Firestore Database:**
-
-   - Go to Firestore Database > Create database
-   - Start in production mode
-   - Choose a location close to your target audience
-
-4. **Set up Firebase Storage:**
-
-   - Go to Storage > Get started
-   - Follow the setup instructions
-
-5. **Get your Firebase configuration:**
-
-   - Go to Project Settings > Your apps
-   - Click the web icon (</>) to add a web app
-   - Register your app with a nickname
-   - Copy the firebaseConfig object
-
-6. **Update Firebase configuration in the project:**
-
-   - Open `index.html`, `search.html`, and any other HTML files with Firebase integration
-   - Replace the placeholder firebaseConfig with your actual configuration:
-
-```javascript
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
-};
-```
-
-7. **Initialize the admin account:**
-
-   - Use the credentials provided in your project setup:
-     - Email: tgen.robotics@gmail.com
-     - Password: Admin123!
-   - Navigate to the website and log in with these credentials
-   - The system will automatically set up the admin account
+3. **Test locally (optional):**
+   
+   You can run the website locally using any simple web server, for example:
+   
+   - With Python: `python -m http.server` (Python 3) or `python -m SimpleHTTPServer` (Python 2)
+   - With Node.js: Install `http-server` with `npm install -g http-server` and run `http-server`
 
 ## Usage
 
@@ -126,12 +75,14 @@ const firebaseConfig = {
 3. **Create an Account:**
    - Click the "Sign Up" button to create a new account
    - Fill in the required information
-   - Verify your email if prompted
+   - For this demo version, accounts are stored in local storage
 
 4. **Login to Your Account:**
    - Click the "Login" button
    - Enter your email and password
-   - Access your personalized features
+   - For demo/testing purposes, you can use:
+     - Email: tgen.robotics@gmail.com
+     - Password: Admin123!
 
 5. **Use the AI Assistant:**
    - Click the "Ask MOOK" button to activate the AI assistant
@@ -139,36 +90,20 @@ const firebaseConfig = {
 
 6. **Subscribe to the Newsletter:**
    - Enter your email in the newsletter form at the bottom of the homepage
-   - Receive updates on new robots and news articles
+   - For demo purposes, this doesn't actually send emails
 
 ### Admin Features
 
 1. **Access the Admin Dashboard:**
-   - Login with an admin account
+   - Login with the admin account (tgen.robotics@gmail.com / Admin123!)
    - Click the "Admin Dashboard" link in the footer
-
-2. **Manage Robots:**
-   - Add new robots with detailed information, images, and videos
-   - Edit existing robot entries
-   - Delete robots from the database
-
-3. **Manage News:**
-   - Add new news articles
-   - Edit existing articles
-   - Delete news articles
-
-4. **Initialize Database:**
-   - Use the "Initialize Database" button to populate the database with sample data
-   - This is useful for testing or when setting up a new instance
+   
+   Note: In this static version, admin functionality is limited, but the UI is in place for demonstration.
 
 ## Project Structure
 
 ```
 mook-robotic-hub/
-│
-├── admin/                      # Admin dashboard files
-│   ├── add-robot.html          # Form for adding/editing robots
-│   └── dashboard.html          # Main admin dashboard
 │
 ├── css/                        # Stylesheet files
 │   ├── admin.css               # Admin dashboard styles
@@ -178,25 +113,24 @@ mook-robotic-hub/
 │   └── theme.css               # Theme variables (light/dark)
 │
 ├── js/                         # JavaScript files
-│   ├── admin.js                # Admin functionality
 │   ├── ai-assistant.js         # AI assistant functionality
-│   ├── auth.js                 # Authentication functionality
-│   ├── database.js             # Database operations
-│   ├── encyclopedia.js         # Encyclopedia page functionality
-│   ├── firebase-config.js      # Firebase configuration
+│   ├── data.js                 # Static data for robots and news
 │   ├── main.js                 # Main JavaScript functionality
-│   ├── robot-detail.js         # Robot detail page functionality
-│   └── search.js               # Search functionality
+│   ├── search.js               # Search functionality
+│   └── static-services.js      # Service implementations
+│
+├── images/                     # Image assets
+│   └── robots/                 # Robot images
+│   └── news/                   # News images
 │
 ├── robots/                     # Robot pages
 │   ├── atlas.html              # Example robot detail page
 │   └── index.html              # Encyclopedia main page
 │
-├── images/                     # Image assets
+├── admin/                      # Admin dashboard pages
 │
 ├── index.html                  # Homepage
 ├── search.html                 # Search results page
-├── about.html                  # About page
 └── README.md                   # Project documentation
 ```
 
@@ -208,50 +142,65 @@ mook-robotic-hub/
   - JavaScript (ES6+)
   - Font Awesome (for icons)
 
-- **Backend & Database:**
-  - Firebase Authentication (user management)
-  - Firebase Firestore (database)
-  - Firebase Storage (image and video storage)
-
 - **Hosting:**
   - GitHub Pages
 
+## Adding Images
+
+To add images for robots and news articles:
+
+1. Create the following directory structure in the `images` folder:
+   - `images/robots/` - For robot images
+   - `images/news/` - For news article images
+
+2. Add images with the filenames referenced in the `data.js` file. For example:
+   - `images/robots/atlas.jpg`
+   - `images/robots/spot.jpg`
+   - etc.
+
+3. You can find royalty-free robot images from sites like:
+   - [Unsplash](https://unsplash.com)
+   - [Pexels](https://pexels.com)
+   - [Pixabay](https://pixabay.com)
+
+4. Make sure to optimize your images for web use to ensure fast loading times.
+
+## Customization
+
+### Adding New Robots
+
+To add new robots to the encyclopedia:
+
+1. Open `js/data.js`
+2. Add a new robot object to the `ROBOTS_DATA` array following the existing format
+3. Add corresponding images to the `images/robots/` directory
+
+### Modifying Theme Colors
+
+To change the theme colors:
+
+1. Open `css/theme.css`
+2. Modify the color variables in the `:root` selector for light theme
+3. Modify the color variables in the `[data-theme="dark"]` selector for dark theme
+
 ## Future Improvements
 
-Here are some potential enhancements for future development:
+For a more robust implementation, consider these future enhancements:
 
-1. **Mobile Application:** 
-   - Develop a companion mobile app using React Native or Flutter
-   - Implement offline functionality for browsing robots without internet
+1. **Backend Integration**
+   - Implement a proper backend with a database (e.g., Firebase, MongoDB)
+   - Create secure user authentication
+   - Add real admin functionality for content management
 
-2. **Advanced AI Features:**
-   - Implement more sophisticated AI assistant functionality
-   - Add robot recognition from images
+2. **Advanced Features**
+   - Implement a more sophisticated AI assistant
+   - Add user comments and ratings
+   - Create a user profile page with saved/favorite robots
 
-3. **Community Features:**
-   - User comments and discussions
-   - User-contributed robot entries (with admin approval)
-   - Rating system for robots
-
-4. **Interactive 3D Models:**
-   - Add WebGL-based 3D models of robots that users can interact with
-   - Virtual reality (VR) and augmented reality (AR) experiences
-
-5. **Content Expansion:**
-   - Historical timeline of robotics
-   - Educational resources and tutorials
-   - Job board for robotics professionals
-
-## Getting Started with Development
-
-If you want to contribute to the development of MOOK Robotics Hub, follow these steps:
-
-1. Fork the repository
-2. Clone your forked repository to your local machine
-3. Make your changes
-4. Test your changes locally
-5. Commit and push your changes to your fork
-6. Create a pull request to the main repository
+3. **Content Expansion**
+   - Add more robot categories and entries
+   - Create a timeline of robotics history
+   - Include educational resources and tutorials
 
 ## Contributing
 
@@ -265,13 +214,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact
-
-Project Owner: [Taikibonnet](https://github.com/Taikibonnet)
-
-Project Link: [https://github.com/Taikibonnet/mook-robotic-hub](https://github.com/Taikibonnet/mook-robotic-hub)
+This project is licensed under the MIT License.
 
 ---
 
