@@ -1,7 +1,7 @@
 // Search JavaScript for MOOK Robotics Hub
 // This file handles the search functionality for robots and news
 
-import { robotService, newsService } from './database.js';
+import { robotService } from './static-services.js';
 
 // DOM Elements
 const searchInput = document.getElementById('search-input');
@@ -25,18 +25,13 @@ function initializeSearchPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
     
-    if (query) {
+    if (query && searchInput) {
         // Set search input value
-        if (searchInput) {
-            searchInput.value = query;
-        }
-        
-        // Perform search
-        performSearch(query);
-    } else {
-        // No query provided, show all robots instead
-        performSearch('');
+        searchInput.value = query;
     }
+    
+    // Perform search with query or get all robots if no query
+    performSearch(query || '');
 }
 
 // Perform search
@@ -57,15 +52,8 @@ async function performSearch(query) {
             noResultsContainer.style.display = 'none';
         }
         
-        let robotResults = [];
-        
-        if (query) {
-            // Search with query
-            robotResults = await robotService.searchRobots(query);
-        } else {
-            // No query, get all robots
-            robotResults = await robotService.getAllRobots();
-        }
+        // Search for robots
+        const robotResults = await robotService.searchRobots(query);
         
         // Store results for filtering and sorting
         currentSearchResults = robotResults;
@@ -121,7 +109,7 @@ function sortResults(results, sortBy) {
             });
         case 'relevance':
         default:
-            // Relevance is the default sort (results already ordered by search relevance)
+            // Return as is for relevance sort
             return results;
     }
 }
@@ -143,6 +131,7 @@ function displayResults(results) {
             noResultsContainer.style.display = 'block';
         }
         
+        // Clear results container
         searchResultsContainer.innerHTML = '';
         
         // Hide pagination
