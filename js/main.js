@@ -1,213 +1,317 @@
-/**
- * MOOK Robotics Hub - Main JavaScript
- * 
- * This file contains the main functionality for the website,
- * including UI interactions, animations, and general behavior.
- */
+// Main JavaScript for MOOK Robotics Hub
+// This file handles common functionality across the site
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize components
-    initModals();
-    initAnimations();
-    initSearch();
-    
-    // Log initialization message
-    console.log('MOOK Robotics Hub initialized successfully!');
-});
+import { initializeDatabase, robotService, newsService } from './database.js';
 
-/**
- * Modal functionality
- */
-function initModals() {
-    // Get all modals and triggers
-    const loginModal = document.getElementById('login-modal');
-    const signupModal = document.getElementById('signup-modal');
-    const assistantModal = document.getElementById('assistant-modal');
-    
-    const loginBtn = document.getElementById('login-btn');
-    const signupBtn = document.getElementById('signup-btn');
-    const activateAssistantBtn = document.getElementById('activate-assistant');
-    
-    const switchToSignup = document.getElementById('switch-to-signup');
-    const switchToLogin = document.getElementById('switch-to-login');
-    
-    const closeButtons = document.querySelectorAll('.close-modal');
-    
-    // Login button functionality
-    if (loginBtn) {
-        loginBtn.addEventListener('click', function() {
-            openModal(loginModal);
-        });
-    }
-    
-    // Signup button functionality
-    if (signupBtn) {
-        signupBtn.addEventListener('click', function() {
-            openModal(signupModal);
-        });
-    }
-    
-    // Activate assistant button functionality
-    if (activateAssistantBtn) {
-        activateAssistantBtn.addEventListener('click', function() {
-            openModal(assistantModal);
-        });
-    }
-    
-    // Switch between login and signup
-    if (switchToSignup) {
-        switchToSignup.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeModal(loginModal);
-            openModal(signupModal);
-        });
-    }
-    
-    if (switchToLogin) {
-        switchToLogin.addEventListener('click', function(e) {
-            e.preventDefault();
-            closeModal(signupModal);
-            openModal(loginModal);
-        });
-    }
-    
-    // Close modal functionality
-    closeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal');
-            closeModal(modal);
-        });
-    });
-    
-    // Close modal when clicking outside of content
-    window.addEventListener('click', function(event) {
-        if (event.target.classList.contains('modal') && event.target.classList.contains('active')) {
-            closeModal(event.target);
+// DOM Elements
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+const searchResultsContainer = document.getElementById('search-results');
+const featuredRobotsContainer = document.querySelector('.robot-cards');
+const newsContainer = document.querySelector('.news-container');
+const themeToggle = document.getElementById('theme-toggle');
+const newsletterForm = document.getElementById('newsletter-form');
+
+// Theme handling
+function initializeTheme() {
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        if (themeToggle) {
+            themeToggle.checked = savedTheme === 'dark';
         }
-    });
-}
-
-/**
- * Open a modal
- * @param {HTMLElement} modal - The modal to open
- */
-function openModal(modal) {
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
     }
 }
 
-/**
- * Close a modal
- * @param {HTMLElement} modal - The modal to close
- */
-function closeModal(modal) {
-    if (modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = ''; // Restore scrolling
-    }
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
 }
 
-/**
- * Initialize animations and interactive elements
- */
-function initAnimations() {
-    // Add scroll animations for sections
-    const sections = document.querySelectorAll('section');
+// Search functionality
+async function handleSearch() {
+    if (!searchInput || !searchResultsContainer) return;
     
-    // Simple animation on scroll
-    window.addEventListener('scroll', function() {
-        sections.forEach(section => {
-            const sectionTop = section.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-            
-            if (sectionTop < windowHeight * 0.75) {
-                section.classList.add('animate-in');
-            }
-        });
-    });
-    
-    // Animate "explore all" button
-    const exploreAllBtn = document.querySelector('.explore-all');
-    if (exploreAllBtn) {
-        exploreAllBtn.addEventListener('mouseenter', function() {
-            this.classList.add('pulse');
-        });
-        
-        exploreAllBtn.addEventListener('mouseleave', function() {
-            this.classList.remove('pulse');
-        });
-    }
-    
-    // Add fancy hover effects to robot cards
-    const robotCards = document.querySelectorAll('.robot-card');
-    robotCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            // Add a subtle transform
-            this.style.transform = 'translateY(-5px) scale(1.02)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            // Reset transform
-            this.style.transform = '';
-        });
-    });
-}
-
-/**
- * Initialize search functionality
- */
-function initSearch() {
-    const searchInput = document.getElementById('search-input');
-    const searchBtn = document.getElementById('search-btn');
-    
-    if (searchBtn && searchInput) {
-        searchBtn.addEventListener('click', function() {
-            performSearch();
-        });
-        
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                performSearch();
-            }
-        });
-    }
-}
-
-/**
- * Perform search (placeholder function)
- */
-function performSearch() {
-    const searchInput = document.getElementById('search-input');
     const query = searchInput.value.trim();
     
-    if (query) {
-        console.log(`Searching for: ${query}`);
-        // This would be replaced with actual search functionality
-        // For now, redirect to robots page with search query
-        window.location.href = `robots/index.html?search=${encodeURIComponent(query)}`;
+    if (!query) {
+        hideSearchResults();
+        return;
+    }
+    
+    try {
+        // Search for robots
+        const robotResults = await robotService.searchRobots(query);
+        
+        // If we have a search results container, display the results
+        if (searchResultsContainer) {
+            if (robotResults.length > 0) {
+                displaySearchResults(robotResults);
+            } else {
+                searchResultsContainer.innerHTML = '<p class="no-results">No robots found matching your search.</p>';
+                searchResultsContainer.style.display = 'block';
+            }
+        } else {
+            // If we don't have a results container, redirect to search page with query parameter
+            window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+        }
+    } catch (error) {
+        console.error("Search error:", error);
+        if (searchResultsContainer) {
+            searchResultsContainer.innerHTML = '<p class="error">An error occurred while searching. Please try again.</p>';
+            searchResultsContainer.style.display = 'block';
+        }
     }
 }
 
-/**
- * Add CSS classes for animations
- */
-document.addEventListener('DOMContentLoaded', function() {
-    // Add animation classes to elements
-    document.querySelectorAll('section').forEach((section, index) => {
-        section.style.animationDelay = `${index * 0.2}s`;
-        section.classList.add('fade-in');
+function displaySearchResults(results) {
+    if (!searchResultsContainer) return;
+    
+    // Clear previous results
+    searchResultsContainer.innerHTML = '';
+    
+    // Create results list
+    const resultsList = document.createElement('ul');
+    resultsList.classList.add('search-results-list');
+    
+    // Add each result
+    results.forEach(robot => {
+        const resultItem = document.createElement('li');
+        resultItem.innerHTML = `
+            <a href="robots/${robot.slug}.html" class="search-result-item">
+                <div class="result-image">
+                    ${robot.mainImage 
+                        ? `<img src="${robot.mainImage}" alt="${robot.name}">`
+                        : '<div class="placeholder"></div>'
+                    }
+                </div>
+                <div class="result-content">
+                    <h3>${robot.name}</h3>
+                    <p>${robot.description}</p>
+                </div>
+            </a>
+        `;
+        resultsList.appendChild(resultItem);
     });
     
-    // Animate hero elements
-    const heroContent = document.querySelector('.hero-content');
-    if (heroContent) {
-        heroContent.classList.add('slide-in-left');
+    // Add results to container
+    searchResultsContainer.appendChild(resultsList);
+    searchResultsContainer.style.display = 'block';
+}
+
+function hideSearchResults() {
+    if (searchResultsContainer) {
+        searchResultsContainer.style.display = 'none';
     }
-    
-    const heroImage = document.querySelector('.hero-image');
-    if (heroImage) {
-        heroImage.classList.add('slide-in-right');
+}
+
+// Handle click outside search results to hide them
+document.addEventListener('click', (e) => {
+    if (searchResultsContainer && 
+        e.target !== searchResultsContainer && 
+        !searchResultsContainer.contains(e.target) && 
+        e.target !== searchInput &&
+        e.target !== searchBtn) {
+        hideSearchResults();
     }
 });
+
+// Load featured robots on homepage
+async function loadFeaturedRobots() {
+    if (!featuredRobotsContainer) return;
+    
+    try {
+        const featuredRobots = await robotService.getFeaturedRobots(3);
+        
+        // Clear container
+        featuredRobotsContainer.innerHTML = '';
+        
+        // Add each featured robot
+        featuredRobots.forEach(robot => {
+            const robotCard = document.createElement('div');
+            robotCard.classList.add('robot-card');
+            
+            robotCard.innerHTML = `
+                <div class="robot-image">
+                    ${robot.mainImage 
+                        ? `<img src="${robot.mainImage}" alt="${robot.name}">`
+                        : '<div class="placeholder"></div>'
+                    }
+                </div>
+                <h3>${robot.name}</h3>
+                <p>${robot.description}</p>
+                <a href="robots/${robot.slug}.html" class="btn btn-secondary">Learn More</a>
+            `;
+            
+            featuredRobotsContainer.appendChild(robotCard);
+        });
+    } catch (error) {
+        console.error("Error loading featured robots:", error);
+        featuredRobotsContainer.innerHTML = '<p class="error">Error loading featured robots. Please try again later.</p>';
+    }
+}
+
+// Load recent news on homepage
+async function loadRecentNews() {
+    if (!newsContainer) return;
+    
+    try {
+        const recentNews = await newsService.getRecentNews(3);
+        
+        // Clear container
+        newsContainer.innerHTML = '';
+        
+        // Add each recent news article
+        recentNews.forEach(article => {
+            const newsCard = document.createElement('div');
+            newsCard.classList.add('news-card');
+            
+            // Format date
+            const date = new Date(article.publishDate);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            newsCard.innerHTML = `
+                <div class="news-image">
+                    ${article.image 
+                        ? `<img src="${article.image}" alt="${article.title}">`
+                        : '<div class="placeholder"></div>'
+                    }
+                </div>
+                <div class="news-content">
+                    <h3>${article.title}</h3>
+                    <p class="news-date">${formattedDate}</p>
+                    <p>${article.content.substring(0, 100).replace(/<[^>]*>/g, '')}...</p>
+                    <a href="news/${article.slug}.html" class="read-more">Read More</a>
+                </div>
+            `;
+            
+            newsContainer.appendChild(newsCard);
+        });
+    } catch (error) {
+        console.error("Error loading recent news:", error);
+        newsContainer.innerHTML = '<p class="error">Error loading recent news. Please try again later.</p>';
+    }
+}
+
+// Newsletter signup
+function handleNewsletterSignup(e) {
+    if (!newsletterForm) return;
+    
+    e.preventDefault();
+    
+    const emailInput = newsletterForm.querySelector('input[type="email"]');
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+        showNewsletterMessage("Please enter your email address.", "error");
+        return;
+    }
+    
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showNewsletterMessage("Please enter a valid email address.", "error");
+        return;
+    }
+    
+    // In a real implementation, this would send the email to a server
+    // For now, we'll just show a success message
+    showNewsletterMessage("Thank you for subscribing to our newsletter!", "success");
+    emailInput.value = '';
+}
+
+function showNewsletterMessage(message, type = 'info') {
+    if (!newsletterForm) return;
+    
+    // Remove existing message
+    const existingMessage = newsletterForm.querySelector('.newsletter-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Create new message
+    const messageElement = document.createElement('p');
+    messageElement.classList.add('newsletter-message', type);
+    messageElement.textContent = message;
+    
+    // Add message to form
+    newsletterForm.appendChild(messageElement);
+    
+    // Remove message after 5 seconds
+    setTimeout(() => {
+        messageElement.classList.add('fade-out');
+        setTimeout(() => {
+            messageElement.remove();
+        }, 500);
+    }, 5000);
+}
+
+// Initialize the application
+async function initializeApp() {
+    try {
+        // Initialize database with sample data if needed
+        await initializeDatabase();
+        
+        // Set up theme
+        initializeTheme();
+        
+        // Load featured robots and recent news on homepage
+        if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
+            await Promise.all([
+                loadFeaturedRobots(),
+                loadRecentNews()
+            ]);
+        }
+    } catch (error) {
+        console.error("Error initializing app:", error);
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize app
+    initializeApp();
+    
+    // Search functionality
+    if (searchBtn) {
+        searchBtn.addEventListener('click', handleSearch);
+    }
+    
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+        
+        // Show results when input receives focus and has value
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim()) {
+                handleSearch();
+            }
+        });
+    }
+    
+    // Theme toggle
+    if (themeToggle) {
+        themeToggle.addEventListener('change', toggleTheme);
+    }
+    
+    // Newsletter signup
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', handleNewsletterSignup);
+    }
+});
+
+// Expose functions for use in HTML event attributes if needed
+window.handleSearch = handleSearch;
+window.toggleTheme = toggleTheme;
