@@ -1,0 +1,29 @@
+This file is a placeholder to create the images directory structure.
+
+For a complete implementation, you would need to add actual image files to these directories:
+
+/images/robots/
+- atlas.jpg
+- atlas-1.jpg
+- atlas-2.jpg
+- spot.jpg
+- spot-1.jpg
+- spot-2.jpg
+- sophia.jpg
+- sophia-1.jpg
+- sophia-2.jpg
+- pepper.jpg
+- pepper-1.jpg
+- nao.jpg
+
+/images/news/
+- soft-robotics.jpg
+- healthcare-robots.jpg
+- ai-robotics.jpg
+
+You can find royalty-free robot images from sites like:
+- Unsplash.com
+- Pexels.com
+- Pixabay.com
+
+Remember to optimize images for web use (reduce file size while maintaining acceptable quality) before adding them to your website.
