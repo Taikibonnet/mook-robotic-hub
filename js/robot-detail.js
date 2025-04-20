@@ -32,22 +32,7 @@ function loadRobotDetails() {
         
         const slug = slugMatch[1];
         
-        // First check if this robot has HTML content generated
-        if (robotHtmlExists(slug)) {
-            // If HTML exists, we're on a page for a robot that was added by a user
-            // In a real app, we would load a proper HTML file
-            // For this demo, we'll render the stored HTML content
-            const htmlContent = getRobotHtml(slug);
-            
-            if (htmlContent) {
-                // In a real app, we'd redirect to the proper HTML file
-                // For demo, we'll replace the current page content
-                document.documentElement.innerHTML = htmlContent;
-                return;
-            }
-        }
-        
-        // Otherwise, fetch the robot data and render it
+        // Fetch the robot data
         const robot = getRobotBySlug(slug);
         
         if (!robot) {
@@ -89,10 +74,16 @@ function renderRobotDetails(robot) {
     document.querySelector('.robot-manufacturer').textContent = robot.manufacturer || 'Unknown Manufacturer';
     document.querySelector('.robot-description').textContent = robot.description || 'No description available.';
     
+    // Update the breadcrumb
+    const breadcrumbSpan = document.querySelector('.breadcrumb-container span');
+    if (breadcrumbSpan) {
+        breadcrumbSpan.textContent = robot.name;
+    }
+    
     // Update the content section
     const contentElement = document.querySelector('.robot-content');
     if (contentElement) {
-        contentElement.innerHTML = robot.content || '<p>No detailed content available for this robot yet.</p>';
+        contentElement.innerHTML = robot.content || `<p>${robot.description || 'No detailed content available for this robot yet.'}</p>`;
     }
     
     // Update features list
