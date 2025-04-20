@@ -225,15 +225,21 @@ function initFormSubmission() {
     addRobotForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Get form data
-        const robotData = getFormData();
-        
-        // Create the robot
         try {
+            // Get form data
+            const robotData = getFormData();
+            
+            // Validate required fields
+            if (!robotData.name || !robotData.category) {
+                alert('Please fill in all required fields (Name and Category are required).');
+                return;
+            }
+            
+            // Create the robot
             const createdRobot = createRobot(robotData);
             
             // Show success message
-            alert(`Robot "${createdRobot.name}" has been saved successfully!`);
+            alert(`Robot "${createdRobot.name}" has been saved successfully! You can now view it in the encyclopedia.`);
             
             // Reset form
             addRobotForm.reset();
@@ -241,7 +247,7 @@ function initFormSubmission() {
             
             // Redirect to robots list
             setTimeout(() => {
-                window.location.href = 'robots.html';
+                window.location.href = '../robots/index.html';
             }, 1500);
         } catch (error) {
             console.error('Error creating robot:', error);
@@ -252,14 +258,19 @@ function initFormSubmission() {
     // Handle preview
     if (previewBtn) {
         previewBtn.addEventListener('click', function() {
-            // Get form data
-            const robotData = getFormData();
-            
-            // Store in session storage for preview
-            sessionStorage.setItem('robotPreview', JSON.stringify(robotData));
-            
-            // Open preview in new tab/window
-            window.open('robot-preview.html', '_blank');
+            try {
+                // Get form data
+                const robotData = getFormData();
+                
+                // Store in session storage for preview
+                sessionStorage.setItem('robotPreview', JSON.stringify(robotData));
+                
+                // Open preview in new tab/window
+                window.open('robot-preview.html', '_blank');
+            } catch (error) {
+                console.error('Error creating preview:', error);
+                alert('There was an error generating the preview. Please try again.');
+            }
         });
     }
     
@@ -349,6 +360,9 @@ function initFormSubmission() {
         // Formatted HTML content from full description
         const formattedContent = fullDesc ? `<p>${fullDesc.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>` : '';
         
+        // Combine features from capabilities and applications
+        const features = [...capabilitiesList, ...applicationsList];
+        
         // Return the structured robot data
         return {
             name,
@@ -358,7 +372,7 @@ function initFormSubmission() {
             year: parseInt(year) || new Date().getFullYear(),
             category,
             specifications: specsList,
-            features: capabilitiesList,
+            features: features.length > 0 ? features : capabilitiesList,
             applications: applicationsList,
             mainImage,
             gallery,
