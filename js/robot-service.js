@@ -165,26 +165,6 @@ function createSlug(name) {
         .trim(); // Trim extra spaces
 }
 
-/**
- * Check if robot HTML exists
- * @param {string} slug - Robot slug
- * @returns {boolean} True if HTML exists
- */
-function robotHtmlExists(slug) {
-    // This will always return false now as we're using dynamic templates instead of stored HTML
-    return false;
-}
-
-/**
- * Get robot HTML content
- * @param {string} slug - Robot slug
- * @returns {string|null} HTML content or null if not found
- */
-function getRobotHtml(slug) {
-    // This will always return null now as we're using dynamic templates instead of stored HTML
-    return null;
-}
-
 // Export functions
 export {
     getAllRobots,
@@ -193,6 +173,5 @@ export {
     createRobot,
     updateRobot,
     deleteRobot,
-    robotHtmlExists,
-    getRobotHtml
+    createSlug
 };
