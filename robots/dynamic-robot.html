@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Details - MOOK Robotics Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/encyclopedia.css">
+    <link rel="stylesheet" href="../css/robot-detail.css">
+</head>
+<body>
+    <div id="robot-content-container">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading robot information...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getRobotHtml } from '../js/robot-service.js';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDynamicRobotContent();
+        });
+
+        /**
+         * Load dynamic robot content from localStorage
+         */
+        function loadDynamicRobotContent() {
+            // Get slug from URL parameters
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('slug');
+            
+            if (!slug) {
+                displayError('Robot not found');
+                return;
+            }
+            
+            // Get HTML content for this robot
+            const htmlContent = getRobotHtml(slug);
+            
+            if (!htmlContent) {
+                displayError('Robot content not found');
+                return;
+            }
+            
+            // Set the HTML content
+            // We can't completely replace the page content, but we can replace the body
+            // This is a simplified approach for a static site
+            document.body.innerHTML = htmlContent.split('<body>')[1].split('</body>')[0];
+            
+            // Append necessary scripts
+            appendScripts();
+        }
+        
+        /**
+         * Display an error message
+         * @param {string} message - Error message
+         */
+        function displayError(message) {
+            const container = document.getElementById('robot-content-container');
+            container.innerHTML = `
+                <div class="error-message">
+                    <h2>Error</h2>
+                    <p>${message}</p>
+                    <p><a href="index.html">Return to Encyclopedia</a></p>
+                </div>
+            `;
+        }
+        
+        /**
+         * Append necessary scripts to the page
+         */
+        function appendScripts() {
+            // Add main.js
+            const mainScript = document.createElement('script');
+            mainScript.src = '../js/main.js';
+            document.body.appendChild(mainScript);
+            
+            // Add auth.js
+            const authScript = document.createElement('script');
+            authScript.src = '../js/auth.js';
+            document.body.appendChild(authScript);
+        }
+    </script>
+    
+    <style>
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: var(--font-family);
+            color: var(--text-color);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 50px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .error-message h2 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        
+        .error-message a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .error-message a:hover {
+            background-color: var(--primary-dark-color);
+        }
+    </style>
+</body>
+</html>
