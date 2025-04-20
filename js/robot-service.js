@@ -185,9 +185,8 @@ function createSlug(name) {
 function generateRobotHtml(robot) {
     // In a real backend system, this would create an actual file
     // For now, we'll store the HTML content in localStorage
-    // When the page is loaded, we'll check if there's HTML content for the requested robot
     
-    // Create a basic HTML template using the robot's data
+    // Create the HTML template using the robot's data - matching the Atlas format
     const html = generateRobotHtmlContent(robot);
     
     // Store in localStorage
@@ -202,7 +201,37 @@ function generateRobotHtml(robot) {
  * @returns {string} HTML content
  */
 function generateRobotHtmlContent(robot) {
-    // This is a simplified template - in a real implementation, this would be more comprehensive
+    // Handle features list
+    let featuresHtml = '<li>No features listed.</li>';
+    if (robot.features && robot.features.length > 0) {
+        featuresHtml = robot.features.map(feature => `<li>${feature}</li>`).join('');
+    }
+
+    // Handle specifications
+    let specificationsHtml = '<p>No specifications available.</p>';
+    if (robot.specifications && Object.keys(robot.specifications).length > 0) {
+        specificationsHtml = Object.entries(robot.specifications).map(([key, value]) => `
+            <div class="spec-item">
+                <span class="spec-label">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                <span class="spec-value">${value}</span>
+            </div>
+        `).join('');
+    }
+
+    // Handle gallery
+    let galleryHtml = '<p>No additional images available.</p>';
+    if (robot.gallery && robot.gallery.length > 0) {
+        galleryHtml = robot.gallery.map(image => `
+            <div class="gallery-item">
+                <img src="../${image}" alt="${robot.name}" onerror="this.src='../images/robots/placeholder.jpg'">
+            </div>
+        `).join('');
+    }
+
+    // Format content from description if content not provided
+    const content = robot.content || `<p>${robot.description || 'No detailed content available for this robot yet.'}</p>`;
+    
+    // Create a template that matches the Atlas page format
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -260,12 +289,12 @@ function generateRobotHtmlContent(robot) {
                 </div>
                 <div class="robot-hero-info">
                     <div class="robot-categories">
-                        <span class="robot-category">${robot.category}</span>
-                        <span class="robot-year">${robot.year}</span>
+                        <span class="robot-category">${robot.category || 'Uncategorized'}</span>
+                        <span class="robot-year">${robot.year || 'Unknown Year'}</span>
                     </div>
                     <h1>${robot.name}</h1>
-                    <p class="robot-manufacturer">${robot.manufacturer}</p>
-                    <p class="robot-description">${robot.description}</p>
+                    <p class="robot-manufacturer">${robot.manufacturer || 'Unknown Manufacturer'}</p>
+                    <p class="robot-description">${robot.description || 'No description available.'}</p>
                     <div class="robot-actions">
                         <a href="#specifications" class="btn btn-primary">Specifications</a>
                         <a href="#features" class="btn btn-outline">Features</a>
@@ -278,13 +307,15 @@ function generateRobotHtmlContent(robot) {
             <div class="robot-main-content">
                 <section id="overview" class="robot-section">
                     <h2>Overview</h2>
-                    <div class="robot-content">${robot.content || '<p>No detailed content available for this robot yet.</p>'}</div>
+                    <div class="robot-content">
+                        ${content}
+                    </div>
                 </section>
 
                 <section id="features" class="robot-section">
                     <h2>Features</h2>
                     <ul class="features-list">
-                        ${robot.features ? robot.features.map(feature => `<li>${feature}</li>`).join('') : '<li>No features listed.</li>'}
+                        ${featuresHtml}
                     </ul>
                 </section>
 
@@ -294,15 +325,7 @@ function generateRobotHtmlContent(robot) {
                         <div class="specs-column">
                             <div class="spec-group">
                                 <h3>Technical Details</h3>
-                                ${robot.specifications ? 
-                                    Object.entries(robot.specifications).map(([key, value]) => `
-                                        <div class="spec-item">
-                                            <span class="spec-label">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                                            <span class="spec-value">${value}</span>
-                                        </div>
-                                    `).join('') 
-                                    : '<p>No specifications available.</p>'
-                                }
+                                ${specificationsHtml}
                             </div>
                         </div>
                     </div>
@@ -311,14 +334,7 @@ function generateRobotHtmlContent(robot) {
                 <section id="gallery" class="robot-section">
                     <h2>Image Gallery</h2>
                     <div class="gallery-grid">
-                        ${robot.gallery && robot.gallery.length > 0 ? 
-                            robot.gallery.map(image => `
-                                <div class="gallery-item">
-                                    <img src="../${image}" alt="${robot.name}" onerror="this.src='../images/robots/placeholder.jpg'">
-                                </div>
-                            `).join('') 
-                            : '<p>No additional images available.</p>'
-                        }
+                        ${galleryHtml}
                     </div>
                 </section>
             </div>
@@ -403,7 +419,7 @@ function generateRobotHtmlContent(robot) {
 
     <script src="../js/main.js"></script>
     <script src="../js/auth.js"></script>
-    <script src="../js/robot-detail.js"></script>
+    <script type="module" src="../js/robot-detail.js"></script>
 </body>
 </html>`;
 }
