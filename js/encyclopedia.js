@@ -304,10 +304,13 @@ async function renderRobotPage(page) {
             const button = robotCard.querySelector('button');
             button.textContent = 'Learn More';
             button.onclick = function() {
-                // For hard-coded robots with static HTML pages, we go directly to the page
-                // For dynamically added robots, we use robot-template.html as a base but pass the slug
-                const templateUrl = `${robot.slug}.html`;
-                window.location.href = templateUrl;
+                // Check if it's Atlas (which has a static page)
+                if (robot.slug === 'atlas') {
+                    window.location.href = 'atlas.html';
+                } else {
+                    // For all other robots, use the dynamic robot.html page with a slug parameter
+                    window.location.href = `robot.html?slug=${encodeURIComponent(robot.slug)}`;
+                }
             };
             
             // Set image (with fallback)
