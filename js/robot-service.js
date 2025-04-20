@@ -79,9 +79,6 @@ function createRobot(robotData) {
     // Save to localStorage (excluding default robots)
     saveRobotsToStorage(robots);
     
-    // Generate HTML file for the robot
-    generateRobotHtml(newRobot);
-    
     return newRobot;
 }
 
@@ -111,9 +108,6 @@ function updateRobot(id, robotData) {
     // Save to localStorage
     saveRobotsToStorage(robots);
     
-    // Update HTML file
-    generateRobotHtml(robots[index]);
-    
     return robots[index];
 }
 
@@ -130,17 +124,11 @@ function deleteRobot(id) {
         return false;
     }
     
-    // Get the robot to be deleted
-    const deletedRobot = robots[index];
-    
     // Remove from array
     robots.splice(index, 1);
     
     // Save to localStorage
     saveRobotsToStorage(robots);
-    
-    // Here we would ideally delete the HTML file, but we can't do that in a static site
-    // We would need to mark it as deleted in some way
     
     return true;
 }
@@ -178,259 +166,13 @@ function createSlug(name) {
 }
 
 /**
- * Generate HTML file for a robot
- * @param {Object} robot - Robot data
- * @returns {boolean} Success status
- */
-function generateRobotHtml(robot) {
-    // In a real backend system, this would create an actual file
-    // For now, we'll store the HTML content in localStorage
-    
-    // Create the HTML template using the robot's data - matching the Atlas format
-    const html = generateRobotHtmlContent(robot);
-    
-    // Store in localStorage
-    localStorage.setItem(`mookRoboticsRobotHtml_${robot.slug}`, html);
-    
-    return true;
-}
-
-/**
- * Generate HTML content for a robot
- * @param {Object} robot - Robot data
- * @returns {string} HTML content
- */
-function generateRobotHtmlContent(robot) {
-    // Handle features list
-    let featuresHtml = '<li>No features listed.</li>';
-    if (robot.features && robot.features.length > 0) {
-        featuresHtml = robot.features.map(feature => `<li>${feature}</li>`).join('');
-    }
-
-    // Handle specifications
-    let specificationsHtml = '<p>No specifications available.</p>';
-    if (robot.specifications && Object.keys(robot.specifications).length > 0) {
-        specificationsHtml = Object.entries(robot.specifications).map(([key, value]) => `
-            <div class="spec-item">
-                <span class="spec-label">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                <span class="spec-value">${value}</span>
-            </div>
-        `).join('');
-    }
-
-    // Handle gallery
-    let galleryHtml = '<p>No additional images available.</p>';
-    if (robot.gallery && robot.gallery.length > 0) {
-        galleryHtml = robot.gallery.map(image => `
-            <div class="gallery-item">
-                <img src="../${image}" alt="${robot.name}" onerror="this.src='../images/robots/placeholder.jpg'">
-            </div>
-        `).join('');
-    }
-
-    // Format content from description if content not provided
-    const content = robot.content || `<p>${robot.description || 'No detailed content available for this robot yet.'}</p>`;
-    
-    // Create a template that matches the Atlas page format
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${robot.name} - MOOK Robotics Hub</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/theme.css">
-    <link rel="stylesheet" href="../css/encyclopedia.css">
-    <link rel="stylesheet" href="../css/robot-detail.css">
-</head>
-<body>
-    <header>
-        <nav class="main-nav">
-            <div class="logo">
-                <svg width="50" height="50" viewBox="0 0 50 50" class="logo-svg">
-                    <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
-                    <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
-                    <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
-                    <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
-                    <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
-                    <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
-                </svg>
-                <span>MOOK Robotics Hub</span>
-            </div>
-            <div class="nav-links">
-                <a href="../index.html">Home</a>
-                <a href="index.html" class="active">Encyclopedia</a>
-                <a href="../news.html">News</a>
-                <a href="../about.html">About</a>
-            </div>
-            <div class="nav-auth">
-                <button id="login-btn" class="btn btn-primary">Login</button>
-                <button id="signup-btn" class="btn btn-outline">Sign Up</button>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <div class="robot-breadcrumb">
-            <div class="breadcrumb-container">
-                <a href="../index.html">Home</a>
-                <i class="fas fa-chevron-right"></i>
-                <a href="index.html">Encyclopedia</a>
-                <i class="fas fa-chevron-right"></i>
-                <span>${robot.name}</span>
-            </div>
-        </div>
-
-        <section class="robot-hero">
-            <div class="robot-hero-container">
-                <div class="robot-hero-image">
-                    <img src="../${robot.mainImage}" alt="${robot.name}" onerror="this.src='../images/robots/placeholder.jpg'">
-                </div>
-                <div class="robot-hero-info">
-                    <div class="robot-categories">
-                        <span class="robot-category">${robot.category || 'Uncategorized'}</span>
-                        <span class="robot-year">${robot.year || 'Unknown Year'}</span>
-                    </div>
-                    <h1>${robot.name}</h1>
-                    <p class="robot-manufacturer">${robot.manufacturer || 'Unknown Manufacturer'}</p>
-                    <p class="robot-description">${robot.description || 'No description available.'}</p>
-                    <div class="robot-actions">
-                        <a href="#specifications" class="btn btn-primary">Specifications</a>
-                        <a href="#features" class="btn btn-outline">Features</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div class="robot-content-container">
-            <div class="robot-main-content">
-                <section id="overview" class="robot-section">
-                    <h2>Overview</h2>
-                    <div class="robot-content">
-                        ${content}
-                    </div>
-                </section>
-
-                <section id="features" class="robot-section">
-                    <h2>Features</h2>
-                    <ul class="features-list">
-                        ${featuresHtml}
-                    </ul>
-                </section>
-
-                <section id="specifications" class="robot-section">
-                    <h2>Specifications</h2>
-                    <div class="specs-container">
-                        <div class="specs-column">
-                            <div class="spec-group">
-                                <h3>Technical Details</h3>
-                                ${specificationsHtml}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="gallery" class="robot-section">
-                    <h2>Image Gallery</h2>
-                    <div class="gallery-grid">
-                        ${galleryHtml}
-                    </div>
-                </section>
-            </div>
-
-            <aside class="robot-sidebar">
-                <div class="sidebar-section">
-                    <h3>Quick Facts</h3>
-                    <ul class="quick-facts">
-                        <li>
-                            <i class="fas fa-calendar-alt"></i>
-                            <span class="fact-label">Year:</span>
-                            <span class="fact-value">${robot.year || 'Unknown'}</span>
-                        </li>
-                        <li>
-                            <i class="fas fa-building"></i>
-                            <span class="fact-label">Manufacturer:</span>
-                            <span class="fact-value">${robot.manufacturer || 'Unknown'}</span>
-                        </li>
-                        <li>
-                            <i class="fas fa-tag"></i>
-                            <span class="fact-label">Category:</span>
-                            <span class="fact-value">${robot.category || 'Unspecified'}</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-section">
-                    <h3>On This Page</h3>
-                    <ul class="page-nav">
-                        <li><a href="#overview">Overview</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#specifications">Specifications</a></li>
-                        <li><a href="#gallery">Image Gallery</a></li>
-                    </ul>
-                </div>
-            </aside>
-        </div>
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>MOOK Robotics Hub</h3>
-                <p>Your interactive guide to the world of robotics</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h3>Navigation</h3>
-                <ul>
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="index.html">Encyclopedia</a></li>
-                    <li><a href="../news.html">News</a></li>
-                    <li><a href="../about.html">About</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact</h3>
-                <ul>
-                    <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
-                    <li><a href="../contact.html">Contact Form</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Account</h3>
-                <ul>
-                    <li><a href="#login">Login</a></li>
-                    <li><a href="#signup">Sign Up</a></li>
-                    <li><a href="../my-account.html">My Account</a></li>
-                    <li><a href="../admin/dashboard.html">Admin</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="../js/main.js"></script>
-    <script src="../js/auth.js"></script>
-    <script type="module" src="../js/robot-detail.js"></script>
-</body>
-</html>`;
-}
-
-/**
  * Check if robot HTML exists
  * @param {string} slug - Robot slug
  * @returns {boolean} True if HTML exists
  */
 function robotHtmlExists(slug) {
-    return localStorage.getItem(`mookRoboticsRobotHtml_${slug}`) !== null;
+    // This will always return false now as we're using dynamic templates instead of stored HTML
+    return false;
 }
 
 /**
@@ -439,7 +181,8 @@ function robotHtmlExists(slug) {
  * @returns {string|null} HTML content or null if not found
  */
 function getRobotHtml(slug) {
-    return localStorage.getItem(`mookRoboticsRobotHtml_${slug}`);
+    // This will always return null now as we're using dynamic templates instead of stored HTML
+    return null;
 }
 
 // Export functions
