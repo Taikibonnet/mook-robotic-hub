@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robotics Encyclopedia - MOOK Robotics Hub</title>
+    <title>Robot Encyclopedia - MOOK Robotics Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/theme.css">
@@ -37,13 +37,15 @@
     </header>
 
     <main>
-        <section class="encyclopedia-hero">
-            <div class="hero-content">
-                <h1>Robotics <span class="highlight">Encyclopedia</span></h1>
-                <p>Explore our comprehensive database of robots from around the world</p>
-                <div class="search-container">
-                    <input type="text" id="encyclopedia-search" placeholder="Search robots by name, type, manufacturer...">
-                    <button id="encyclopedia-search-btn"><i class="fas fa-search"></i></button>
+        <section class="encyclopedia-header">
+            <div class="encyclopedia-header-content">
+                <h1>Robot Encyclopedia</h1>
+                <p>Explore our comprehensive collection of robots from all around the world, featuring detailed specifications, capabilities, and history.</p>
+                <div class="encyclopedia-search">
+                    <input type="text" id="encyclopedia-search-input" placeholder="Search robots...">
+                    <button id="encyclopedia-search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
             </div>
         </section>
@@ -51,212 +53,56 @@
         <section class="encyclopedia-filters">
             <div class="filter-container">
                 <div class="filter-group">
-                    <label for="category-filter">Category</label>
-                    <select id="category-filter" class="filter-select">
+                    <label>Category</label>
+                    <select id="filter-category">
                         <option value="">All Categories</option>
-                        <option value="humanoid">Humanoid</option>
-                        <option value="industrial">Industrial</option>
-                        <option value="medical">Medical</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="exploration">Exploration</option>
-                        <option value="military">Military</option>
-                        <option value="domestic">Domestic</option>
+                        <option value="Humanoid">Humanoid</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Exploration">Exploration</option>
+                        <option value="Military">Military</option>
+                        <option value="Domestic">Domestic</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="manufacturer-filter">Manufacturer</label>
-                    <select id="manufacturer-filter" class="filter-select">
+                    <label>Manufacturer</label>
+                    <select id="filter-manufacturer">
                         <option value="">All Manufacturers</option>
-                        <option value="boston-dynamics">Boston Dynamics</option>
-                        <option value="honda">Honda</option>
-                        <option value="abb">ABB</option>
-                        <option value="kuka">KUKA</option>
-                        <option value="fanuc">FANUC</option>
-                        <option value="softbank">SoftBank Robotics</option>
-                        <option value="nasa">NASA</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="year-filter">Year</label>
-                    <select id="year-filter" class="filter-select">
+                    <label>Year</label>
+                    <select id="filter-year">
                         <option value="">All Years</option>
-                        <option value="2020-2025">2020-2025</option>
-                        <option value="2015-2019">2015-2019</option>
-                        <option value="2010-2014">2010-2014</option>
-                        <option value="2000-2009">2000-2009</option>
-                        <option value="1990-1999">1990-1999</option>
-                        <option value="before-1990">Before 1990</option>
                     </select>
                 </div>
-                <button id="reset-filters" class="btn btn-outline">Reset Filters</button>
+                <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+                <button id="reset-filters" class="btn">Reset</button>
             </div>
         </section>
 
-        <section class="robots-container">
-            <div class="robots-grid">
-                <!-- Robot Card 1 -->
-                <div class="robot-card" data-category="humanoid" data-manufacturer="boston-dynamics" data-year="2020">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>Atlas</h3>
-                        <p class="robot-manufacturer">Boston Dynamics</p>
-                        <p class="robot-description">Advanced humanoid robot designed for mobility and a variety of tasks.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2020</span>
-                            <span class="robot-category">Humanoid</span>
-                        </div>
-                        <a href="atlas.html" class="btn btn-primary">View Details</a>
-                    </div>
+        <section class="robots-grid">
+            <div class="robots-container" id="robots-container">
+                <!-- Robots will be added here dynamically -->
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading robots...</p>
                 </div>
-
-                <!-- Robot Card 2 -->
-                <div class="robot-card" data-category="exploration" data-manufacturer="boston-dynamics" data-year="2019">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>Spot</h3>
-                        <p class="robot-manufacturer">Boston Dynamics</p>
-                        <p class="robot-description">Agile mobile robot that navigates terrain with unprecedented mobility.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2019</span>
-                            <span class="robot-category">Exploration</span>
-                        </div>
-                        <a href="spot.html" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-
-                <!-- Robot Card 3 -->
-                <div class="robot-card" data-category="humanoid" data-manufacturer="softbank" data-year="2016">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>Sophia</h3>
-                        <p class="robot-manufacturer">SoftBank Robotics</p>
-                        <p class="robot-description">Advanced humanoid robot with expressive face and conversational AI.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2016</span>
-                            <span class="robot-category">Humanoid</span>
-                        </div>
-                        <a href="sophia.html" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-
-                <!-- Robot Card 4 -->
-                <div class="robot-card" data-category="exploration" data-manufacturer="nasa" data-year="2021">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>Perseverance</h3>
-                        <p class="robot-manufacturer">NASA</p>
-                        <p class="robot-description">Mars rover designed to explore the Martian surface and collect samples.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2021</span>
-                            <span class="robot-category">Exploration</span>
-                        </div>
-                        <a href="perseverance.html" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-
-                <!-- Robot Card 5 -->
-                <div class="robot-card" data-category="humanoid" data-manufacturer="honda" data-year="2000">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>ASIMO</h3>
-                        <p class="robot-manufacturer">Honda</p>
-                        <p class="robot-description">Advanced humanoid robot capable of walking, running, and interacting with humans.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2000</span>
-                            <span class="robot-category">Humanoid</span>
-                        </div>
-                        <a href="asimo.html" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-
-                <!-- Robot Card 6 -->
-                <div class="robot-card" data-category="industrial" data-manufacturer="fanuc" data-year="2018">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>CR-35iA</h3>
-                        <p class="robot-manufacturer">FANUC</p>
-                        <p class="robot-description">Collaborative industrial robot designed to work safely alongside humans.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2018</span>
-                            <span class="robot-category">Industrial</span>
-                        </div>
-                        <a href="cr-35ia.html" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-
-                <!-- Robot Card 7 -->
-                <div class="robot-card" data-category="entertainment" data-manufacturer="softbank" data-year="2014">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>Pepper</h3>
-                        <p class="robot-manufacturer">SoftBank Robotics</p>
-                        <p class="robot-description">Humanoid robot designed to recognize and respond to human emotions.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2014</span>
-                            <span class="robot-category">Entertainment</span>
-                        </div>
-                        <a href="pepper.html" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-
-                <!-- Robot Card 8 -->
-                <div class="robot-card" data-category="domestic" data-manufacturer="irobot" data-year="2002">
-                    <div class="robot-image">
-                        <div class="placeholder"></div>
-                    </div>
-                    <div class="robot-details">
-                        <h3>Roomba</h3>
-                        <p class="robot-manufacturer">iRobot</p>
-                        <p class="robot-description">Autonomous robotic vacuum cleaner that revolutionized home cleaning.</p>
-                        <div class="robot-meta">
-                            <span class="robot-year">2002</span>
-                            <span class="robot-category">Domestic</span>
-                        </div>
-                        <a href="roomba.html" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pagination">
-                <a href="#" class="page-link active">1</a>
-                <a href="#" class="page-link">2</a>
-                <a href="#" class="page-link">3</a>
-                <a href="#" class="page-link">4</a>
-                <a href="#" class="page-link">5</a>
-                <span class="page-ellipsis">...</span>
-                <a href="#" class="page-link">10</a>
-                <a href="#" class="page-link next">Next <i class="fas fa-angle-right"></i></a>
             </div>
         </section>
 
-        <section class="submit-robot">
-            <div class="submit-content">
-                <div class="submit-info">
-                    <h2>Know a robot that's not listed?</h2>
-                    <p>Help us expand our encyclopedia by submitting information about robots that aren't yet included in our database.</p>
-                    <button id="submit-robot-btn" class="btn btn-primary">Submit a Robot</button>
-                </div>
-                <div class="submit-image">
-                    <div class="robot-illustration">
-                        <div class="robot-head-icon"></div>
-                        <div class="robot-body-icon"></div>
-                    </div>
-                </div>
+        <section class="pagination">
+            <button class="pagination-btn prev-page" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <div class="pagination-info">
+                Page <span id="current-page">1</span> of <span id="total-pages">1</span>
             </div>
+            <button class="pagination-btn next-page" disabled>
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
         </section>
     </main>
 
@@ -294,6 +140,7 @@
                     <li><a href="#login">Login</a></li>
                     <li><a href="#signup">Sign Up</a></li>
                     <li><a href="../my-account.html">My Account</a></li>
+                    <li><a href="../admin/dashboard.html">Admin</a></li>
                 </ul>
             </div>
         </div>
@@ -302,59 +149,26 @@
         </div>
     </footer>
 
-    <!-- Login and Signup Modals (same as index.html) -->
-    <!-- These would be included here but are omitted for brevity -->
-
-    <!-- Submit Robot Modal -->
-    <div id="submit-robot-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Submit a <span class="highlight">Robot</span></h2>
-            <form id="submit-robot-form">
-                <div class="form-group">
-                    <label for="robot-name">Robot Name</label>
-                    <input type="text" id="robot-name" required>
+    <!-- Robot card template (hidden) -->
+    <template id="robot-card-template">
+        <div class="robot-card">
+            <div class="robot-card-image">
+                <img src="" alt="">
+            </div>
+            <div class="robot-card-content">
+                <div class="robot-card-category"></div>
+                <h3 class="robot-card-title"></h3>
+                <p class="robot-card-description"></p>
+                <div class="robot-card-footer">
+                    <div class="robot-card-manufacturer"></div>
+                    <a href="#" class="btn btn-outline btn-sm">View Details</a>
                 </div>
-                <div class="form-group">
-                    <label for="robot-manufacturer">Manufacturer</label>
-                    <input type="text" id="robot-manufacturer" required>
-                </div>
-                <div class="form-group">
-                    <label for="robot-year">Year</label>
-                    <input type="number" id="robot-year" min="1900" max="2100">
-                </div>
-                <div class="form-group">
-                    <label for="robot-category">Category</label>
-                    <select id="robot-category" required>
-                        <option value="">Select a category</option>
-                        <option value="humanoid">Humanoid</option>
-                        <option value="industrial">Industrial</option>
-                        <option value="medical">Medical</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="exploration">Exploration</option>
-                        <option value="military">Military</option>
-                        <option value="domestic">Domestic</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="robot-description">Description</label>
-                    <textarea id="robot-description" rows="4" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="submitter-email">Your Email</label>
-                    <input type="email" id="submitter-email" required>
-                    <p class="form-hint">We'll contact you if we need more information</p>
-                </div>
-                <div class="form-footer">
-                    <button type="submit" class="btn btn-primary btn-full">Submit Robot</button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </template>
 
     <script src="../js/main.js"></script>
     <script src="../js/auth.js"></script>
-    <script src="../js/encyclopedia.js"></script>
+    <script type="module" src="../js/encyclopedia.js"></script>
 </body>
 </html>
