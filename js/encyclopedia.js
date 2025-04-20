@@ -1,436 +1,321 @@
 /**
  * MOOK Robotics Hub - Encyclopedia JavaScript
  * 
- * This file contains functionality for the robotics encyclopedia,
- * including search, filtering, and interaction.
+ * This file handles the encyclopedia page functionality,
+ * including loading robots, filtering, and pagination.
  */
 
+import { getAllRobots } from './robot-service.js';
+import { getValidImagePath } from './file-util.js';
+
+// Constants
+const ROBOTS_PER_PAGE = 12;
+
+// State
+let currentPage = 1;
+let filteredRobots = [];
+let allRobots = [];
+
+// Document is ready
 document.addEventListener('DOMContentLoaded', function() {
-    initEncyclopedia();
-    initSubmitRobotModal();
+    loadRobots();
+    initFilters();
+    initSearch();
+    initPagination();
 });
 
 /**
- * Initialize encyclopedia functionality
+ * Load robots from data source
  */
-function initEncyclopedia() {
-    // Setup search
-    const searchInput = document.getElementById('encyclopedia-search');
-    const searchBtn = document.getElementById('encyclopedia-search-btn');
+async function loadRobots() {
+    // Get robots
+    allRobots = getAllRobots();
     
-    if (searchInput && searchBtn) {
-        // Search button click
-        searchBtn.addEventListener('click', function() {
-            searchRobots(searchInput.value);
-        });
-        
-        // Search on Enter key
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchRobots(searchInput.value);
-            }
-        });
-        
-        // Live search as you type (with debounce)
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchRobots(searchInput.value);
-            }, 300); // 300ms delay to reduce frequency of searches
-        });
-        
-        // Check URL for search query param
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchQuery = urlParams.get('search');
-        if (searchQuery) {
-            searchInput.value = searchQuery;
-            searchRobots(searchQuery);
-        }
-    }
+    // Apply initial filters
+    filterRobots();
     
-    // Setup filters
-    setupFilters();
+    // Update filter dropdowns
+    updateFilterOptions();
     
-    // Setup pagination
-    setupPagination();
-    
-    // Add hover effects to robot cards
-    const robotCards = document.querySelectorAll('.robot-card');
-    robotCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.classList.add('hover');
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.classList.remove('hover');
-        });
-    });
+    // Render the first page
+    renderRobotPage(1);
 }
 
 /**
- * Search robots based on a query
- * @param {string} query - The search query
+ * Initialize filter functionality
  */
-function searchRobots(query) {
-    query = query.toLowerCase().trim();
-    
-    const robotCards = document.querySelectorAll('.robot-card');
-    let matchCount = 0;
-    
-    robotCards.forEach(card => {
-        const robotName = card.querySelector('h3').textContent.toLowerCase();
-        const robotManufacturer = card.querySelector('.robot-manufacturer').textContent.toLowerCase();
-        const robotDescription = card.querySelector('.robot-description').textContent.toLowerCase();
-        const robotCategory = card.dataset.category.toLowerCase();
-        
-        // Check if any fields match the query
-        if (query === '' || 
-            robotName.includes(query) || 
-            robotManufacturer.includes(query) || 
-            robotDescription.includes(query) || 
-            robotCategory.includes(query)) {
-            
-            card.style.display = 'flex';
-            matchCount++;
-            
-            // Highlight matching text if there's a query
-            if (query !== '') {
-                highlightText(card, query);
-            } else {
-                // Remove any existing highlights
-                removeHighlights(card);
-            }
-        } else {
-            card.style.display = 'none';
-        }
-    });
-    
-    // Update results message
-    updateResultsMessage(matchCount, query);
-}
-
-/**
- * Highlight matching text in a robot card
- * @param {HTMLElement} card - The robot card element
- * @param {string} query - The search query
- */
-function highlightText(card, query) {
-    // Remove any existing highlights first
-    removeHighlights(card);
-    
-    // Fields to highlight
-    const titleElement = card.querySelector('h3');
-    const manufacturerElement = card.querySelector('.robot-manufacturer');
-    const descriptionElement = card.querySelector('.robot-description');
-    
-    // Highlight function
-    const highlightInElement = (element, text) => {
-        if (!element) return;
-        
-        const regex = new RegExp(`(${escapeRegExp(text)})`, 'gi');
-        element.innerHTML = element.textContent.replace(
-            regex, 
-            '<span class="highlight-search">$1</span>'
-        );
-    };
-    
-    // Apply highlights
-    highlightInElement(titleElement, query);
-    highlightInElement(manufacturerElement, query);
-    highlightInElement(descriptionElement, query);
-}
-
-/**
- * Remove highlight spans from a robot card
- * @param {HTMLElement} card - The robot card element
- */
-function removeHighlights(card) {
-    const highlightSpans = card.querySelectorAll('.highlight-search');
-    
-    highlightSpans.forEach(span => {
-        // Replace the span with its text content
-        span.outerHTML = span.textContent;
-    });
-}
-
-/**
- * Escape special characters for regex
- * @param {string} string - The string to escape
- * @returns {string} Escaped string
- */
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\/**
- * MOOK Robotics Hub - Encyclopedia JavaScript
- * 
- * This file contains functionality for the robotics encyclopedia,
- * including search, filtering, and interaction.
- */
-
-document.addEventListener('DOMContentLoaded', function() {
-    initEncyclopedia();
-    initSubmitRobotModal();
-});
-
-/**
- * Initialize encyclopedia functionality
- */
-function initEncyclopedia() {
-    // Setup search
-    const searchInput = document.getElementById('encyclopedia-search');
-    const searchBtn = document.getElementById('encyclopedia-search-btn');
-    
-    if (searchInput && searchBtn) {
-        // Search button click
-        searchBtn.addEventListener('click', function() {
-            searchRobots(searchInput.value);
-        });
-        
-        // Search on Enter key
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchRobots(searchInput.value);
-            }
-        });
-        
-        // Live search as you type (with debounce)
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchRobots(searchInput.value);
-            }, 300); // 300');
-}
-
-/**
- * Update the results message based on search results
- * @param {number} count - Number of matching robots
- * @param {string} query - The search query
- */
-function updateResultsMessage(count, query) {
-    // Create or get the results message element
-    let resultsMessage = document.querySelector('.results-message');
-    
-    if (!resultsMessage) {
-        resultsMessage = document.createElement('p');
-        resultsMessage.className = 'results-message';
-        
-        // Insert after the filters section
-        const filtersSection = document.querySelector('.encyclopedia-filters');
-        if (filtersSection) {
-            filtersSection.after(resultsMessage);
-        }
-    }
-    
-    // Update the message content
-    if (query) {
-        if (count === 0) {
-            resultsMessage.textContent = `No robots found matching "${query}"`;
-            resultsMessage.classList.add('no-results');
-        } else {
-            resultsMessage.textContent = `Found ${count} robot${count !== 1 ? 's' : ''} matching "${query}"`;
-            resultsMessage.classList.remove('no-results');
-        }
-        
-        resultsMessage.style.display = 'block';
-    } else {
-        // Hide the message if there's no query
-        resultsMessage.style.display = 'none';
-    }
-}
-
-/**
- * Setup filters for the encyclopedia
- */
-function setupFilters() {
-    const categoryFilter = document.getElementById('category-filter');
-    const manufacturerFilter = document.getElementById('manufacturer-filter');
-    const yearFilter = document.getElementById('year-filter');
+function initFilters() {
+    const applyFiltersBtn = document.getElementById('apply-filters');
     const resetFiltersBtn = document.getElementById('reset-filters');
     
-    // Apply filters function
-    const applyFilters = () => {
-        const categoryValue = categoryFilter.value;
-        const manufacturerValue = manufacturerFilter.value;
-        const yearValue = yearFilter.value;
-        
-        const robotCards = document.querySelectorAll('.robot-card');
-        let visibleCount = 0;
-        
-        robotCards.forEach(card => {
-            // Check if card matches all selected filters
-            const categoryMatch = !categoryValue || card.dataset.category === categoryValue;
-            const manufacturerMatch = !manufacturerValue || card.dataset.manufacturer === manufacturerValue;
-            
-            // For year filter, need to check ranges
-            let yearMatch = true;
-            if (yearValue) {
-                const robotYear = parseInt(card.dataset.year);
-                
-                switch (yearValue) {
-                    case '2020-2025':
-                        yearMatch = robotYear >= 2020 && robotYear <= 2025;
-                        break;
-                    case '2015-2019':
-                        yearMatch = robotYear >= 2015 && robotYear <= 2019;
-                        break;
-                    case '2010-2014':
-                        yearMatch = robotYear >= 2010 && robotYear <= 2014;
-                        break;
-                    case '2000-2009':
-                        yearMatch = robotYear >= 2000 && robotYear <= 2009;
-                        break;
-                    case '1990-1999':
-                        yearMatch = robotYear >= 1990 && robotYear <= 1999;
-                        break;
-                    case 'before-1990':
-                        yearMatch = robotYear < 1990;
-                        break;
-                }
-            }
-            
-            // Show or hide based on all filters
-            if (categoryMatch && manufacturerMatch && yearMatch) {
-                card.style.display = 'flex';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', function() {
+            filterRobots();
+            renderRobotPage(1);
         });
-        
-        // Update filter status
-        updateFilterStatus(visibleCount);
-    };
+    }
     
-    // Add event listeners to filters
-    if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
-    if (manufacturerFilter) manufacturerFilter.addEventListener('change', applyFilters);
-    if (yearFilter) yearFilter.addEventListener('change', applyFilters);
-    
-    // Reset filters
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', function() {
-            if (categoryFilter) categoryFilter.value = '';
-            if (manufacturerFilter) manufacturerFilter.value = '';
-            if (yearFilter) yearFilter.value = '';
+            // Reset filter dropdowns
+            document.getElementById('filter-category').value = '';
+            document.getElementById('filter-manufacturer').value = '';
+            document.getElementById('filter-year').value = '';
             
-            // Reset search
-            const searchInput = document.getElementById('encyclopedia-search');
-            if (searchInput) searchInput.value = '';
-            
-            // Show all robots
-            const robotCards = document.querySelectorAll('.robot-card');
-            robotCards.forEach(card => {
-                card.style.display = 'flex';
-                removeHighlights(card);
-            });
-            
-            // Hide results message
-            const resultsMessage = document.querySelector('.results-message');
-            if (resultsMessage) resultsMessage.style.display = 'none';
-            
-            // Hide filter status
-            const filterStatus = document.querySelector('.filter-status');
-            if (filterStatus) filterStatus.style.display = 'none';
+            // Reset filters and render
+            filterRobots();
+            renderRobotPage(1);
         });
     }
 }
 
 /**
- * Update filter status message
- * @param {number} count - Number of visible robots
+ * Initialize search functionality
  */
-function updateFilterStatus(count) {
-    // Create or get the filter status element
-    let filterStatus = document.querySelector('.filter-status');
+function initSearch() {
+    const searchInput = document.getElementById('encyclopedia-search-input');
+    const searchBtn = document.getElementById('encyclopedia-search-btn');
     
-    if (!filterStatus) {
-        filterStatus = document.createElement('p');
-        filterStatus.className = 'filter-status';
+    if (searchInput && searchBtn) {
+        searchBtn.addEventListener('click', function() {
+            // Apply search filter
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            filterRobots(searchTerm);
+            renderRobotPage(1);
+        });
         
-        // Insert after the filters section
-        const filtersSection = document.querySelector('.encyclopedia-filters');
-        if (filtersSection) {
-            filtersSection.after(filterStatus);
-        }
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                // Apply search filter
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                filterRobots(searchTerm);
+                renderRobotPage(1);
+            }
+        });
     }
-    
-    // Update the status content
-    if (count === 0) {
-        filterStatus.textContent = 'No robots match the selected filters.';
-        filterStatus.classList.add('no-results');
-    } else {
-        filterStatus.textContent = `Showing ${count} robot${count !== 1 ? 's' : ''} that match your filters.`;
-        filterStatus.classList.remove('no-results');
-    }
-    
-    filterStatus.style.display = 'block';
 }
 
 /**
- * Setup pagination functionality
+ * Initialize pagination controls
  */
-function setupPagination() {
-    const paginationLinks = document.querySelectorAll('.pagination .page-link');
+function initPagination() {
+    const prevPageBtn = document.querySelector('.prev-page');
+    const nextPageBtn = document.querySelector('.next-page');
     
-    paginationLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all links
-            paginationLinks.forEach(l => l.classList.remove('active'));
-            
-            // Add active class to clicked link
-            this.classList.add('active');
-            
-            // In a real application, this would load the next page of robots
-            // For this demo, we'll just scroll to the top
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                renderRobotPage(currentPage - 1);
+            }
         });
+    }
+    
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', function() {
+            const totalPages = Math.ceil(filteredRobots.length / ROBOTS_PER_PAGE);
+            if (currentPage < totalPages) {
+                renderRobotPage(currentPage + 1);
+            }
+        });
+    }
+}
+
+/**
+ * Filter robots based on criteria
+ * @param {string} [searchTerm=''] - Optional search term
+ */
+function filterRobots(searchTerm = '') {
+    // Get filter values
+    const categoryFilter = document.getElementById('filter-category').value;
+    const manufacturerFilter = document.getElementById('filter-manufacturer').value;
+    const yearFilter = document.getElementById('filter-year').value;
+    
+    // Filter robots
+    filteredRobots = allRobots.filter(robot => {
+        // Apply category filter
+        if (categoryFilter && robot.category !== categoryFilter) {
+            return false;
+        }
+        
+        // Apply manufacturer filter
+        if (manufacturerFilter && robot.manufacturer !== manufacturerFilter) {
+            return false;
+        }
+        
+        // Apply year filter
+        if (yearFilter && robot.year.toString() !== yearFilter) {
+            return false;
+        }
+        
+        // Apply search term
+        if (searchTerm) {
+            const searchString = `${robot.name} ${robot.manufacturer || ''} ${robot.description || ''}`.toLowerCase();
+            if (!searchString.includes(searchTerm)) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+    
+    // Update pagination
+    updatePagination();
+}
+
+/**
+ * Update filter dropdowns with available options
+ */
+function updateFilterOptions() {
+    // Get unique manufacturers
+    const manufacturers = [...new Set(allRobots.map(robot => robot.manufacturer).filter(Boolean))];
+    const manufacturerSelect = document.getElementById('filter-manufacturer');
+    
+    // Clear existing options (except the first)
+    while (manufacturerSelect.options.length > 1) {
+        manufacturerSelect.remove(1);
+    }
+    
+    // Add manufacturer options
+    manufacturers.forEach(manufacturer => {
+        const option = document.createElement('option');
+        option.value = manufacturer;
+        option.textContent = manufacturer;
+        manufacturerSelect.appendChild(option);
+    });
+    
+    // Get unique years
+    const years = [...new Set(allRobots.map(robot => robot.year).filter(Boolean))];
+    years.sort((a, b) => b - a); // Sort descending
+    const yearSelect = document.getElementById('filter-year');
+    
+    // Clear existing options (except the first)
+    while (yearSelect.options.length > 1) {
+        yearSelect.remove(1);
+    }
+    
+    // Add year options
+    years.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
     });
 }
 
 /**
- * Initialize the submit robot modal
+ * Update pagination controls based on filtered robots
  */
-function initSubmitRobotModal() {
-    const submitRobotBtn = document.getElementById('submit-robot-btn');
-    const submitRobotModal = document.getElementById('submit-robot-modal');
-    const closeModal = submitRobotModal?.querySelector('.close-modal');
-    const submitRobotForm = document.getElementById('submit-robot-form');
+function updatePagination() {
+    const totalPages = Math.ceil(filteredRobots.length / ROBOTS_PER_PAGE);
+    const currentPageElement = document.getElementById('current-page');
+    const totalPagesElement = document.getElementById('total-pages');
     
-    // Open modal
-    if (submitRobotBtn && submitRobotModal) {
-        submitRobotBtn.addEventListener('click', function() {
-            submitRobotModal.classList.add('active');
-        });
+    if (currentPageElement) currentPageElement.textContent = currentPage;
+    if (totalPagesElement) totalPagesElement.textContent = totalPages;
+    
+    // Update button states
+    const prevPageBtn = document.querySelector('.prev-page');
+    const nextPageBtn = document.querySelector('.next-page');
+    
+    if (prevPageBtn) prevPageBtn.disabled = currentPage <= 1;
+    if (nextPageBtn) nextPageBtn.disabled = currentPage >= totalPages;
+}
+
+/**
+ * Render a page of robots
+ * @param {number} page - Page number to render
+ */
+async function renderRobotPage(page) {
+    // Update current page
+    currentPage = page;
+    
+    // Update pagination
+    updatePagination();
+    
+    // Get robots for this page
+    const startIndex = (page - 1) * ROBOTS_PER_PAGE;
+    const pageRobots = filteredRobots.slice(startIndex, startIndex + ROBOTS_PER_PAGE);
+    
+    // Get the container
+    const robotsContainer = document.getElementById('robots-container');
+    
+    if (!robotsContainer) return;
+    
+    // Show loading
+    robotsContainer.innerHTML = `
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading robots...</p>
+        </div>
+    `;
+    
+    // Clear the container
+    robotsContainer.innerHTML = '';
+    
+    // If no robots, show message
+    if (pageRobots.length === 0) {
+        robotsContainer.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-robot"></i>
+                <p>No robots found</p>
+                <button id="reset-search" class="btn btn-primary">Reset Filters</button>
+            </div>
+        `;
+        
+        const resetSearchBtn = document.getElementById('reset-search');
+        if (resetSearchBtn) {
+            resetSearchBtn.addEventListener('click', function() {
+                // Reset filters
+                document.getElementById('filter-category').value = '';
+                document.getElementById('filter-manufacturer').value = '';
+                document.getElementById('filter-year').value = '';
+                document.getElementById('encyclopedia-search-input').value = '';
+                
+                // Reset and render
+                filterRobots();
+                renderRobotPage(1);
+            });
+        }
+        
+        return;
     }
     
-    // Close modal
-    if (closeModal && submitRobotModal) {
-        closeModal.addEventListener('click', function() {
-            submitRobotModal.classList.remove('active');
-        });
+    // Get template
+    const template = document.getElementById('robot-card-template');
+    
+    // Create a fragment to avoid reflows
+    const fragment = document.createDocumentFragment();
+    
+    // Add robot cards
+    for (const robot of pageRobots) {
+        // Clone template
+        const robotCard = template.content.cloneNode(true);
+        
+        // Set title and description
+        robotCard.querySelector('.robot-card-title').textContent = robot.name;
+        robotCard.querySelector('.robot-card-description').textContent = robot.description || 'No description available';
+        
+        // Set category
+        robotCard.querySelector('.robot-card-category').textContent = robot.category || 'Uncategorized';
+        
+        // Set manufacturer
+        robotCard.querySelector('.robot-card-manufacturer').textContent = robot.manufacturer || 'Unknown Manufacturer';
+        
+        // Set link
+        robotCard.querySelector('a').href = `${robot.slug}.html`;
+        
+        // Set image (with fallback)
+        const imgElement = robotCard.querySelector('img');
+        imgElement.alt = robot.name;
+        imgElement.src = `../${robot.mainImage}`;
+        imgElement.onerror = function() {
+            this.src = '../images/robots/placeholder.jpg';
+        };
+        
+        // Add to fragment
+        fragment.appendChild(robotCard);
     }
     
-    // Submit form
-    if (submitRobotForm) {
-        submitRobotForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // In a real application, this would submit the form data to a server
-            alert('Thank you for your submission! Our team will review the information and add this robot to our database if appropriate.');
-            
-            // Close the modal
-            if (submitRobotModal) {
-                submitRobotModal.classList.remove('active');
-            }
-            
-            // Reset the form
-            submitRobotForm.reset();
-        });
-    }
+    // Add all cards to container
+    robotsContainer.appendChild(fragment);
 }
