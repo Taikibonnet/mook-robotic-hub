@@ -209,6 +209,25 @@ function initNavigation() {
     // Get "Learn More" buttons on robot cards
     const learnMoreButtons = document.querySelectorAll('.robot-card .btn-secondary');
     
+    // Get navigation links in the header
+    const navLinks = document.querySelectorAll('.nav-links a');
+    
+    // Handle navigation links with hash anchors (like #news)
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = href.substring(1);
+                const targetSection = document.getElementById(targetId);
+                
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+    });
+    
     // Encyclopedia button in hero section
     if (encyclopediaButton) {
         encyclopediaButton.addEventListener('click', function() {
@@ -220,7 +239,7 @@ function initNavigation() {
     if (newsButton) {
         newsButton.addEventListener('click', function() {
             // Scroll to news section
-            const newsSection = document.querySelector('.news-section');
+            const newsSection = document.getElementById('news');
             if (newsSection) {
                 newsSection.scrollIntoView({ behavior: 'smooth' });
             }
@@ -239,7 +258,7 @@ function initNavigation() {
         viewAllNewsButton.addEventListener('click', function() {
             // For now, just scroll to the news section
             // You might want to create a separate news page later
-            const newsSection = document.querySelector('.news-section');
+            const newsSection = document.getElementById('news');
             if (newsSection) {
                 newsSection.scrollIntoView({ behavior: 'smooth' });
             }
@@ -257,6 +276,17 @@ function initNavigation() {
             
             // Navigate to robot detail page
             window.location.href = `robots/${robotUrl}.html`;
+        });
+    });
+    
+    // Make the "Read More" links in news cards work too
+    const readMoreLinks = document.querySelectorAll('.news-content .read-more');
+    readMoreLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            // For now, we'll just show an alert since detailed news pages don't exist yet
+            const newsTitle = this.closest('.news-content').querySelector('h3').textContent;
+            alert(`You clicked to read more about "${newsTitle}". A detailed news page will be available soon!`);
         });
     });
 }
@@ -281,4 +311,4 @@ document.addEventListener('DOMContentLoaded', function() {
     if (heroImage) {
         heroImage.classList.add('slide-in-right');
     }
-}); 
+});
