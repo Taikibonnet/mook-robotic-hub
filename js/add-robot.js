@@ -245,7 +245,7 @@ function initFormSubmission() {
             addRobotForm.reset();
             resetFormPreviews();
             
-            // Redirect to robots list
+            // Redirect to encyclopedia page
             setTimeout(() => {
                 window.location.href = '../robots/index.html';
             }, 1500);
@@ -266,7 +266,7 @@ function initFormSubmission() {
                 sessionStorage.setItem('robotPreview', JSON.stringify(robotData));
                 
                 // Open preview in new tab/window
-                window.open('robot-preview.html', '_blank');
+                window.open(`../robots/robot.html?slug=preview&preview=true`, '_blank');
             } catch (error) {
                 console.error('Error creating preview:', error);
                 alert('There was an error generating the preview. Please try again.');
