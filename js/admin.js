@@ -53,15 +53,6 @@ function initAdminPanel() {
  * Check if user is authenticated as admin
  */
 function checkAdminAuth() {
-    // Temporarily add admin user for demo purposes
-    localStorage.setItem('mookRoboticsUser', JSON.stringify({
-        email: 'tgen.robotics@gmail.com',
-        name: 'Administrator',
-        isAdmin: true,
-        lastLogin: new Date().toISOString()
-    }));
-    
-    // Original auth check
     const user = JSON.parse(localStorage.getItem('mookRoboticsUser') || '{}');
     
     // If not logged in or not an admin, redirect
