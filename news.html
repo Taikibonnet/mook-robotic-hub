@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robotics News - MOOK Robotics Hub</title>
+    <title>News - MOOK Robotics Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/theme.css">
@@ -27,7 +27,7 @@
                 <a href="index.html">Home</a>
                 <a href="robots/index.html">Encyclopedia</a>
                 <a href="news.html" class="active">News</a>
-                <a href="about.html">About</a>
+                <a href="#about">About</a>
             </div>
             <div class="nav-auth">
                 <button id="login-btn" class="btn btn-primary">Login</button>
@@ -39,10 +39,10 @@
     <main>
         <section class="news-header">
             <div class="news-header-content">
-                <h1>Robotics News & Insights</h1>
-                <p>Stay updated with the latest developments, breakthroughs, and trends in the world of robotics.</p>
+                <h1>Latest in <span class="highlight">Robotics</span></h1>
+                <p>Stay updated with the most recent developments, breakthroughs, and trends in the world of robotics.</p>
                 <div class="news-search">
-                    <input type="text" id="news-search-input" placeholder="Search news articles...">
+                    <input type="text" id="news-search-input" placeholder="Search news...">
                     <button id="news-search-btn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -50,137 +50,56 @@
             </div>
         </section>
 
-        <section class="news-categories">
-            <div class="categories-container">
-                <button class="category-btn active" data-category="all">All</button>
-                <button class="category-btn" data-category="Research">Research</button>
-                <button class="category-btn" data-category="Healthcare">Healthcare</button>
-                <button class="category-btn" data-category="Artificial Intelligence">AI</button>
-                <button class="category-btn" data-category="Industry">Industry</button>
-                <button class="category-btn" data-category="Consumer">Consumer</button>
-            </div>
-        </section>
-
-        <section class="news-featured">
-            <div class="featured-article">
-                <div class="featured-image">
-                    <img src="images/news/soft-robotics.jpg" alt="Advances in Soft Robotics" onerror="this.src='images/news/default.jpg'">
+        <section class="news-filters">
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select id="filter-category">
+                        <option value="">All Categories</option>
+                        <option value="Research">Research</option>
+                        <option value="Industry">Industry</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Artificial Intelligence">Artificial Intelligence</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Education">Education</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
-                <div class="featured-content">
-                    <div class="article-category">Research</div>
-                    <h2>Advances in Soft Robotics</h2>
-                    <p class="article-meta">April 10, 2025 | By Dr. Sarah Chen</p>
-                    <p class="article-excerpt">New materials enable robots with unprecedented flexibility and adaptability, paving the way for applications in healthcare, search and rescue, and more. Researchers have developed a new type of soft actuator that mimics natural muscle movement, allowing for more human-like motion in robotic systems.</p>
-                    <a href="news/advances-in-soft-robotics.html" class="btn btn-primary">Read More</a>
+                <div class="filter-group">
+                    <label>Date</label>
+                    <select id="filter-date">
+                        <option value="">All Time</option>
+                        <option value="week">Past Week</option>
+                        <option value="month">Past Month</option>
+                        <option value="year">Past Year</option>
+                    </select>
                 </div>
+                <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+                <button id="reset-filters" class="btn">Reset</button>
             </div>
         </section>
 
         <section class="news-grid">
             <div class="news-container" id="news-container">
-                <!-- News Article 1 -->
-                <div class="news-card" data-category="Healthcare">
-                    <div class="news-card-image">
-                        <img src="images/news/healthcare-robots.jpg" alt="Robots in Healthcare" onerror="this.src='images/news/default.jpg'">
-                    </div>
-                    <div class="news-card-content">
-                        <div class="news-card-category">Healthcare</div>
-                        <h3 class="news-card-title">Robots in Healthcare</h3>
-                        <p class="news-card-meta">April 5, 2025 | By Michael Rodriguez</p>
-                        <p class="news-card-excerpt">How medical robots are transforming surgery and patient care across hospitals worldwide. From surgical assistants to automated medication dispensing, robots are helping healthcare professionals provide better care with greater precision and efficiency.</p>
-                        <a href="news/robots-in-healthcare.html" class="news-card-link">Read More</a>
-                    </div>
-                </div>
-
-                <!-- News Article 2 -->
-                <div class="news-card" data-category="Artificial Intelligence">
-                    <div class="news-card-image">
-                        <img src="images/news/ai-robotics.jpg" alt="AI Revolution in Robotics" onerror="this.src='images/news/default.jpg'">
-                    </div>
-                    <div class="news-card-content">
-                        <div class="news-card-category">Artificial Intelligence</div>
-                        <h3 class="news-card-title">AI Revolution in Robotics</h3>
-                        <p class="news-card-meta">March 28, 2025 | By Alex Patel</p>
-                        <p class="news-card-excerpt">The latest advancements in robot intelligence and decision-making are creating more autonomous and capable machines. Neural network architectures specifically designed for robotic control are enabling robots to learn complex tasks with minimal human supervision.</p>
-                        <a href="news/ai-revolution-in-robotics.html" class="news-card-link">Read More</a>
-                    </div>
-                </div>
-
-                <!-- News Article 3 -->
-                <div class="news-card" data-category="Industry">
-                    <div class="news-card-image">
-                        <img src="images/news/industrial-automation.jpg" alt="The Future of Industrial Automation" onerror="this.src='images/news/default.jpg'">
-                    </div>
-                    <div class="news-card-content">
-                        <div class="news-card-category">Industry</div>
-                        <h3 class="news-card-title">The Future of Industrial Automation</h3>
-                        <p class="news-card-meta">March 15, 2025 | By Jessica Li</p>
-                        <p class="news-card-excerpt">Industrial robots are evolving rapidly with enhanced mobility, collaborative capabilities, and intelligence. The next generation of factory automation is creating smarter production lines and safer workplaces.</p>
-                        <a href="news/future-industrial-automation.html" class="news-card-link">Read More</a>
-                    </div>
-                </div>
-
-                <!-- News Article 4 -->
-                <div class="news-card" data-category="Consumer">
-                    <div class="news-card-image">
-                        <img src="images/news/home-robots.jpg" alt="Home Robots Go Mainstream" onerror="this.src='images/news/default.jpg'">
-                    </div>
-                    <div class="news-card-content">
-                        <div class="news-card-category">Consumer</div>
-                        <h3 class="news-card-title">Home Robots Go Mainstream</h3>
-                        <p class="news-card-meta">March 5, 2025 | By Marcus Johnson</p>
-                        <p class="news-card-excerpt">Advanced home robots are becoming increasingly common, with new models offering unprecedented functionality and integration with smart home systems. The latest generation can perform multiple tasks, recognize family members, and even anticipate needs.</p>
-                        <a href="news/home-robots-mainstream.html" class="news-card-link">Read More</a>
-                    </div>
-                </div>
-
-                <!-- News Article 5 -->
-                <div class="news-card" data-category="Research">
-                    <div class="news-card-image">
-                        <img src="images/news/biomimetic-robotics.jpg" alt="Biomimetic Robotics Breakthrough" onerror="this.src='images/news/default.jpg'">
-                    </div>
-                    <div class="news-card-content">
-                        <div class="news-card-category">Research</div>
-                        <h3 class="news-card-title">Biomimetic Robotics Breakthrough</h3>
-                        <p class="news-card-meta">February 25, 2025 | By Dr. Anita Gupta</p>
-                        <p class="news-card-excerpt">Researchers have created a new generation of robots that mimic biological systems with unprecedented accuracy. These nature-inspired designs are solving complex problems in movement, sensing, and adaptation to different environments.</p>
-                        <a href="news/biomimetic-robotics-breakthrough.html" class="news-card-link">Read More</a>
-                    </div>
-                </div>
-
-                <!-- News Article 6 -->
-                <div class="news-card" data-category="Artificial Intelligence">
-                    <div class="news-card-image">
-                        <img src="images/news/robot-ethics.jpg" alt="The Ethics of Intelligent Robots" onerror="this.src='images/news/default.jpg'">
-                    </div>
-                    <div class="news-card-content">
-                        <div class="news-card-category">Artificial Intelligence</div>
-                        <h3 class="news-card-title">The Ethics of Intelligent Robots</h3>
-                        <p class="news-card-meta">February 15, 2025 | By Prof. Robert Chen</p>
-                        <p class="news-card-excerpt">As robots become more autonomous and capable of making decisions, ethical frameworks are becoming crucial. Experts are developing new guidelines for creating responsible AI systems that can safely operate in human environments.</p>
-                        <a href="news/ethics-intelligent-robots.html" class="news-card-link">Read More</a>
-                    </div>
+                <!-- News will be added here dynamically -->
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading news articles...</p>
                 </div>
             </div>
         </section>
 
-        <section class="newsletter">
-            <div class="newsletter-container">
-                <div class="newsletter-content">
-                    <h2>Subscribe to Our Newsletter</h2>
-                    <p>Stay updated with the latest news and developments in the world of robotics. We'll send you a monthly digest of our best articles, plus exclusive content.</p>
-                    <form id="newsletter-form">
-                        <div class="form-group">
-                            <input type="email" id="newsletter-email" placeholder="Your email address" required>
-                            <button type="submit" class="btn btn-primary">Subscribe</button>
-                        </div>
-                        <p class="form-note">We respect your privacy and will never share your information.</p>
-                    </form>
-                </div>
-                <div class="newsletter-image">
-                    <img src="images/newsletter.jpg" alt="Newsletter" onerror="this.src='images/news/default.jpg'">
-                </div>
+        <section class="pagination">
+            <button class="pagination-btn prev-page" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <div class="pagination-info">
+                Page <span id="current-page">1</span> of <span id="total-pages">1</span>
             </div>
+            <button class="pagination-btn next-page" disabled>
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
         </section>
     </main>
 
@@ -202,14 +121,14 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="robots/index.html">Encyclopedia</a></li>
                     <li><a href="news.html">News</a></li>
-                    <li><a href="about.html">About</a></li>
+                    <li><a href="#about">About</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Contact</h3>
                 <ul>
                     <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
-                    <li><a href="contact.html">Contact Form</a></li>
+                    <li><a href="#contact">Contact Form</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -217,7 +136,7 @@
                 <ul>
                     <li><a href="#login">Login</a></li>
                     <li><a href="#signup">Sign Up</a></li>
-                    <li><a href="my-account.html">My Account</a></li>
+                    <li><a href="#my-account">My Account</a></li>
                     <li><a href="admin/dashboard.html">Admin</a></li>
                 </ul>
             </div>
@@ -227,8 +146,27 @@
         </div>
     </footer>
 
+    <!-- News card template (hidden) -->
+    <template id="news-card-template">
+        <div class="news-card">
+            <div class="news-card-image">
+                <img src="" alt="">
+            </div>
+            <div class="news-card-content">
+                <div class="news-card-category"></div>
+                <h3 class="news-card-title"></h3>
+                <p class="news-card-date"></p>
+                <p class="news-card-summary"></p>
+                <div class="news-card-footer">
+                    <span class="news-card-author"></span>
+                    <a href="#" class="btn btn-outline btn-sm">Read More</a>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <script src="js/main.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/news.js"></script>
+    <script type="module" src="js/news-list.js"></script>
 </body>
 </html>
