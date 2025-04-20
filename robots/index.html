@@ -83,8 +83,8 @@
             </div>
         </section>
 
-        <section class="robots-grid">
-            <div class="robots-container" id="robots-container">
+        <section class="robots-section">
+            <div class="robot-cards" id="robots-container">
                 <!-- Robots will be added here dynamically -->
                 <div class="loading-container">
                     <div class="loading-spinner"></div>
@@ -152,18 +152,14 @@
     <!-- Robot card template (hidden) -->
     <template id="robot-card-template">
         <div class="robot-card">
-            <div class="robot-card-image">
-                <img src="" alt="">
-            </div>
-            <div class="robot-card-content">
-                <div class="robot-card-category"></div>
-                <h3 class="robot-card-title"></h3>
-                <p class="robot-card-description"></p>
-                <div class="robot-card-footer">
-                    <div class="robot-card-manufacturer"></div>
-                    <a href="#" class="btn btn-outline btn-sm">View Details</a>
+            <div class="robot-image">
+                <div class="placeholder">
+                    <img src="" alt="">
                 </div>
             </div>
+            <h3></h3>
+            <p></p>
+            <button class="btn btn-secondary">Learn More</button>
         </div>
     </template>
 
