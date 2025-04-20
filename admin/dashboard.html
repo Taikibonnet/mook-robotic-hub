@@ -98,327 +98,129 @@
             </header>
 
             <div class="admin-content">
-                <!-- Stats Cards -->
-                <section class="stats-cards">
+                <!-- Stats Overview -->
+                <section class="stats-overview">
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-robot"></i>
                         </div>
-                        <div class="stat-info">
+                        <div class="stat-content">
                             <h3>Total Robots</h3>
-                            <p>42</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Registered Users</h3>
-                            <p>156</p>
+                            <p class="stat-number" id="total-robots">0</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-eye"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3>Page Views</h3>
-                            <p>2,843</p>
+                        <div class="stat-content">
+                            <h3>Total Visits</h3>
+                            <p class="stat-number" id="total-visits">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Registered Users</h3>
+                            <p class="stat-number" id="total-users">0</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <div class="stat-info">
+                        <div class="stat-content">
                             <h3>News Articles</h3>
-                            <p>18</p>
+                            <p class="stat-number" id="total-news">3</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Robots -->
+                <section class="admin-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Robots</h2>
+                        <div class="panel-actions">
+                            <a href="add-robot.html" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Robot
+                            </a>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <div class="table-container">
+                            <table class="admin-table" id="robots-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Manufacturer</th>
+                                        <th>Category</th>
+                                        <th>Year</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Robot rows will be added here dynamically -->
+                                    <tr>
+                                        <td colspan="6">
+                                            <div class="loading-message">
+                                                <i class="fas fa-spinner fa-spin"></i>
+                                                <p>Loading robots...</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
 
                 <!-- Recent Activity -->
-                <section class="admin-panel recent-activity">
-                    <h2 class="panel-title">Recent Activity</h2>
+                <section class="admin-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Recent Activity</h2>
+                    </div>
                     <div class="panel-content">
                         <ul class="activity-list">
                             <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-user-plus"></i>
+                                <div class="activity-icon activity-add">
+                                    <i class="fas fa-plus"></i>
                                 </div>
-                                <div class="activity-details">
-                                    <p class="activity-text">New user registered: <strong>RobotFan42</strong></p>
-                                    <p class="activity-time">10 minutes ago</p>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-edit"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p class="activity-text">Robot entry updated: <strong>Atlas</strong></p>
-                                    <p class="activity-time">1 hour ago</p>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-comment"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p class="activity-text">New comment on <strong>Sophia</strong> by <strong>TechGuru</strong></p>
-                                    <p class="activity-time">3 hours ago</p>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-plus-circle"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p class="activity-text">New robot added: <strong>Stretch</strong></p>
-                                    <p class="activity-time">Yesterday</p>
-                                </div>
-                            </li>
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-newspaper"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p class="activity-text">New article published: <strong>The Future of Robot Ethics</strong></p>
+                                <div class="activity-content">
+                                    <p class="activity-text">New robot <strong>Atlas</strong> was added</p>
                                     <p class="activity-time">2 days ago</p>
                                 </div>
                             </li>
+                            <li class="activity-item">
+                                <div class="activity-icon activity-edit">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">Robot <strong>Sophia</strong> was updated</p>
+                                    <p class="activity-time">3 days ago</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon activity-user">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">New user registered</p>
+                                    <p class="activity-time">5 days ago</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon activity-news">
+                                    <i class="fas fa-newspaper"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">New article <strong>Robots in Healthcare</strong> was published</p>
+                                    <p class="activity-time">1 week ago</p>
+                                </div>
+                            </li>
                         </ul>
-                    </div>
-                </section>
-
-                <!-- Admin Panels Row -->
-                <div class="admin-panels-row">
-                    <!-- Popular Robots -->
-                    <section class="admin-panel popular-robots">
-                        <h2 class="panel-title">Popular Robots</h2>
-                        <div class="panel-content">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Robot</th>
-                                        <th>Views</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="robot-list-item">
-                                                <div class="list-item-img placeholder"></div>
-                                                <span>Atlas</span>
-                                            </div>
-                                        </td>
-                                        <td>842</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="robot-list-item">
-                                                <div class="list-item-img placeholder"></div>
-                                                <span>Sophia</span>
-                                            </div>
-                                        </td>
-                                        <td>756</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="robot-list-item">
-                                                <div class="list-item-img placeholder"></div>
-                                                <span>Spot</span>
-                                            </div>
-                                        </td>
-                                        <td>531</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="robot-list-item">
-                                                <div class="list-item-img placeholder"></div>
-                                                <span>ASIMO</span>
-                                            </div>
-                                        </td>
-                                        <td>487</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="robots.html" class="view-all-link">View All Robots</a>
-                        </div>
-                    </section>
-
-                    <!-- Recent Users -->
-                    <section class="admin-panel recent-users">
-                        <h2 class="panel-title">Recent Users</h2>
-                        <div class="panel-content">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Joined</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="user-list-item">
-                                                <div class="user-avatar">RF</div>
-                                                <div class="user-info">
-                                                    <span class="user-name">RobotFan42</span>
-                                                    <span class="user-email">robotfan42@example.com</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>10 min ago</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="table-action message">
-                                                    <i class="fas fa-envelope"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-list-item">
-                                                <div class="user-avatar">TG</div>
-                                                <div class="user-info">
-                                                    <span class="user-name">TechGuru</span>
-                                                    <span class="user-email">techguru@example.com</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>3 hours ago</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="table-action message">
-                                                    <i class="fas fa-envelope"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-list-item">
-                                                <div class="user-avatar">RE</div>
-                                                <div class="user-info">
-                                                    <span class="user-name">RobotEnthusiast</span>
-                                                    <span class="user-email">robotlover@example.com</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Yesterday</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="table-action message">
-                                                    <i class="fas fa-envelope"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-list-item">
-                                                <div class="user-avatar">AI</div>
-                                                <div class="user-info">
-                                                    <span class="user-name">AIResearcher</span>
-                                                    <span class="user-email">airesearch@example.com</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>3 days ago</td>
-                                        <td>
-                                            <div class="table-actions">
-                                                <a href="#" class="table-action view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="table-action message">
-                                                    <i class="fas fa-envelope"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="manage-users.html" class="view-all-link">View All Users</a>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- Quick Actions -->
-                <section class="admin-panel quick-actions">
-                    <h2 class="panel-title">Quick Actions</h2>
-                    <div class="panel-content">
-                        <div class="action-buttons">
-                            <a href="add-robot.html" class="action-button">
-                                <i class="fas fa-robot"></i>
-                                <span>Add Robot</span>
-                            </a>
-                            <a href="add-news.html" class="action-button">
-                                <i class="fas fa-newspaper"></i>
-                                <span>Add News</span>
-                            </a>
-                            <a href="#" class="action-button">
-                                <i class="fas fa-cog"></i>
-                                <span>Settings</span>
-                            </a>
-                            <a href="#" class="action-button">
-                                <i class="fas fa-download"></i>
-                                <span>Export Data</span>
-                            </a>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -427,5 +229,6 @@
 
     <script src="../js/admin.js"></script>
     <script src="../js/auth.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>
