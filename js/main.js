@@ -281,4 +281,4 @@ document.addEventListener('DOMContentLoaded', function() {
     if (heroImage) {
         heroImage.classList.add('slide-in-right');
     }
-});
+}); 
