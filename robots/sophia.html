@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sophia - MOOK Robotics Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/encyclopedia.css">
+    <link rel="stylesheet" href="../css/robot-detail.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
+                <svg width="50" height="50" viewBox="0 0 50 50" class="logo-svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                    <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
+                    <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
+                </svg>
+                <span>MOOK Robotics Hub</span>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html" class="active">Encyclopedia</a>
+                <a href="../news.html">News</a>
+                <a href="../about.html">About</a>
+            </div>
+            <div class="nav-auth">
+                <button id="login-btn" class="btn btn-primary">Login</button>
+                <button id="signup-btn" class="btn btn-outline">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="robot-breadcrumb">
+            <div class="breadcrumb-container">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="index.html">Encyclopedia</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Sophia</span>
+            </div>
+        </div>
+
+        <section class="robot-hero">
+            <div class="robot-hero-container">
+                <div class="robot-hero-image">
+                    <img src="../images/robots/sophia.jpg" alt="Sophia" onerror="this.src='../images/robots/placeholder.jpg'">
+                </div>
+                <div class="robot-hero-info">
+                    <div class="robot-categories">
+                        <span class="robot-category">Humanoid</span>
+                        <span class="robot-year">2016</span>
+                    </div>
+                    <h1>Sophia</h1>
+                    <p class="robot-manufacturer">Hanson Robotics</p>
+                    <p class="robot-description">Advanced humanoid robot with expressive face and conversational AI</p>
+                    <div class="robot-actions">
+                        <a href="#specifications" class="btn btn-primary">Specifications</a>
+                        <a href="#features" class="btn btn-outline">Features</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="robot-content-container">
+            <div class="robot-main-content">
+                <section id="overview" class="robot-section">
+                    <h2>Overview</h2>
+                    <div class="robot-content">
+                        <p>Sophia is a social humanoid robot developed by Hanson Robotics. She was designed to respond to questions and has been interviewed around the world. The robot, modeled after actress Audrey Hepburn, is known for her human-like appearance and behavior compared to previous robotic variants.</p>
+                        <p>Sophia uses artificial intelligence, visual data processing, and facial recognition. She also imitates human gestures and facial expressions and is able to answer certain questions and to make simple conversations on predefined topics.</p>
+                    </div>
+                </section>
+
+                <section id="features" class="robot-section">
+                    <h2>Features</h2>
+                    <ul class="features-list">
+                        <li>Natural language processing</li>
+                        <li>Facial recognition</li>
+                        <li>Emotional expression</li>
+                    </ul>
+                </section>
+
+                <section id="specifications" class="robot-section">
+                    <h2>Specifications</h2>
+                    <div class="specs-container">
+                        <div class="specs-column">
+                            <div class="spec-group">
+                                <h3>Technical Details</h3>
+                                <div class="spec-item">
+                                    <span class="spec-label">Height</span>
+                                    <span class="spec-value">Variable</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Weight</span>
+                                    <span class="spec-value">Not disclosed</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Power Source</span>
+                                    <span class="spec-value">Electric</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Battery Life</span>
+                                    <span class="spec-value">Not disclosed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="gallery" class="robot-section">
+                    <h2>Image Gallery</h2>
+                    <div class="gallery-grid">
+                        <div class="gallery-item">
+                            <img src="../images/robots/sophia-1.jpg" alt="Sophia" onerror="this.src='../images/robots/placeholder.jpg'">
+                        </div>
+                        <div class="gallery-item">
+                            <img src="../images/robots/sophia-2.jpg" alt="Sophia" onerror="this.src='../images/robots/placeholder.jpg'">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="robot-sidebar">
+                <div class="sidebar-section">
+                    <h3>Quick Facts</h3>
+                    <ul class="quick-facts">
+                        <li>
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="fact-label">Year:</span>
+                            <span class="fact-value">2016</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-building"></i>
+                            <span class="fact-label">Manufacturer:</span>
+                            <span class="fact-value">Hanson Robotics</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-tag"></i>
+                            <span class="fact-label">Category:</span>
+                            <span class="fact-value">Humanoid</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>On This Page</h3>
+                    <ul class="page-nav">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#specifications">Specifications</a></li>
+                        <li><a href="#gallery">Image Gallery</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>MOOK Robotics Hub</h3>
+                <p>Your interactive guide to the world of robotics</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="index.html">Encyclopedia</a></li>
+                    <li><a href="../news.html">News</a></li>
+                    <li><a href="../about.html">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
+                    <li><a href="../contact.html">Contact Form</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#signup">Sign Up</a></li>
+                    <li><a href="../my-account.html">My Account</a></li>
+                    <li><a href="../admin/dashboard.html">Admin</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script type="module" src="../js/robot-detail.js"></script>
+</body>
+</html>
