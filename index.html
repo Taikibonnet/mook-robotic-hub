@@ -272,44 +272,4 @@
     <script src="js/auth.js"></script>
     <script src="js/ai-assistant.js"></script>
 </body>
-    // Add this JavaScript code at the end of your HTML file, just before the closing </body> tag
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Find all buttons that should navigate to sections
-    // You'll need to give your buttons specific IDs or classes
-    
-    // Example: If you have a button with ID "encyclopedia-btn"
-    const encyclopediaBtn = document.getElementById('encyclopedia-btn');
-    if (encyclopediaBtn) {
-        encyclopediaBtn.addEventListener('click', function() {
-            // Navigate to the encyclopedia section
-            // Option 1: If the section is on the same page, scroll to it
-            const encyclopediaSection = document.getElementById('encyclopedia');
-            if (encyclopediaSection) {
-                encyclopediaSection.scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            // Option 2: If the section is on another page, navigate to it
-            // window.location.href = 'encyclopedia.html';
-        });
-    }
-    
-    // Example: If you have a button with ID "news-btn"
-    const newsBtn = document.getElementById('news-btn');
-    if (newsBtn) {
-        newsBtn.addEventListener('click', function() {
-            // Navigate to the news section
-            // Option 1: If the section is on the same page, scroll to it
-            const newsSection = document.getElementById('news');
-            if (newsSection) {
-                newsSection.scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            // Option 2: If the section is on another page, navigate to it
-            // window.location.href = 'news.html';
-        });
-    }
-    
-    // You can add more button handlers here as needed
-});
 </html>
