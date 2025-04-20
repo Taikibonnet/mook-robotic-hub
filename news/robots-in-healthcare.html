@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robots in Healthcare - MOOK Robotics Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/news.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
+                <svg width="50" height="50" viewBox="0 0 50 50" class="logo-svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                    <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
+                    <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
+                </svg>
+                <span>MOOK Robotics Hub</span>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../robots/index.html">Encyclopedia</a>
+                <a href="../news.html" class="active">News</a>
+                <a href="../about.html">About</a>
+            </div>
+            <div class="nav-auth">
+                <button id="login-btn" class="btn btn-primary">Login</button>
+                <button id="signup-btn" class="btn btn-outline">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="news-breadcrumb">
+            <div class="breadcrumb-container">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../news.html">News</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Robots in Healthcare</span>
+            </div>
+        </div>
+
+        <article class="news-article">
+            <header class="article-header">
+                <h1>Robots in Healthcare</h1>
+                <div class="article-meta">
+                    <span class="article-date">
+                        <i class="fas fa-calendar-alt"></i> April 5, 2025
+                    </span>
+                    <span class="article-author">
+                        <i class="fas fa-user"></i> Michael Rodriguez
+                    </span>
+                    <span class="article-category">
+                        <i class="fas fa-folder"></i> Healthcare
+                    </span>
+                </div>
+            </header>
+
+            <div class="article-featured-image">
+                <img src="../images/news/healthcare-robots.jpg" alt="Robots in Healthcare" onerror="this.src='../images/news/placeholder.jpg'">
+            </div>
+
+            <div class="article-content">
+                <p>How medical robots are transforming surgery and patient care across hospitals worldwide. From surgical assistants to automated medication dispensing, robots are helping healthcare professionals provide better care with greater precision and efficiency.</p>
+                <p>Recent studies have shown that robot-assisted surgeries can lead to shorter recovery times and reduced complications in certain procedures.</p>
+                
+                <h2>The Rise of Robotic Surgery</h2>
+                <p>Robotic surgery systems like the da Vinci Surgical System have revolutionized minimally invasive procedures. These systems provide surgeons with enhanced dexterity, precision, and control while performing complex operations through small incisions. This results in less pain, reduced blood loss, and faster recovery for patients.</p>
+                
+                <h2>Patient Care Automation</h2>
+                <p>Beyond the operating room, robots are improving everyday patient care. Medication dispensing robots ensure accuracy in drug administration, reducing human error. Transport robots move supplies, lab samples, and even food throughout healthcare facilities, allowing human staff to focus on direct patient care.</p>
+                
+                <h2>Rehabilitation and Therapy</h2>
+                <p>Robotic exoskeletons and therapy devices are helping patients recover from strokes, spinal cord injuries, and other conditions that affect mobility. These devices provide consistent, measurable therapy sessions and can adapt to a patient's progress over time.</p>
+                
+                <h2>Future Trends</h2>
+                <p>As artificial intelligence and robotics continue to advance, we can expect to see even more sophisticated healthcare robots. Remote surgical systems may allow specialists to perform procedures from anywhere in the world, bringing expert care to underserved regions. Nanorobots might someday deliver targeted treatments directly to diseased cells, minimizing side effects.</p>
+                
+                <p>The integration of robotics into healthcare represents not just a technological shift but a fundamental change in how medical care is delivered. As these technologies become more affordable and accessible, their benefits will extend to more patients around the globe.</p>
+            </div>
+
+            <footer class="article-footer">
+                <div class="article-tags">
+                    <a href="../news.html?tag=healthcare" class="tag">healthcare</a>
+                    <a href="../news.html?tag=surgery" class="tag">surgery</a>
+                    <a href="../news.html?tag=medical-robots" class="tag">medical-robots</a>
+                </div>
+                <div class="article-share">
+                    <span>Share:</span>
+                    <a href="#" class="share-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="share-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="share-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="share-link"><i class="fas fa-envelope"></i></a>
+                </div>
+            </footer>
+        </article>
+
+        <section class="related-articles">
+            <h2>Related Articles</h2>
+            <div class="related-articles-container" id="related-articles-container">
+                <!-- Related articles will be added here dynamically -->
+                <div class="news-card">
+                    <div class="news-card-image">
+                        <img src="../images/news/soft-robotics.jpg" alt="Advances in Soft Robotics" onerror="this.src='../images/news/placeholder.jpg'">
+                    </div>
+                    <div class="news-card-content">
+                        <div class="news-card-category">Research</div>
+                        <h3 class="news-card-title">Advances in Soft Robotics</h3>
+                        <p class="news-card-date">April 10, 2025</p>
+                        <p class="news-card-summary">New materials enable robots with unprecedented flexibility and adaptability...</p>
+                        <div class="news-card-footer">
+                            <span class="news-card-author">Dr. Sarah Chen</span>
+                            <a href="advances-in-soft-robotics.html" class="btn btn-outline btn-sm">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <div class="news-card-image">
+                        <img src="../images/news/ai-robotics.jpg" alt="AI Revolution in Robotics" onerror="this.src='../images/news/placeholder.jpg'">
+                    </div>
+                    <div class="news-card-content">
+                        <div class="news-card-category">Artificial Intelligence</div>
+                        <h3 class="news-card-title">AI Revolution in Robotics</h3>
+                        <p class="news-card-date">March 28, 2025</p>
+                        <p class="news-card-summary">The latest advancements in robot intelligence and decision-making are creating more autonomous and capable machines...</p>
+                        <div class="news-card-footer">
+                            <span class="news-card-author">Alex Patel</span>
+                            <a href="ai-revolution-in-robotics.html" class="btn btn-outline btn-sm">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>MOOK Robotics Hub</h3>
+                <p>Your interactive guide to the world of robotics</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../robots/index.html">Encyclopedia</a></li>
+                    <li><a href="../news.html">News</a></li>
+                    <li><a href="../about.html">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
+                    <li><a href="../contact.html">Contact Form</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#signup">Sign Up</a></li>
+                    <li><a href="../my-account.html">My Account</a></li>
+                    <li><a href="../admin/dashboard.html">Admin</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script type="module" src="../js/news-detail.js"></script>
+</body>
+</html>
