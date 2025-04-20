@@ -1,8 +1,8 @@
 /**
  * MOOK Robotics Hub - News Service
  * 
- * This file contains functions for managing news data,
- * including creating, updating, and retrieving news articles.
+ * This file contains functions for managing news article data,
+ * including creating, updating, and retrieving news information.
  * It uses localStorage for data persistence in this static implementation.
  */
 
@@ -67,7 +67,7 @@ function createNews(newsData) {
     const news = getAllNews();
     
     // Generate ID and slug if not provided
-    const newArticle = {
+    const newNews = {
         ...newsData,
         id: newsData.id || `news-${Date.now()}`,
         slug: newsData.slug || createSlug(newsData.title),
@@ -75,15 +75,15 @@ function createNews(newsData) {
     };
     
     // Add to array
-    news.push(newArticle);
+    news.push(newNews);
     
     // Save to localStorage (excluding default news)
     saveNewsToStorage(news);
     
     // Generate HTML file for the news article
-    generateNewsHtml(newArticle);
+    generateNewsHtml(newNews);
     
-    return newArticle;
+    return newNews;
 }
 
 /**
@@ -100,7 +100,7 @@ function updateNews(id, newsData) {
         return null;
     }
     
-    // Update news article data
+    // Update news data
     news[index] = {
         ...news[index],
         ...newsData,
@@ -131,42 +131,17 @@ function deleteNews(id) {
         return false;
     }
     
-    // Get the news article to be deleted
-    const deletedArticle = news[index];
-    
     // Remove from array
     news.splice(index, 1);
     
     // Save to localStorage
     saveNewsToStorage(news);
     
-    // Here we would ideally delete the HTML file, but we can't do that in a static site
-    // We would need to mark it as deleted in some way
-    
     return true;
 }
 
 /**
- * Get most recent news articles
- * @param {number} count - Number of articles to return
- * @returns {Array} Array of recent news articles
- */
-function getRecentNews(count = 3) {
-    const news = getAllNews();
-    
-    // Sort by publish date (newest first)
-    const sortedNews = [...news].sort((a, b) => {
-        const dateA = new Date(a.publishDate);
-        const dateB = new Date(b.publishDate);
-        return dateB - dateA;
-    });
-    
-    // Return the specified number of articles
-    return sortedNews.slice(0, count);
-}
-
-/**
- * Save news articles to localStorage (excluding default news)
+ * Save news to localStorage (excluding default news)
  * @param {Array} news - Full array of news articles
  */
 function saveNewsToStorage(news) {
@@ -199,36 +174,43 @@ function createSlug(title) {
 
 /**
  * Generate HTML file for a news article
- * @param {Object} article - News article data
+ * @param {Object} news - News article data
  * @returns {boolean} Success status
  */
-function generateNewsHtml(article) {
+function generateNewsHtml(news) {
     // In a real backend system, this would create an actual file
     // For now, we'll store the HTML content in localStorage
-    // When the page is loaded, we'll check if there's HTML content for the requested article
     
-    // Create a basic HTML template using the article's data
-    const html = generateNewsHtmlContent(article);
+    // Create a basic HTML template using the news article's data
+    const html = generateNewsHtmlContent(news);
     
     // Store in localStorage
-    localStorage.setItem(`mookRoboticsNewsHtml_${article.slug}`, html);
+    localStorage.setItem(`mookRoboticsNewsHtml_${news.slug}`, html);
     
     return true;
 }
 
 /**
  * Generate HTML content for a news article
- * @param {Object} article - News article data
+ * @param {Object} news - News article data
  * @returns {string} HTML content
  */
-function generateNewsHtmlContent(article) {
+function generateNewsHtmlContent(news) {
+    // Format the publish date
+    const publishDate = new Date(news.publishDate);
+    const formattedDate = publishDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
     // This is a simplified template - in a real implementation, this would be more comprehensive
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${article.title} - MOOK Robotics Hub</title>
+    <title>${news.title} - MOOK Robotics Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/theme.css">
@@ -268,55 +250,55 @@ function generateNewsHtmlContent(article) {
                 <i class="fas fa-chevron-right"></i>
                 <a href="../news.html">News</a>
                 <i class="fas fa-chevron-right"></i>
-                <span>${article.title}</span>
+                <span>${news.title}</span>
             </div>
         </div>
 
         <article class="news-article">
-            <div class="article-header">
-                <h1>${article.title}</h1>
+            <header class="article-header">
+                <h1>${news.title}</h1>
                 <div class="article-meta">
-                    <span class="article-date">${formatDate(article.publishDate)}</span>
-                    <span class="article-author">By ${article.author}</span>
-                    <span class="article-category">${article.category}</span>
+                    <span class="article-date">
+                        <i class="fas fa-calendar-alt"></i> ${formattedDate}
+                    </span>
+                    <span class="article-author">
+                        <i class="fas fa-user"></i> ${news.author || 'MOOK Editorial Team'}
+                    </span>
+                    <span class="article-category">
+                        <i class="fas fa-folder"></i> ${news.category || 'General'}
+                    </span>
                 </div>
+            </header>
+
+            <div class="article-featured-image">
+                <img src="../${news.image}" alt="${news.title}" onerror="this.src='../images/news/placeholder.jpg'">
             </div>
-            
-            <div class="article-image">
-                <img src="../${article.image}" alt="${article.title}" onerror="this.src='../images/news/placeholder.jpg'">
-            </div>
-            
+
             <div class="article-content">
-                ${article.content}
+                ${news.content}
             </div>
-            
-            <div class="article-footer">
+
+            <footer class="article-footer">
                 <div class="article-tags">
-                    ${article.tags ? article.tags.map(tag => `<span class="article-tag">${tag}</span>`).join('') : ''}
+                    ${news.tags ? (typeof news.tags === 'string' ? 
+                      news.tags.split(',').map(tag => `<a href="../news.html?tag=${tag.trim()}" class="tag">${tag.trim()}</a>`).join('') : 
+                      news.tags.map(tag => `<a href="../news.html?tag=${tag}" class="tag">${tag}</a>`).join('')) : ''}
                 </div>
                 <div class="article-share">
                     <span>Share:</span>
                     <a href="#" class="share-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="share-link"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="share-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="share-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="share-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="share-link"><i class="fas fa-envelope"></i></a>
                 </div>
-            </div>
+            </footer>
         </article>
-        
-        <section class="related-news">
+
+        <section class="related-articles">
             <h2>Related Articles</h2>
-            <div class="related-news-container">
-                <!-- This would be dynamically populated in a real implementation -->
-                <div class="news-card">
-                    <div class="news-card-image">
-                        <img src="../images/news/placeholder.jpg" alt="Related article">
-                    </div>
-                    <div class="news-card-content">
-                        <h3 class="news-card-title">Related Article Title</h3>
-                        <p class="news-card-excerpt">Brief excerpt from the related article...</p>
-                        <a href="#" class="read-more">Read More</a>
-                    </div>
-                </div>
+            <div class="related-articles-container" id="related-articles-container">
+                <!-- Related articles will be added here dynamically -->
+                <p>Loading related articles...</p>
             </div>
         </section>
     </main>
@@ -372,14 +354,21 @@ function generateNewsHtmlContent(article) {
 }
 
 /**
- * Format date for display
- * @param {string} dateString - ISO date string
- * @returns {string} Formatted date
+ * Check if news HTML exists
+ * @param {string} slug - News article slug
+ * @returns {boolean} True if HTML exists
  */
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+function newsHtmlExists(slug) {
+    return localStorage.getItem(`mookRoboticsNewsHtml_${slug}`) !== null;
+}
+
+/**
+ * Get news HTML content
+ * @param {string} slug - News article slug
+ * @returns {string|null} HTML content or null if not found
+ */
+function getNewsHtml(slug) {
+    return localStorage.getItem(`mookRoboticsNewsHtml_${slug}`);
 }
 
 // Export functions
@@ -390,5 +379,6 @@ export {
     createNews,
     updateNews,
     deleteNews,
-    getRecentNews
+    newsHtmlExists,
+    getNewsHtml
 };
