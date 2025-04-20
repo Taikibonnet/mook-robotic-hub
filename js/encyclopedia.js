@@ -6,7 +6,6 @@
  */
 
 import { getAllRobots } from './robot-service.js';
-import { getValidImagePath } from './file-util.js';
 
 // Constants
 const ROBOTS_PER_PAGE = 12;
@@ -143,7 +142,7 @@ function filterRobots(searchTerm = '') {
         }
         
         // Apply year filter
-        if (yearFilter && robot.year.toString() !== yearFilter) {
+        if (yearFilter && robot.year && robot.year.toString() !== yearFilter) {
             return false;
         }
         
@@ -170,36 +169,40 @@ function updateFilterOptions() {
     const manufacturers = [...new Set(allRobots.map(robot => robot.manufacturer).filter(Boolean))];
     const manufacturerSelect = document.getElementById('filter-manufacturer');
     
-    // Clear existing options (except the first)
-    while (manufacturerSelect.options.length > 1) {
-        manufacturerSelect.remove(1);
+    if (manufacturerSelect) {
+        // Clear existing options (except the first)
+        while (manufacturerSelect.options.length > 1) {
+            manufacturerSelect.remove(1);
+        }
+        
+        // Add manufacturer options
+        manufacturers.forEach(manufacturer => {
+            const option = document.createElement('option');
+            option.value = manufacturer;
+            option.textContent = manufacturer;
+            manufacturerSelect.appendChild(option);
+        });
     }
-    
-    // Add manufacturer options
-    manufacturers.forEach(manufacturer => {
-        const option = document.createElement('option');
-        option.value = manufacturer;
-        option.textContent = manufacturer;
-        manufacturerSelect.appendChild(option);
-    });
     
     // Get unique years
     const years = [...new Set(allRobots.map(robot => robot.year).filter(Boolean))];
     years.sort((a, b) => b - a); // Sort descending
     const yearSelect = document.getElementById('filter-year');
     
-    // Clear existing options (except the first)
-    while (yearSelect.options.length > 1) {
-        yearSelect.remove(1);
+    if (yearSelect) {
+        // Clear existing options (except the first)
+        while (yearSelect.options.length > 1) {
+            yearSelect.remove(1);
+        }
+        
+        // Add year options
+        years.forEach(year => {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        });
     }
-    
-    // Add year options
-    years.forEach(year => {
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
-    });
 }
 
 /**
@@ -249,73 +252,74 @@ async function renderRobotPage(page) {
         </div>
     `;
     
-    // Clear the container
-    robotsContainer.innerHTML = '';
-    
-    // If no robots, show message
-    if (pageRobots.length === 0) {
-        robotsContainer.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-robot"></i>
-                <p>No robots found</p>
-                <button id="reset-search" class="btn btn-primary">Reset Filters</button>
-            </div>
-        `;
+    // Clear the container after a short delay to show loading
+    setTimeout(() => {
+        // Clear the container
+        robotsContainer.innerHTML = '';
         
-        const resetSearchBtn = document.getElementById('reset-search');
-        if (resetSearchBtn) {
-            resetSearchBtn.addEventListener('click', function() {
-                // Reset filters
-                document.getElementById('filter-category').value = '';
-                document.getElementById('filter-manufacturer').value = '';
-                document.getElementById('filter-year').value = '';
-                document.getElementById('encyclopedia-search-input').value = '';
-                
-                // Reset and render
-                filterRobots();
-                renderRobotPage(1);
-            });
+        // If no robots, show message
+        if (pageRobots.length === 0) {
+            robotsContainer.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-robot"></i>
+                    <p>No robots found</p>
+                    <button id="reset-search" class="btn btn-primary">Reset Filters</button>
+                </div>
+            `;
+            
+            const resetSearchBtn = document.getElementById('reset-search');
+            if (resetSearchBtn) {
+                resetSearchBtn.addEventListener('click', function() {
+                    // Reset filters
+                    document.getElementById('filter-category').value = '';
+                    document.getElementById('filter-manufacturer').value = '';
+                    document.getElementById('filter-year').value = '';
+                    document.getElementById('encyclopedia-search-input').value = '';
+                    
+                    // Reset and render
+                    filterRobots();
+                    renderRobotPage(1);
+                });
+            }
+            
+            return;
         }
         
-        return;
-    }
-    
-    // Get template
-    const template = document.getElementById('robot-card-template');
-    
-    // Create a fragment to avoid reflows
-    const fragment = document.createDocumentFragment();
-    
-    // Add robot cards
-    for (const robot of pageRobots) {
-        // Clone template
-        const robotCard = template.content.cloneNode(true);
+        // Get template
+        const template = document.getElementById('robot-card-template');
         
-        // Set title and description
-        robotCard.querySelector('.robot-card-title').textContent = robot.name;
-        robotCard.querySelector('.robot-card-description').textContent = robot.description || 'No description available';
+        // Create a fragment to avoid reflows
+        const fragment = document.createDocumentFragment();
         
-        // Set category
-        robotCard.querySelector('.robot-card-category').textContent = robot.category || 'Uncategorized';
+        // Add robot cards
+        for (const robot of pageRobots) {
+            // Clone template
+            const robotCard = template.content.cloneNode(true);
+            
+            // Set title and description
+            robotCard.querySelector('h3').textContent = robot.name;
+            robotCard.querySelector('p').textContent = robot.description || 'No description available';
+            
+            // Set link - make the button a link
+            const button = robotCard.querySelector('button');
+            button.textContent = 'Learn More';
+            button.onclick = function() {
+                window.location.href = `${robot.slug}.html`;
+            };
+            
+            // Set image (with fallback)
+            const imgElement = robotCard.querySelector('img');
+            imgElement.alt = robot.name;
+            imgElement.src = `../${robot.mainImage || 'images/robots/placeholder.jpg'}`;
+            imgElement.onerror = function() {
+                this.src = '../images/robots/placeholder.jpg';
+            };
+            
+            // Add to fragment
+            fragment.appendChild(robotCard);
+        }
         
-        // Set manufacturer
-        robotCard.querySelector('.robot-card-manufacturer').textContent = robot.manufacturer || 'Unknown Manufacturer';
-        
-        // Set link
-        robotCard.querySelector('a').href = `${robot.slug}.html`;
-        
-        // Set image (with fallback)
-        const imgElement = robotCard.querySelector('img');
-        imgElement.alt = robot.name;
-        imgElement.src = `../${robot.mainImage}`;
-        imgElement.onerror = function() {
-            this.src = '../images/robots/placeholder.jpg';
-        };
-        
-        // Add to fragment
-        fragment.appendChild(robotCard);
-    }
-    
-    // Add all cards to container
-    robotsContainer.appendChild(fragment);
+        // Add all cards to container
+        robotsContainer.appendChild(fragment);
+    }, 200); // Short delay for loading effect
 }
