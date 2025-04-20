@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initModals();
     initAnimations();
     initSearch();
+    initNavigation(); // Added navigation initialization
     
     // Log initialization message
     console.log('MOOK Robotics Hub initialized successfully!');
@@ -188,6 +189,76 @@ function performSearch() {
         // For now, redirect to robots page with search query
         window.location.href = `robots/index.html?search=${encodeURIComponent(query)}`;
     }
+}
+
+/**
+ * Initialize navigation functionality for buttons
+ * This adds interactivity to the homepage buttons
+ */
+function initNavigation() {
+    // Get the main CTA buttons in the hero section
+    const encyclopediaButton = document.querySelector('.hero-cta .btn-primary');
+    const newsButton = document.querySelector('.hero-cta .btn-outline');
+    
+    // Get the "Explore All Robots" button
+    const exploreAllButton = document.querySelector('.explore-all');
+    
+    // Get the "View All News" button
+    const viewAllNewsButton = document.querySelector('.view-all-news');
+    
+    // Get "Learn More" buttons on robot cards
+    const learnMoreButtons = document.querySelectorAll('.robot-card .btn-secondary');
+    
+    // Encyclopedia button in hero section
+    if (encyclopediaButton) {
+        encyclopediaButton.addEventListener('click', function() {
+            window.location.href = 'robots/index.html';
+        });
+    }
+    
+    // News button in hero section
+    if (newsButton) {
+        newsButton.addEventListener('click', function() {
+            // Scroll to news section
+            const newsSection = document.querySelector('.news-section');
+            if (newsSection) {
+                newsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+    
+    // Explore All Robots button
+    if (exploreAllButton) {
+        exploreAllButton.addEventListener('click', function() {
+            window.location.href = 'robots/index.html';
+        });
+    }
+    
+    // View All News button
+    if (viewAllNewsButton) {
+        viewAllNewsButton.addEventListener('click', function() {
+            // For now, just scroll to the news section
+            // You might want to create a separate news page later
+            const newsSection = document.querySelector('.news-section');
+            if (newsSection) {
+                newsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+    
+    // Learn More buttons on robot cards
+    learnMoreButtons.forEach((button, index) => {
+        button.addEventListener('click', function() {
+            // Get the robot name from the card
+            const robotName = this.closest('.robot-card').querySelector('h3').textContent;
+            
+            // Convert robot name to URL-friendly format
+            const robotUrl = robotName.toLowerCase().replace(/\s+/g, '-');
+            
+            // Navigate to robot detail page
+            window.location.href = `robots/${robotUrl}.html`;
+        });
+    });
 }
 
 /**
