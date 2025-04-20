@@ -127,14 +127,14 @@
                                     <label class="form-label" for="robot-category">Category</label>
                                     <select id="robot-category" class="form-control">
                                         <option value="">Select a category</option>
-                                        <option value="humanoid">Humanoid</option>
-                                        <option value="industrial">Industrial</option>
-                                        <option value="medical">Medical</option>
-                                        <option value="entertainment">Entertainment</option>
-                                        <option value="exploration">Exploration</option>
-                                        <option value="military">Military</option>
-                                        <option value="domestic">Domestic</option>
-                                        <option value="other">Other</option>
+                                        <option value="Humanoid">Humanoid</option>
+                                        <option value="Industrial">Industrial</option>
+                                        <option value="Medical">Medical</option>
+                                        <option value="Entertainment">Entertainment</option>
+                                        <option value="Exploration">Exploration</option>
+                                        <option value="Military">Military</option>
+                                        <option value="Domestic">Domestic</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
                                 
@@ -157,18 +157,13 @@
                                 <div class="form-group">
                                     <label class="form-label" for="robot-specs">Technical Specifications</label>
                                     <textarea id="robot-specs" class="form-control" rows="6"></textarea>
-                                    <p class="form-hint">Enter technical details like dimensions, weight, power requirements, etc.</p>
+                                    <p class="form-hint">Enter technical details in format "Property: Value", one per line (e.g., "Height: 1.5 meters")</p>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="robot-capabilities">Capabilities</label>
                                     <textarea id="robot-capabilities" class="form-control" rows="4"></textarea>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="robot-applications">Applications</label>
-                                    <textarea id="robot-applications" class="form-control" rows="4"></textarea>
-                                    <p class="form-hint">Describe real-world applications and use cases</p>
+                                    <p class="form-hint">Enter one capability per line (these will be displayed as bullet points)</p>
                                 </div>
                             </div>
                             
@@ -212,19 +207,6 @@
                                     </div>
                                     <div class="image-gallery" id="additional-images-preview"></div>
                                 </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">Video URLs</label>
-                                    <div id="video-urls">
-                                        <div class="video-url-input">
-                                            <input type="url" class="form-control" placeholder="YouTube or Vimeo URL">
-                                            <button type="button" class="add-video-btn">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="form-hint">Add links to YouTube or Vimeo videos</p>
-                                </div>
                             </div>
                             
                             <!-- Additional Information -->
@@ -234,18 +216,6 @@
                                 <div class="form-group">
                                     <label class="form-label" for="robot-website">Official Website</label>
                                     <input type="url" id="robot-website" class="form-control">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">References</label>
-                                    <div id="references">
-                                        <div class="reference-input">
-                                            <input type="text" class="form-control" placeholder="Reference title or URL">
-                                            <button type="button" class="add-reference-btn">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -269,48 +239,6 @@
 
     <script src="../js/admin.js"></script>
     <script src="../js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Image upload preview for main image
-            const mainImageInput = document.getElementById('main-image-input');
-            const mainImagePreview = document.getElementById('main-image-preview');
-            const mainImagePreviewImg = document.getElementById('main-image-preview-img');
-            const removeMainImage = document.getElementById('remove-main-image');
-            
-            mainImageInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        mainImagePreviewImg.src = e.target.result;
-                        mainImagePreview.style.display = 'flex';
-                        document.getElementById('main-image-upload').style.display = 'none';
-                    }
-                    
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-            
-            if (removeMainImage) {
-                removeMainImage.addEventListener('click', function() {
-                    mainImageInput.value = '';
-                    mainImagePreview.style.display = 'none';
-                    document.getElementById('main-image-upload').style.display = 'block';
-                });
-            }
-            
-            // Add more functionality for additional images, video URLs, references, etc.
-            
-            // Form submission (placeholder)
-            const addRobotForm = document.getElementById('add-robot-form');
-            if (addRobotForm) {
-                addRobotForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Robot data would be saved here!');
-                    // In a real application, you would serialize the form data and send it to a server
-                });
-            }
-        });
-    </script>
+    <script type="module" src="js/add-robot.js"></script>
 </body>
 </html>
