@@ -6,6 +6,7 @@
  */
 
 import { getAllRobots } from './robot-service.js';
+import { getFileUrl } from './file-upload-service.js';
 
 // Constants
 const ROBOTS_PER_PAGE = 12;
@@ -316,7 +317,15 @@ async function renderRobotPage(page) {
             // Set image (with fallback)
             const imgElement = robotCard.querySelector('img');
             imgElement.alt = robot.name;
-            imgElement.src = `../${robot.mainImage || 'images/robots/placeholder.jpg'}`;
+            
+            // Use the file upload service to get the proper URL for the image
+            if (robot.mainImage) {
+                imgElement.src = getFileUrl(robot.mainImage);
+            } else {
+                imgElement.src = '../images/robots/placeholder.jpg';
+            }
+            
+            // Error handler for images
             imgElement.onerror = function() {
                 this.src = '../images/robots/placeholder.jpg';
             };
