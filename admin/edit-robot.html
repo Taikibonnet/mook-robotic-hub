@@ -32,7 +32,7 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="robots.html">
                             <i class="fas fa-robot"></i>
                             <span>Robots</span>
@@ -105,26 +105,9 @@
 
             <div class="admin-content">
                 <section class="admin-panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title" id="edit-robot-title">Edit Robot</h2>
-                        <div class="panel-actions">
-                            <a href="robots.html" class="btn">
-                                <i class="fas fa-arrow-left"></i> Back to Robots
-                            </a>
-                            <button id="delete-robot-btn" class="btn btn-danger">
-                                <i class="fas fa-trash"></i> Delete Robot
-                            </button>
-                            <a id="view-robot-btn" href="#" class="btn btn-outline" target="_blank">
-                                <i class="fas fa-eye"></i> View Robot
-                            </a>
-                        </div>
-                    </div>
+                    <h2 class="panel-title">Edit Robot</h2>
                     <div class="panel-content">
                         <form class="admin-form" id="edit-robot-form">
-                            <!-- Hidden ID field -->
-                            <input type="hidden" id="robot-id">
-                            <input type="hidden" id="robot-slug">
-                            
                             <!-- Basic Information -->
                             <div class="form-section">
                                 <h3 class="section-title">Basic Information</h3>
@@ -151,7 +134,6 @@
                                     <select id="robot-category" class="form-control">
                                         <option value="">Select a category</option>
                                         <option value="Humanoid">Humanoid</option>
-                                        <option value="Quadruped">Quadruped</option>
                                         <option value="Industrial">Industrial</option>
                                         <option value="Medical">Medical</option>
                                         <option value="Entertainment">Entertainment</option>
@@ -166,15 +148,6 @@
                                     <label class="form-label" for="robot-short-desc">Short Description</label>
                                     <input type="text" id="robot-short-desc" class="form-control" maxlength="150">
                                     <p class="form-hint">Brief description (max 150 characters)</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label" for="robot-featured">Featured Robot</label>
-                                    <div class="toggle-switch">
-                                        <input type="checkbox" id="robot-featured" class="toggle-input">
-                                        <label for="robot-featured" class="toggle-label"></label>
-                                        <span class="toggle-text">Display this robot on the homepage</span>
-                                    </div>
                                 </div>
                             </div>
                             
@@ -198,6 +171,12 @@
                                     <textarea id="robot-capabilities" class="form-control" rows="4"></textarea>
                                     <p class="form-hint">Enter capabilities, one per line</p>
                                 </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="robot-applications">Applications</label>
+                                    <textarea id="robot-applications" class="form-control" rows="4"></textarea>
+                                    <p class="form-hint">Describe real-world applications and use cases, one per line</p>
+                                </div>
                             </div>
                             
                             <!-- Media -->
@@ -206,15 +185,7 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label">Main Image</label>
-                                    <div class="current-image" id="current-main-image">
-                                        <img src="../images/robots/placeholder.jpg" alt="Current main image" id="current-main-image-preview">
-                                        <div class="image-actions">
-                                            <button type="button" class="btn btn-sm" id="change-main-image-btn">
-                                                <i class="fas fa-edit"></i> Change Image
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="file-upload" id="main-image-upload" style="display: none;">
+                                    <div class="file-upload" id="main-image-upload">
                                         <div class="file-upload-icon">
                                             <i class="fas fa-cloud-upload-alt"></i>
                                         </div>
@@ -234,15 +205,8 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label class="form-label">Gallery Images</label>
-                                    <div class="current-gallery" id="current-gallery">
-                                        <!-- Existing gallery images will be loaded here -->
-                                        <p class="no-gallery-images">No gallery images available.</p>
-                                    </div>
-                                    <button type="button" class="btn btn-sm" id="add-gallery-images-btn">
-                                        <i class="fas fa-plus"></i> Add Gallery Images
-                                    </button>
-                                    <div class="file-upload" id="additional-images-upload" style="display: none;">
+                                    <label class="form-label">Additional Images</label>
+                                    <div class="file-upload" id="additional-images-upload">
                                         <div class="file-upload-icon">
                                             <i class="fas fa-images"></i>
                                         </div>
@@ -254,6 +218,14 @@
                                         <p class="form-hint">You can select multiple images (max 5)</p>
                                     </div>
                                     <div class="image-gallery" id="additional-images-preview"></div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Video URLs</label>
+                                    <div id="video-urls">
+                                        <!-- Video URL inputs will be added here dynamically -->
+                                    </div>
+                                    <p class="form-hint">Add links to YouTube or Vimeo videos</p>
                                 </div>
                             </div>
                             
@@ -267,6 +239,13 @@
                                 </div>
                                 
                                 <div class="form-group">
+                                    <label class="form-label">References</label>
+                                    <div id="references">
+                                        <!-- Reference inputs will be added here dynamically -->
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
                                     <label class="form-label" for="robot-tags">Tags</label>
                                     <input type="text" id="robot-tags" class="form-control">
                                     <p class="form-hint">Enter tags separated by commas (e.g., humanoid, AI, autonomous)</p>
@@ -274,8 +253,7 @@
                             </div>
                             
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Update Robot</button>
-                                <button type="button" class="btn btn-outline" id="preview-btn">Preview</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
                                 <a href="robots.html" class="btn">Cancel</a>
                             </div>
                         </form>
@@ -284,35 +262,9 @@
             </div>
         </main>
     </div>
-    
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-confirm-modal" class="admin-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Delete Robot</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this robot? This action cannot be undone.</p>
-                <div class="robot-preview">
-                    <div class="robot-preview-img">
-                        <img src="../images/robots/placeholder.jpg" alt="Robot" id="delete-preview-img">
-                    </div>
-                    <div class="robot-preview-info">
-                        <h4 id="delete-preview-name">Robot Name</h4>
-                        <p id="delete-preview-description">Robot description will appear here.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" id="cancel-delete">Cancel</button>
-                <button class="btn btn-danger" id="confirm-delete">Delete</button>
-            </div>
-        </div>
-    </div>
 
     <script src="../js/admin.js"></script>
     <script src="../js/auth.js"></script>
-    <script src="js/edit-robot.js" type="module"></script>
+    <script src="../js/edit-robot.js" type="module"></script>
 </body>
 </html>
