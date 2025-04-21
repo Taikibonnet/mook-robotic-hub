@@ -1,0 +1,172 @@
+/* Settings Page Styles for MOOK Robotics Hub */
+
+/* Tab Navigation */
+.settings-tabs {
+    display: flex;
+    overflow-x: auto;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.tab-button {
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button i {
+    margin-right: 0.5rem;
+}
+
+.tab-button:hover {
+    background-color: rgba(0, 180, 216, 0.05);
+    color: var(--primary-color);
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* Settings Panels */
+.settings-panel {
+    display: none;
+}
+
+.settings-panel.active {
+    display: block;
+}
+
+/* Color Pickers */
+.color-pickers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.color-picker-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.color-picker-group label {
+    margin-bottom: 0.5rem;
+}
+
+.color-input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--background-light);
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.color-text {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--background-light);
+    color: var(--text-color);
+}
+
+/* Theme Mode Toggle */
+.theme-mode-selector {
+    margin-bottom: 1.5rem;
+}
+
+/* Backup & Export */
+.backup-buttons,
+.export-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.file-selected {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--background-light);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.selected-file-info {
+    display: flex;
+    align-items: center;
+}
+
+.selected-file-info i {
+    margin-right: 0.8rem;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+/* Warning Text */
+.warning-text {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: rgba(46, 160, 67, 0.15);
+    color: #2ea043;
+}
+
+.status-inactive {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+.status-pending {
+    background-color: rgba(240, 136, 62, 0.15);
+    color: #f0883e;
+}
+
+/* Additional toggle switch styles */
+.toggle-switch {
+    margin-bottom: 1rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .color-pickers {
+        grid-template-columns: 1fr;
+    }
+    
+    .backup-buttons,
+    .export-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .file-selected {
+        flex-direction: column;
+    }
+    
+    .selected-file-info {
+        margin-bottom: 1rem;
+    }
+}
