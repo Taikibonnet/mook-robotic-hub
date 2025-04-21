@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - MOOK Robotics Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin-fix.css">
+</head>
+<body class="admin-body">
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <svg width="40" height="40" viewBox="0 0 50 50" class="logo-svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                    <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
+                    <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
+                </svg>
+                <span>MOOK Admin</span>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="robots.html">
+                            <i class="fas fa-robot"></i>
+                            <span>Robots</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="add-robot.html">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Robot</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news.html">
+                            <i class="fas fa-newspaper"></i>
+                            <span>News</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="manage-users.html">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="../index.html" class="view-site">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View Site</span>
+                </a>
+                <a href="#" id="admin-logout" class="admin-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button id="toggle-sidebar" class="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Settings</h1>
+                </div>
+                <div class="admin-header-right">
+                    <div class="admin-user">
+                        <span class="admin-username">Administrator</span>
+                        <span class="admin-role">Super Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Settings Tabs Navigation -->
+                <div class="settings-tabs">
+                    <button class="tab-button active" data-target="general-settings">
+                        <i class="fas fa-sliders-h"></i> General
+                    </button>
+                    <button class="tab-button" data-target="appearance-settings">
+                        <i class="fas fa-palette"></i> Appearance
+                    </button>
+                    <button class="tab-button" data-target="content-settings">
+                        <i class="fas fa-file-alt"></i> Content
+                    </button>
+                    <button class="tab-button" data-target="notification-settings">
+                        <i class="fas fa-bell"></i> Notifications
+                    </button>
+                    <button class="tab-button" data-target="backup-settings">
+                        <i class="fas fa-database"></i> Backup & Export
+                    </button>
+                </div>
+
+                <!-- Settings Content Panels -->
+                <section class="admin-panel settings-panel active" id="general-settings">
+                    <h2 class="panel-title">General Settings</h2>
+                    <div class="panel-content">
+                        <form id="general-settings-form" class="admin-form">
+                            <div class="form-section">
+                                <h3 class="section-title">Site Information</h3>
+                                <div class="form-group">
+                                    <label for="site-title">Site Title</label>
+                                    <input type="text" id="site-title" class="form-control" value="MOOK Robotics Hub">
+                                </div>
+                                <div class="form-group">
+                                    <label for="site-tagline">Tagline</label>
+                                    <input type="text" id="site-tagline" class="form-control" value="Your Ultimate Resource for Robotics">
+                                </div>
+                                <div class="form-group">
+                                    <label for="site-description">Site Description</label>
+                                    <textarea id="site-description" class="form-control" rows="3">A comprehensive resource for robotics enthusiasts, featuring the latest robots, AI assistants, and news from the world of robotics and automation.</textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Contact Information</h3>
+                                <div class="form-group">
+                                    <label for="contact-email">Contact Email</label>
+                                    <input type="email" id="contact-email" class="form-control" value="contact@mookrobotics.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-phone">Contact Phone</label>
+                                    <input type="tel" id="contact-phone" class="form-control" value="+1 (123) 456-7890">
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-address">Address</label>
+                                    <textarea id="contact-address" class="form-control" rows="3">123 Robot Street, Tech City, AI 98765</textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Social Media Links</h3>
+                                <div class="form-group">
+                                    <label for="social-facebook">Facebook</label>
+                                    <input type="url" id="social-facebook" class="form-control" value="https://facebook.com/mookrobotics">
+                                </div>
+                                <div class="form-group">
+                                    <label for="social-twitter">Twitter</label>
+                                    <input type="url" id="social-twitter" class="form-control" value="https://twitter.com/mookrobotics">
+                                </div>
+                                <div class="form-group">
+                                    <label for="social-instagram">Instagram</label>
+                                    <input type="url" id="social-instagram" class="form-control" value="https://instagram.com/mookrobotics">
+                                </div>
+                                <div class="form-group">
+                                    <label for="social-linkedin">LinkedIn</label>
+                                    <input type="url" id="social-linkedin" class="form-control" value="https://linkedin.com/company/mookrobotics">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="reset-general-settings" class="btn btn-outline">Reset to Default</button>
+                                <button type="button" id="save-general-settings" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="admin-panel settings-panel" id="appearance-settings">
+                    <h2 class="panel-title">Appearance Settings</h2>
+                    <div class="panel-content">
+                        <form id="appearance-settings-form" class="admin-form">
+                            <div class="form-section">
+                                <h3 class="section-title">Theme Colors</h3>
+                                <div class="color-pickers">
+                                    <div class="color-picker-group">
+                                        <label for="primary-color">Primary Color</label>
+                                        <input type="color" id="primary-color" class="color-input" value="#00b4d8">
+                                        <input type="text" id="primary-color-text" class="color-text" value="#00b4d8">
+                                    </div>
+                                    <div class="color-picker-group">
+                                        <label for="secondary-color">Secondary Color</label>
+                                        <input type="color" id="secondary-color" class="color-input" value="#5e60ce">
+                                        <input type="text" id="secondary-color-text" class="color-text" value="#5e60ce">
+                                    </div>
+                                    <div class="color-picker-group">
+                                        <label for="accent-color">Accent Color</label>
+                                        <input type="color" id="accent-color" class="color-input" value="#7209b7">
+                                        <input type="text" id="accent-color-text" class="color-text" value="#7209b7">
+                                    </div>
+                                    <div class="color-picker-group">
+                                        <label for="background-color">Background Color</label>
+                                        <input type="color" id="background-color" class="color-input" value="#0d1117">
+                                        <input type="text" id="background-color-text" class="color-text" value="#0d1117">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Theme Mode</h3>
+                                <div class="theme-mode-selector">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="dark-mode-toggle" class="toggle-input" checked>
+                                        <label for="dark-mode-toggle" class="toggle-label"></label>
+                                        <span class="toggle-text">Dark Mode</span>
+                                    </div>
+                                </div>
+                                <p class="form-hint">Toggle between light and dark mode for the website.</p>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Font Settings</h3>
+                                <div class="form-group">
+                                    <label for="heading-font">Heading Font</label>
+                                    <select id="heading-font" class="form-control">
+                                        <option value="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" selected>Segoe UI (Default)</option>
+                                        <option value="'Roboto', sans-serif">Roboto</option>
+                                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                                        <option value="'Poppins', sans-serif">Poppins</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="body-font">Body Font</label>
+                                    <select id="body-font" class="form-control">
+                                        <option value="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" selected>Segoe UI (Default)</option>
+                                        <option value="'Roboto', sans-serif">Roboto</option>
+                                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                                        <option value="'Lato', sans-serif">Lato</option>
+                                        <option value="'Noto Sans', sans-serif">Noto Sans</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="base-font-size">Base Font Size</label>
+                                    <select id="base-font-size" class="form-control">
+                                        <option value="14px">Small (14px)</option>
+                                        <option value="16px" selected>Medium (16px - Default)</option>
+                                        <option value="18px">Large (18px)</option>
+                                        <option value="20px">Extra Large (20px)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Layout Options</h3>
+                                <div class="form-group">
+                                    <label for="layout-width">Layout Width</label>
+                                    <select id="layout-width" class="form-control">
+                                        <option value="1000px">Narrow (1000px)</option>
+                                        <option value="1200px" selected>Standard (1200px - Default)</option>
+                                        <option value="1400px">Wide (1400px)</option>
+                                        <option value="1600px">Extra Wide (1600px)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="border-radius">Border Radius</label>
+                                    <select id="border-radius" class="form-control">
+                                        <option value="0">None (0px)</option>
+                                        <option value="4px">Slight (4px)</option>
+                                        <option value="8px" selected>Standard (8px - Default)</option>
+                                        <option value="12px">Rounded (12px)</option>
+                                        <option value="16px">Very Rounded (16px)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="preview-appearance" class="btn btn-outline">Preview Changes</button>
+                                <button type="button" id="reset-appearance-settings" class="btn btn-outline">Reset to Default</button>
+                                <button type="button" id="save-appearance-settings" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="admin-panel settings-panel" id="content-settings">
+                    <h2 class="panel-title">Content Settings</h2>
+                    <div class="panel-content">
+                        <form id="content-settings-form" class="admin-form">
+                            <div class="form-section">
+                                <h3 class="section-title">Homepage Display</h3>
+                                <div class="form-group">
+                                    <label for="featured-robots-count">Featured Robots Count</label>
+                                    <select id="featured-robots-count" class="form-control">
+                                        <option value="3">3 Robots</option>
+                                        <option value="6" selected>6 Robots (Default)</option>
+                                        <option value="9">9 Robots</option>
+                                        <option value="12">12 Robots</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="news-count">News Articles Count</label>
+                                    <select id="news-count" class="form-control">
+                                        <option value="3">3 Articles</option>
+                                        <option value="6" selected>6 Articles (Default)</option>
+                                        <option value="9">9 Articles</option>
+                                        <option value="12">12 Articles</option>
+                                    </select>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="show-hero-toggle" class="toggle-input" checked>
+                                    <label for="show-hero-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Show Hero Section</span>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="show-assistant-toggle" class="toggle-input" checked>
+                                    <label for="show-assistant-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Show AI Assistant Section</span>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Content Moderation</h3>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="comments-toggle" class="toggle-input" checked>
+                                    <label for="comments-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Enable Comments</span>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="moderate-comments-toggle" class="toggle-input" checked>
+                                    <label for="moderate-comments-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Moderate Comments Before Publishing</span>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="user-signup-toggle" class="toggle-input" checked>
+                                    <label for="user-signup-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Allow User Registration</span>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">SEO Settings</h3>
+                                <div class="form-group">
+                                    <label for="meta-keywords">Meta Keywords</label>
+                                    <input type="text" id="meta-keywords" class="form-control" value="robotics, AI, automation, technology, robots, artificial intelligence">
+                                    <p class="form-hint">Separate keywords with commas</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="google-analytics">Google Analytics ID</label>
+                                    <input type="text" id="google-analytics" class="form-control" value="UA-XXXXXXXX-X">
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="robots-indexing-toggle" class="toggle-input" checked>
+                                    <label for="robots-indexing-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Allow Search Engines Indexing</span>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="reset-content-settings" class="btn btn-outline">Reset to Default</button>
+                                <button type="button" id="save-content-settings" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="admin-panel settings-panel" id="notification-settings">
+                    <h2 class="panel-title">Notification Settings</h2>
+                    <div class="panel-content">
+                        <form id="notification-settings-form" class="admin-form">
+                            <div class="form-section">
+                                <h3 class="section-title">Email Notifications</h3>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="user-registration-email-toggle" class="toggle-input" checked>
+                                    <label for="user-registration-email-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">New User Registration</span>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="comment-email-toggle" class="toggle-input" checked>
+                                    <label for="comment-email-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">New Comment</span>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="contact-form-email-toggle" class="toggle-input" checked>
+                                    <label for="contact-form-email-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Contact Form Submission</span>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Admin Notifications</h3>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="browser-notifications-toggle" class="toggle-input" checked>
+                                    <label for="browser-notifications-toggle" class="toggle-label"></label>
+                                    <span class="toggle-text">Browser Notifications</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-email-notifications">Admin Email for Notifications</label>
+                                    <input type="email" id="admin-email-notifications" class="form-control" value="admin@mookrobotics.com">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="reset-notification-settings" class="btn btn-outline">Reset to Default</button>
+                                <button type="button" id="save-notification-settings" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="admin-panel settings-panel" id="backup-settings">
+                    <h2 class="panel-title">Backup & Export</h2>
+                    <div class="panel-content">
+                        <div class="form-section">
+                            <h3 class="section-title">Data Backup</h3>
+                            <p>Create a backup of all your website data. This includes robots, users, settings, and activity logs.</p>
+                            <div class="action-buttons backup-buttons">
+                                <button id="create-backup" class="btn btn-primary">
+                                    <i class="fas fa-download"></i> Create Backup
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title">Data Export</h3>
+                            <p>Export specific data from your website.</p>
+                            <div class="action-buttons export-buttons">
+                                <button id="export-robots" class="btn btn-outline">
+                                    <i class="fas fa-robot"></i> Export Robots
+                                </button>
+                                <button id="export-users" class="btn btn-outline">
+                                    <i class="fas fa-users"></i> Export Users
+                                </button>
+                                <button id="export-news" class="btn btn-outline">
+                                    <i class="fas fa-newspaper"></i> Export News
+                                </button>
+                                <button id="export-settings" class="btn btn-outline">
+                                    <i class="fas fa-cog"></i> Export Settings
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title">Data Import</h3>
+                            <p>Import data from a previous backup or export.</p>
+                            <div class="file-upload" id="import-file-upload">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-file-import"></i>
+                                </div>
+                                <div class="file-upload-text">
+                                    <p>Drag and drop a file here, or click to select a file</p>
+                                </div>
+                                <label for="import-file" class="file-upload-btn">Select File</label>
+                                <input type="file" id="import-file" style="display: none;" accept=".json">
+                            </div>
+                            <div class="file-selected" id="file-selected" style="display: none;">
+                                <div class="selected-file-info">
+                                    <i class="fas fa-file"></i>
+                                    <span id="selected-file-name"></span>
+                                </div>
+                                <button id="import-data" class="btn btn-primary">
+                                    <i class="fas fa-file-import"></i> Import Data
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title">Reset Data</h3>
+                            <p class="warning-text">Warning: This will reset all data to default values. This action cannot be undone.</p>
+                            <button id="reset-all-data" class="btn btn-danger">
+                                <i class="fas fa-exclamation-triangle"></i> Reset All Data
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Reset Data Confirmation Modal -->
+    <div id="reset-data-modal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Reset</h3>
+                <button class="close-modal" id="close-reset-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="warning-text">Warning: You are about to reset all website data to default values.</p>
+                <p>This will delete all custom robots, users, settings, and activity logs. This action cannot be undone.</p>
+                <p>Type <strong>RESET</strong> in the field below to confirm:</p>
+                <div class="form-group">
+                    <input type="text" id="reset-confirmation" class="form-control" placeholder="Type RESET here">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancel-reset">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-reset" disabled>Reset All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Notification -->
+    <div id="saved-notification" class="notification success" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <p>Settings saved successfully!</p>
+        <button class="close-notification" id="close-notification">&times;</button>
+    </div>
+
+    <script src="../js/admin.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="js/dashboard-fix.js"></script>
+    <script src="js/settings.js" type="module"></script>
+</body>
+</html>
