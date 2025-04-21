@@ -1,20 +1,18 @@
 /**
- * MOOK Robotics Hub - Admin Robots Page JavaScript
+ * MOOK Robotics Hub - Admin Robots JavaScript
  * 
- * This file contains functionality for the robots management page,
- * including listing, filtering, and performing actions on robots.
+ * This file contains code for handling admin robot management,
+ * including displaying, editing, and deleting robots.
  */
 
-import { getAllRobots, deleteRobot, updateRobot } from '../../js/robot-service.js';
-import { logActivity } from './dashboard.js';
+import { getAllRobots, deleteRobot } from '../js/robot-service.js';
+import { getFileUrl } from '../js/file-upload-service.js';
 
-// Constants
-const ROBOTS_PER_PAGE = 10;
-
-// State
+// State variables
 let allRobots = [];
 let filteredRobots = [];
 let currentPage = 1;
+const ROBOTS_PER_PAGE = 10;
 let selectedRobots = new Set();
 
 // Document is ready
@@ -22,47 +20,131 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load robots
     loadRobots();
     
-    // Initialize filters
+    // Initialize event listeners
     initFilters();
-    
-    // Initialize search
     initSearch();
-    
-    // Initialize pagination
     initPagination();
-    
-    // Initialize selection controls
-    initSelectionControls();
-    
-    // Initialize action buttons
-    initActionButtons();
+    initModalHandling();
+    initBulkActions();
 });
 
 /**
- * Load all robots from the service
+ * Load robots from storage
  */
 async function loadRobots() {
     try {
         // Get all robots
         allRobots = getAllRobots();
         
-        // Apply initial filters and render
+        // Apply initial filtering (none)
         filterRobots();
-        renderRobotPage(1);
         
-        // Update filter dropdowns with available options
-        updateFilterOptions();
+        // Update the table
+        renderRobotsTable();
+        
+        // Initialize the filter dropdowns
+        populateFilterOptions();
     } catch (error) {
         console.error('Error loading robots:', error);
-        showError('Failed to load robots. Please try again later.');
+        showErrorMessage('Failed to load robots. Please try again later.');
     }
 }
 
 /**
- * Initialize filter panel and controls
+ * Filter robots based on selected criteria
+ */
+function filterRobots() {
+    // Get filter values
+    const searchQuery = document.getElementById('robot-search-input').value.toLowerCase();
+    const categoryFilter = document.getElementById('filter-category').value;
+    const manufacturerFilter = document.getElementById('filter-manufacturer').value;
+    const yearFilter = document.getElementById('filter-year').value;
+    const featuredFilter = document.getElementById('filter-featured').value;
+    
+    // Apply filters
+    filteredRobots = allRobots.filter(robot => {
+        // Search query filter
+        if (searchQuery) {
+            const searchableText = `${robot.name} ${robot.manufacturer || ''} ${robot.description || ''}`.toLowerCase();
+            if (!searchableText.includes(searchQuery)) {
+                return false;
+            }
+        }
+        
+        // Category filter
+        if (categoryFilter && robot.category !== categoryFilter) {
+            return false;
+        }
+        
+        // Manufacturer filter
+        if (manufacturerFilter && robot.manufacturer !== manufacturerFilter) {
+            return false;
+        }
+        
+        // Year filter
+        if (yearFilter && (!robot.year || robot.year.toString() !== yearFilter)) {
+            return false;
+        }
+        
+        // Featured filter
+        if (featuredFilter === 'true' && !robot.featured) {
+            return false;
+        } else if (featuredFilter === 'false' && robot.featured) {
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Reset pagination
+    currentPage = 1;
+    updatePaginationControls();
+}
+
+/**
+ * Populate filter dropdowns with available options
+ */
+function populateFilterOptions() {
+    // Manufacturer filter
+    const manufacturerSelect = document.getElementById('filter-manufacturer');
+    const manufacturers = [...new Set(allRobots.map(robot => robot.manufacturer).filter(Boolean))];
+    
+    // Clear existing options (except the first one)
+    while (manufacturerSelect.options.length > 1) {
+        manufacturerSelect.remove(1);
+    }
+    
+    // Add manufacturer options
+    manufacturers.sort().forEach(manufacturer => {
+        const option = document.createElement('option');
+        option.value = manufacturer;
+        option.textContent = manufacturer;
+        manufacturerSelect.appendChild(option);
+    });
+    
+    // Year filter
+    const yearSelect = document.getElementById('filter-year');
+    const years = [...new Set(allRobots.map(robot => robot.year).filter(Boolean))];
+    
+    // Clear existing options (except the first one)
+    while (yearSelect.options.length > 1) {
+        yearSelect.remove(1);
+    }
+    
+    // Add year options (newest first)
+    years.sort((a, b) => b - a).forEach(year => {
+        const option = document.createElement('option');
+        option.value = year.toString();
+        option.textContent = year.toString();
+        yearSelect.appendChild(option);
+    });
+}
+
+/**
+ * Initialize filter functionality
  */
 function initFilters() {
-    // Filter button toggle
+    // Toggle filter panel
     const filterBtn = document.getElementById('robot-filter-btn');
     const filterPanel = document.getElementById('filter-panel');
     
@@ -72,21 +154,16 @@ function initFilters() {
         });
     }
     
-    // Apply filters button
+    // Apply filters
     const applyFiltersBtn = document.getElementById('apply-filters');
     if (applyFiltersBtn) {
         applyFiltersBtn.addEventListener('click', function() {
             filterRobots();
-            renderRobotPage(1);
-            
-            // Hide the filter panel
-            if (filterPanel) {
-                filterPanel.style.display = 'none';
-            }
+            renderRobotsTable();
         });
     }
     
-    // Reset filters button
+    // Reset filters
     const resetFiltersBtn = document.getElementById('reset-filters');
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', function() {
@@ -96,17 +173,9 @@ function initFilters() {
             document.getElementById('filter-year').value = '';
             document.getElementById('filter-featured').value = '';
             
-            // Reset search
-            document.getElementById('robot-search-input').value = '';
-            
             // Reset filters and render
             filterRobots();
-            renderRobotPage(1);
-            
-            // Hide the filter panel
-            if (filterPanel) {
-                filterPanel.style.display = 'none';
-            }
+            renderRobotsTable();
         });
     }
 }
@@ -122,14 +191,14 @@ function initSearch() {
         // Search button click
         searchBtn.addEventListener('click', function() {
             filterRobots();
-            renderRobotPage(1);
+            renderRobotsTable();
         });
         
-        // Enter key press
+        // Enter key in search input
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 filterRobots();
-                renderRobotPage(1);
+                renderRobotsTable();
             }
         });
     }
@@ -145,7 +214,9 @@ function initPagination() {
     if (prevPageBtn) {
         prevPageBtn.addEventListener('click', function() {
             if (currentPage > 1) {
-                renderRobotPage(currentPage - 1);
+                currentPage--;
+                renderRobotsTable();
+                updatePaginationControls();
             }
         });
     }
@@ -154,336 +225,100 @@ function initPagination() {
         nextPageBtn.addEventListener('click', function() {
             const totalPages = Math.ceil(filteredRobots.length / ROBOTS_PER_PAGE);
             if (currentPage < totalPages) {
-                renderRobotPage(currentPage + 1);
+                currentPage++;
+                renderRobotsTable();
+                updatePaginationControls();
             }
         });
     }
 }
 
 /**
- * Initialize selection controls (checkboxes)
+ * Update pagination controls based on current state
  */
-function initSelectionControls() {
-    // Select all checkbox
-    const selectAllCheckbox = document.getElementById('select-all');
-    if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
-            const isChecked = this.checked;
-            
-            // Get all robot checkboxes on the current page
-            const checkboxes = document.querySelectorAll('#robots-list .robot-checkbox');
-            
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = isChecked;
-                
-                // Update selected robots set
-                const robotId = checkbox.value;
-                if (isChecked) {
-                    selectedRobots.add(robotId);
-                } else {
-                    selectedRobots.delete(robotId);
-                }
-            });
-            
-            // Update bulk action buttons
-            updateBulkActionButtons();
-        });
-    }
-}
-
-/**
- * Initialize action buttons (edit, delete, feature, etc.)
- */
-function initActionButtons() {
-    // Get the bulk delete button
-    const bulkDeleteBtn = document.getElementById('bulk-delete');
-    if (bulkDeleteBtn) {
-        bulkDeleteBtn.addEventListener('click', function() {
-            if (selectedRobots.size > 0) {
-                openDeleteConfirmation([...selectedRobots]);
-            }
-        });
-    }
-    
-    // Modal action buttons
-    const cancelActionBtn = document.getElementById('cancel-action');
-    const confirmDeleteBtn = document.getElementById('confirm-delete');
-    const closeModalBtn = document.querySelector('.close-modal');
-    const actionModal = document.getElementById('robot-action-modal');
-    
-    if (cancelActionBtn && actionModal) {
-        cancelActionBtn.addEventListener('click', function() {
-            actionModal.style.display = 'none';
-        });
-    }
-    
-    if (closeModalBtn && actionModal) {
-        closeModalBtn.addEventListener('click', function() {
-            actionModal.style.display = 'none';
-        });
-    }
-    
-    if (confirmDeleteBtn) {
-        confirmDeleteBtn.addEventListener('click', function() {
-            // Get the robot IDs from the data attribute
-            const robotIds = this.dataset.robotIds.split(',');
-            
-            // Delete the robots
-            deleteRobots(robotIds);
-            
-            // Close the modal
-            if (actionModal) {
-                actionModal.style.display = 'none';
-            }
-        });
-    }
-}
-
-/**
- * Filter robots based on search and filter criteria
- */
-function filterRobots() {
-    // Get filter values
-    const categoryFilter = document.getElementById('filter-category').value;
-    const manufacturerFilter = document.getElementById('filter-manufacturer').value;
-    const yearFilter = document.getElementById('filter-year').value;
-    const featuredFilter = document.getElementById('filter-featured').value;
-    
-    // Get search value
-    const searchInput = document.getElementById('robot-search-input');
-    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
-    
-    // Apply filters
-    filteredRobots = allRobots.filter(robot => {
-        // Category filter
-        if (categoryFilter && robot.category !== categoryFilter) {
-            return false;
-        }
-        
-        // Manufacturer filter
-        if (manufacturerFilter && robot.manufacturer !== manufacturerFilter) {
-            return false;
-        }
-        
-        // Year filter
-        if (yearFilter && robot.year.toString() !== yearFilter) {
-            return false;
-        }
-        
-        // Featured filter
-        if (featuredFilter) {
-            const isFeatured = robot.featured === true;
-            if (featuredFilter === 'true' && !isFeatured) {
-                return false;
-            } else if (featuredFilter === 'false' && isFeatured) {
-                return false;
-            }
-        }
-        
-        // Search filter
-        if (searchTerm) {
-            const searchFields = [
-                robot.name,
-                robot.manufacturer,
-                robot.description,
-                robot.category
-            ].filter(Boolean).map(field => field.toLowerCase());
-            
-            return searchFields.some(field => field.includes(searchTerm));
-        }
-        
-        return true;
-    });
-    
-    // Update pagination
-    updatePagination();
-    
-    // Reset selected robots
-    selectedRobots.clear();
-    updateBulkActionButtons();
-}
-
-/**
- * Update filter dropdowns with available options from robot data
- */
-function updateFilterOptions() {
-    // Get unique manufacturers
-    const manufacturers = [...new Set(allRobots
-        .map(robot => robot.manufacturer)
-        .filter(Boolean))];
-    
-    // Sort alphabetically
-    manufacturers.sort();
-    
-    // Get the manufacturer dropdown
-    const manufacturerSelect = document.getElementById('filter-manufacturer');
-    
-    if (manufacturerSelect) {
-        // Clear existing options (except the first one)
-        while (manufacturerSelect.options.length > 1) {
-            manufacturerSelect.remove(1);
-        }
-        
-        // Add manufacturer options
-        manufacturers.forEach(manufacturer => {
-            const option = document.createElement('option');
-            option.value = manufacturer;
-            option.textContent = manufacturer;
-            manufacturerSelect.appendChild(option);
-        });
-    }
-    
-    // Get unique years
-    const years = [...new Set(allRobots
-        .map(robot => robot.year)
-        .filter(Boolean))];
-    
-    // Sort numerically (descending)
-    years.sort((a, b) => b - a);
-    
-    // Get the year dropdown
-    const yearSelect = document.getElementById('filter-year');
-    
-    if (yearSelect) {
-        // Clear existing options (except the first one)
-        while (yearSelect.options.length > 1) {
-            yearSelect.remove(1);
-        }
-        
-        // Add year options
-        years.forEach(year => {
-            const option = document.createElement('option');
-            option.value = year.toString();
-            option.textContent = year.toString();
-            yearSelect.appendChild(option);
-        });
-    }
-}
-
-/**
- * Update pagination controls based on filtered robots
- */
-function updatePagination() {
-    const totalPages = Math.ceil(filteredRobots.length / ROBOTS_PER_PAGE);
-    
-    // Update page numbers
-    const currentPageElement = document.getElementById('current-page');
-    const totalPagesElement = document.getElementById('total-pages');
-    
-    if (currentPageElement) {
-        currentPageElement.textContent = currentPage.toString();
-    }
-    
-    if (totalPagesElement) {
-        totalPagesElement.textContent = totalPages.toString();
-    }
-    
-    // Update button states
+function updatePaginationControls() {
+    const totalPages = Math.max(1, Math.ceil(filteredRobots.length / ROBOTS_PER_PAGE));
+    const currentPageEl = document.getElementById('current-page');
+    const totalPagesEl = document.getElementById('total-pages');
     const prevPageBtn = document.getElementById('prev-page');
     const nextPageBtn = document.getElementById('next-page');
     
-    if (prevPageBtn) {
-        prevPageBtn.disabled = currentPage <= 1;
-    }
+    if (currentPageEl) currentPageEl.textContent = currentPage;
+    if (totalPagesEl) totalPagesEl.textContent = totalPages;
     
-    if (nextPageBtn) {
-        nextPageBtn.disabled = currentPage >= totalPages;
-    }
+    if (prevPageBtn) prevPageBtn.disabled = currentPage <= 1;
+    if (nextPageBtn) nextPageBtn.disabled = currentPage >= totalPages;
 }
 
 /**
- * Render a page of robots
- * @param {number} page - Page number
+ * Render the robots table with current data
  */
-function renderRobotPage(page) {
-    // Update current page
-    currentPage = page;
-    
-    // Update pagination controls
-    updatePagination();
-    
-    // Calculate start and end indices
-    const startIndex = (page - 1) * ROBOTS_PER_PAGE;
-    const endIndex = startIndex + ROBOTS_PER_PAGE;
-    
-    // Get robots for this page
-    const pageRobots = filteredRobots.slice(startIndex, endIndex);
-    
-    // Get the robot list element
+function renderRobotsTable() {
     const robotsList = document.getElementById('robots-list');
     
     if (!robotsList) return;
     
-    // Clear existing rows
+    // Clear the table
     robotsList.innerHTML = '';
     
-    // If no robots, show message
-    if (pageRobots.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
+    // If no robots found, show message
+    if (filteredRobots.length === 0) {
+        const noRobotsRow = document.createElement('tr');
+        noRobotsRow.innerHTML = `
             <td colspan="7" class="no-results">
+                <i class="fas fa-robot"></i>
                 <p>No robots found</p>
-                <button id="reset-filter-btn" class="btn">Reset Filters</button>
             </td>
         `;
-        robotsList.appendChild(row);
-        
-        // Add event listener to reset button
-        const resetBtn = robotsList.querySelector('#reset-filter-btn');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function() {
-                // Reset filter dropdowns
-                document.getElementById('filter-category').value = '';
-                document.getElementById('filter-manufacturer').value = '';
-                document.getElementById('filter-year').value = '';
-                document.getElementById('filter-featured').value = '';
-                
-                // Reset search
-                document.getElementById('robot-search-input').value = '';
-                
-                // Reset filters and render
-                filterRobots();
-                renderRobotPage(1);
-            });
-        }
-        
+        robotsList.appendChild(noRobotsRow);
         return;
     }
     
-    // Add rows for each robot
+    // Calculate page range
+    const startIndex = (currentPage - 1) * ROBOTS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ROBOTS_PER_PAGE, filteredRobots.length);
+    const pageRobots = filteredRobots.slice(startIndex, endIndex);
+    
+    // Add robot rows
     pageRobots.forEach(robot => {
         const row = document.createElement('tr');
-        row.dataset.robotId = robot.id;
         
-        // Create table cells
+        // For simplicity, we'll consider robots with their own detail pages to be "featured"
+        const isFeatured = robot.featured || robot.slug === 'atlas';
+        
         row.innerHTML = `
             <td>
-                <input type="checkbox" class="robot-checkbox" value="${robot.id}" ${selectedRobots.has(robot.id) ? 'checked' : ''}>
+                <input type="checkbox" class="robot-select" data-robot-id="${robot.id}">
             </td>
             <td>
-                <div class="robot-list-item">
-                    <div class="list-item-img" style="background-image: url('../${robot.mainImage}')"></div>
-                    <span>${robot.name}</span>
+                <div class="robot-info">
+                    <div class="robot-thumbnail">
+                        <img src="${getFileUrl(robot.mainImage || '../images/robots/placeholder.jpg')}" alt="${robot.name}" 
+                             onerror="this.src='../images/robots/placeholder.jpg'">
+                    </div>
+                    <div class="robot-details">
+                        <div class="robot-name">${robot.name}</div>
+                        <div class="robot-description">${robot.description || 'No description available'}</div>
+                    </div>
                 </div>
             </td>
             <td>${robot.category || 'Uncategorized'}</td>
             <td>${robot.manufacturer || 'Unknown'}</td>
-            <td>${robot.year || 'N/A'}</td>
+            <td>${robot.year || 'Unknown'}</td>
             <td>
-                <div class="feature-toggle">
-                    <input type="checkbox" class="toggle-checkbox" id="feature-${robot.id}" ${robot.featured ? 'checked' : ''}>
-                    <label for="feature-${robot.id}" class="toggle-label"></label>
-                </div>
+                <span class="status-badge ${isFeatured ? 'featured' : 'not-featured'}">
+                    ${isFeatured ? 'Featured' : 'Not Featured'}
+                </span>
             </td>
             <td>
-                <div class="table-actions">
-                    <a href="edit-robot.html?id=${robot.id}" class="table-action edit" title="Edit">
+                <div class="action-buttons">
+                    <a href="../robots/robot.html?slug=${robot.slug}" class="action-btn view-btn" title="View Robot" target="_blank">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="edit-robot.html?id=${robot.id}" class="action-btn edit-btn" title="Edit Robot">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <button class="table-action view" title="View" data-id="${robot.id}">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="table-action delete" title="Delete" data-id="${robot.id}">
+                    <button class="action-btn delete-btn" title="Delete Robot" data-robot-id="${robot.id}">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -491,284 +326,279 @@ function renderRobotPage(page) {
         `;
         
         robotsList.appendChild(row);
+    });
+    
+    // Add event listeners to checkboxes
+    const checkboxes = robotsList.querySelectorAll('.robot-select');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const robotId = this.dataset.robotId;
+            
+            if (this.checked) {
+                selectedRobots.add(robotId);
+            } else {
+                selectedRobots.delete(robotId);
+            }
+            
+            updateBulkActionStatus();
+        });
         
-        // Add event listeners to the new checkboxes
-        const checkbox = row.querySelector('.robot-checkbox');
-        if (checkbox) {
-            checkbox.addEventListener('change', function() {
-                const robotId = this.value;
+        // Set initial checked state
+        checkbox.checked = selectedRobots.has(checkbox.dataset.robotId);
+    });
+    
+    // Add event listeners to delete buttons
+    const deleteButtons = robotsList.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const robotId = this.dataset.robotId;
+            const robot = allRobots.find(r => r.id === robotId);
+            
+            if (robot) {
+                openDeleteModal(robot);
+            }
+        });
+    });
+}
+
+/**
+ * Initialize modal handling
+ */
+function initModalHandling() {
+    const modal = document.getElementById('robot-action-modal');
+    const closeButton = modal?.querySelector('.close-modal');
+    const cancelButton = document.getElementById('cancel-action');
+    const confirmDeleteButton = document.getElementById('confirm-delete');
+    
+    // Close modal on X button click
+    if (closeButton) {
+        closeButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+    
+    // Close modal on Cancel button click
+    if (cancelButton) {
+        cancelButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+    
+    // Close modal on click outside
+    if (modal) {
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+    
+    // Handle delete confirmation
+    if (confirmDeleteButton) {
+        confirmDeleteButton.addEventListener('click', function() {
+            const robotId = confirmDeleteButton.dataset.robotId;
+            
+            if (robotId) {
+                // Delete the robot
+                deleteRobot(robotId);
                 
-                if (this.checked) {
+                // Close the modal
+                modal.style.display = 'none';
+                
+                // Remove from selected robots if selected
+                selectedRobots.delete(robotId);
+                
+                // Reload robots and update the table
+                loadRobots();
+                
+                // Show success message
+                showSuccessMessage('Robot deleted successfully!');
+            }
+        });
+    }
+}
+
+/**
+ * Initialize bulk actions
+ */
+function initBulkActions() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    const bulkDeleteButton = document.getElementById('bulk-delete');
+    
+    // Select all checkbox
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            const checkboxes = document.querySelectorAll('.robot-select');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+                
+                const robotId = checkbox.dataset.robotId;
+                if (isChecked) {
                     selectedRobots.add(robotId);
                 } else {
                     selectedRobots.delete(robotId);
                 }
-                
-                updateBulkActionButtons();
             });
-        }
-        
-        // Add event listener to featured toggle
-        const featureToggle = row.querySelector('.toggle-checkbox');
-        if (featureToggle) {
-            featureToggle.addEventListener('change', function() {
-                const robotId = robot.id;
-                const isFeatured = this.checked;
-                
-                toggleRobotFeatured(robotId, isFeatured);
-            });
-        }
-        
-        // Add event listeners to action buttons
-        const viewBtn = row.querySelector('.table-action.view');
-        if (viewBtn) {
-            viewBtn.addEventListener('click', function() {
-                const robotId = this.dataset.id;
-                viewRobot(robotId);
-            });
-        }
-        
-        const deleteBtn = row.querySelector('.table-action.delete');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', function() {
-                const robotId = this.dataset.id;
-                openDeleteConfirmation([robotId]);
-            });
-        }
-    });
+            
+            updateBulkActionStatus();
+        });
+    }
     
-    // Reset the "select all" checkbox
-    const selectAllCheckbox = document.getElementById('select-all');
-    if (selectAllCheckbox) {
-        selectAllCheckbox.checked = false;
+    // Bulk delete button
+    if (bulkDeleteButton) {
+        bulkDeleteButton.addEventListener('click', function() {
+            if (selectedRobots.size > 0) {
+                const confirmBulkDelete = confirm(`Are you sure you want to delete ${selectedRobots.size} robots? This action cannot be undone.`);
+                
+                if (confirmBulkDelete) {
+                    // Delete selected robots
+                    let deletedCount = 0;
+                    
+                    selectedRobots.forEach(robotId => {
+                        const success = deleteRobot(robotId);
+                        if (success) deletedCount++;
+                    });
+                    
+                    // Clear selected robots
+                    selectedRobots.clear();
+                    
+                    // Reload robots and update the table
+                    loadRobots();
+                    
+                    // Show success message
+                    showSuccessMessage(`${deletedCount} robots deleted successfully!`);
+                }
+            }
+        });
     }
 }
 
 /**
- * Update bulk action buttons based on selection
+ * Update bulk action button status based on selection
  */
-function updateBulkActionButtons() {
-    const bulkDeleteBtn = document.getElementById('bulk-delete');
+function updateBulkActionStatus() {
+    const bulkDeleteButton = document.getElementById('bulk-delete');
     
-    if (bulkDeleteBtn) {
-        bulkDeleteBtn.disabled = selectedRobots.size === 0;
-    }
-}
-
-/**
- * Toggle a robot's featured status
- * @param {string} robotId - Robot ID
- * @param {boolean} isFeatured - Whether the robot should be featured
- */
-function toggleRobotFeatured(robotId, isFeatured) {
-    try {
-        // Find the robot in our data
-        const robotIndex = allRobots.findIndex(robot => robot.id === robotId);
-        
-        if (robotIndex !== -1) {
-            // Update the robot in our data
-            allRobots[robotIndex].featured = isFeatured;
-            
-            // Update the robot in the database
-            updateRobot(robotId, { featured: isFeatured });
-            
-            // Log the activity
-            const robotName = allRobots[robotIndex].name;
-            const activityType = 'edit';
-            const activityText = isFeatured
-                ? `Robot "${robotName}" marked as featured`
-                : `Robot "${robotName}" removed from featured`;
-            
-            logActivity(activityType, activityText);
-        }
-    } catch (error) {
-        console.error('Error toggling robot featured status:', error);
-        showError('Failed to update robot. Please try again.');
+    if (bulkDeleteButton) {
+        bulkDeleteButton.disabled = selectedRobots.size === 0;
     }
 }
 
 /**
  * Open the delete confirmation modal
- * @param {string[]} robotIds - Array of robot IDs to delete
+ * @param {Object} robot - The robot to delete
  */
-function openDeleteConfirmation(robotIds) {
+function openDeleteModal(robot) {
     const modal = document.getElementById('robot-action-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalBody = document.getElementById('modal-body');
-    const confirmDeleteBtn = document.getElementById('confirm-delete');
     const previewName = document.getElementById('preview-name');
-    const previewDesc = document.getElementById('preview-description');
+    const previewDescription = document.getElementById('preview-description');
     const previewImg = document.getElementById('preview-img');
+    const confirmDeleteButton = document.getElementById('confirm-delete');
     
-    if (!modal || !modalTitle || !modalBody || !confirmDeleteBtn) return;
+    if (!modal || !confirmDeleteButton) return;
     
-    // Clear existing content
-    modalBody.innerHTML = '';
+    // Update modal content
+    if (modalTitle) modalTitle.textContent = `Delete Robot: ${robot.name}`;
     
-    // Set the title based on the number of robots
-    if (robotIds.length === 1) {
-        // Single robot deletion
-        const robotId = robotIds[0];
-        const robot = allRobots.find(r => r.id === robotId);
-        
-        if (!robot) return;
-        
-        modalTitle.textContent = 'Delete Robot';
-        modalBody.innerHTML = `
-            <p>Are you sure you want to delete this robot? This action cannot be undone.</p>
-            <div class="robot-preview" id="robot-preview">
-                <div class="robot-preview-img">
-                    <img src="../${robot.mainImage}" alt="${robot.name}" onerror="this.src='../images/robots/placeholder.jpg'">
-                </div>
-                <div class="robot-preview-info">
-                    <h4>${robot.name}</h4>
-                    <p>${robot.description || 'No description available.'}</p>
-                </div>
-            </div>
-        `;
-    } else {
-        // Multiple robots deletion
-        modalTitle.textContent = 'Delete Multiple Robots';
-        
-        let robotsList = '';
-        robotIds.forEach(id => {
-            const robot = allRobots.find(r => r.id === id);
-            if (robot) {
-                robotsList += `<li>${robot.name}</li>`;
-            }
-        });
-        
-        modalBody.innerHTML = `
-            <p>Are you sure you want to delete the following robots? This action cannot be undone.</p>
-            <ul class="delete-list">
-                ${robotsList}
-            </ul>
-        `;
+    if (previewName) previewName.textContent = robot.name;
+    if (previewDescription) previewDescription.textContent = robot.description || 'No description available';
+    
+    if (previewImg) {
+        previewImg.src = getFileUrl(robot.mainImage || '../images/robots/placeholder.jpg');
+        previewImg.onerror = function() {
+            this.src = '../images/robots/placeholder.jpg';
+        };
     }
     
-    // Set the robot IDs for the confirm button
-    confirmDeleteBtn.dataset.robotIds = robotIds.join(',');
+    // Set robot ID for delete confirmation
+    confirmDeleteButton.dataset.robotId = robot.id;
     
     // Show the modal
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
 }
 
 /**
- * Delete one or more robots
- * @param {string[]} robotIds - Array of robot IDs to delete
+ * Show a success message to the user
+ * @param {string} message - The message to display
  */
-function deleteRobots(robotIds) {
-    try {
-        // Get the names of the robots being deleted (for logging)
-        const robotNames = robotIds.map(id => {
-            const robot = allRobots.find(r => r.id === id);
-            return robot ? robot.name : 'Unknown Robot';
-        });
-        
-        // Delete each robot
-        robotIds.forEach(id => {
-            deleteRobot(id);
-            
-            // Remove from selectedRobots set
-            selectedRobots.delete(id);
-        });
-        
-        // Update bulk action buttons
-        updateBulkActionButtons();
-        
-        // Refresh the robots list
-        allRobots = allRobots.filter(robot => !robotIds.includes(robot.id));
-        filterRobots();
-        renderRobotPage(1);
-        
-        // Log the activity
-        let activityText;
-        if (robotIds.length === 1) {
-            activityText = `Robot "${robotNames[0]}" deleted`;
-        } else {
-            activityText = `${robotIds.length} robots deleted`;
-        }
-        
-        logActivity('delete', activityText);
-        
-        // Show success message
-        showSuccess(`${robotIds.length} robot(s) deleted successfully`);
-    } catch (error) {
-        console.error('Error deleting robots:', error);
-        showError('Failed to delete robot(s). Please try again.');
-    }
-}
-
-/**
- * View a robot (opens robot detail page in a new tab)
- * @param {string} robotId - Robot ID
- */
-function viewRobot(robotId) {
-    const robot = allRobots.find(r => r.id === robotId);
+function showSuccessMessage(message) {
+    const adminContent = document.querySelector('.admin-content');
     
-    if (robot) {
-        window.open(`../robots/${robot.slug}.html`, '_blank');
-    }
-}
-
-/**
- * Show a success message
- * @param {string} message - Success message to display
- */
-function showSuccess(message) {
-    // Create a success notification
-    const notification = document.createElement('div');
-    notification.className = 'notification success';
-    notification.innerHTML = `
-        <i class="fas fa-check-circle"></i>
-        <p>${message}</p>
-        <button class="close-notification">&times;</button>
+    if (!adminContent) return;
+    
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.className = 'admin-message admin-message-success';
+    messageElement.innerHTML = `
+        <div class="admin-message-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="admin-message-content">
+            <h4>Success</h4>
+            <p>${message}</p>
+        </div>
+        <button type="button" class="admin-message-close">
+            <i class="fas fa-times"></i>
+        </button>
     `;
     
-    // Add to the page
-    document.body.appendChild(notification);
+    // Add to the beginning of the content
+    adminContent.insertBefore(messageElement, adminContent.firstChild);
     
     // Add close button functionality
-    const closeBtn = notification.querySelector('.close-notification');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-            notification.remove();
-        });
-    }
+    messageElement.querySelector('.admin-message-close').addEventListener('click', function() {
+        messageElement.remove();
+    });
     
-    // Auto-close after 5 seconds
+    // Auto-remove after 5 seconds
     setTimeout(() => {
-        notification.remove();
+        if (messageElement.parentNode) {
+            messageElement.remove();
+        }
     }, 5000);
 }
 
 /**
- * Show an error message
- * @param {string} message - Error message to display
+ * Show an error message to the user
+ * @param {string} message - The message to display
  */
-function showError(message) {
-    // Create an error notification
-    const notification = document.createElement('div');
-    notification.className = 'notification error';
-    notification.innerHTML = `
-        <i class="fas fa-exclamation-circle"></i>
-        <p>${message}</p>
-        <button class="close-notification">&times;</button>
+function showErrorMessage(message) {
+    const adminContent = document.querySelector('.admin-content');
+    
+    if (!adminContent) return;
+    
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.className = 'admin-message admin-message-error';
+    messageElement.innerHTML = `
+        <div class="admin-message-icon">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="admin-message-content">
+            <h4>Error</h4>
+            <p>${message}</p>
+        </div>
+        <button type="button" class="admin-message-close">
+            <i class="fas fa-times"></i>
+        </button>
     `;
     
-    // Add to the page
-    document.body.appendChild(notification);
+    // Add to the beginning of the content
+    adminContent.insertBefore(messageElement, adminContent.firstChild);
     
     // Add close button functionality
-    const closeBtn = notification.querySelector('.close-notification');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-            notification.remove();
-        });
-    }
+    messageElement.querySelector('.admin-message-close').addEventListener('click', function() {
+        messageElement.remove();
+    });
     
-    // Auto-close after 5 seconds
+    // Auto-remove after 5 seconds
     setTimeout(() => {
-        notification.remove();
+        if (messageElement.parentNode) {
+            messageElement.remove();
+        }
     }, 5000);
 }
