@@ -4,12 +4,13 @@
  * This file contains code for handling the add robot form functionality.
  */
 
-import { createRobot } from './robot-service.js';
+import { createRobot, extractYouTubeID, extractVimeoID } from './robot-service.js';
 import { uploadFile, uploadMultipleFiles, getFileUrl } from './file-upload-service.js';
 
 // Track uploaded files
 let mainImageFile = null;
 let additionalImageFiles = [];
+let videoFiles = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     initImageUpload();
@@ -224,6 +225,50 @@ function initVideoUrlsAndReferences() {
                 }
             });
         }
+
+        // Add video url preview functionality
+        videoUrls.addEventListener('input', function(e) {
+            if (e.target && e.target.tagName === 'INPUT') {
+                const url = e.target.value.trim();
+                const videoUrlInput = e.target.closest('.video-url-input');
+                
+                // Remove existing preview
+                const existingPreview = videoUrlInput.querySelector('.video-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                // Check if the URL is for YouTube or Vimeo
+                const youtubeId = extractYouTubeID(url);
+                const vimeoId = extractVimeoID(url);
+                
+                if (youtubeId || vimeoId) {
+                    // Create preview element
+                    const previewEl = document.createElement('div');
+                    previewEl.className = 'video-preview';
+                    
+                    if (youtubeId) {
+                        previewEl.innerHTML = `
+                            <div class="video-preview-thumbnail">
+                                <img src="https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg" alt="YouTube preview">
+                                <div class="video-type">YouTube</div>
+                            </div>
+                        `;
+                    } else if (vimeoId) {
+                        // For Vimeo, we can't easily get a thumbnail without API
+                        previewEl.innerHTML = `
+                            <div class="video-preview-thumbnail">
+                                <i class="fab fa-vimeo fa-3x"></i>
+                                <div class="video-type">Vimeo</div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Insert after input
+                    videoUrlInput.appendChild(previewEl);
+                }
+            }
+        });
     }
     
     // References
@@ -307,6 +352,7 @@ function initFormSubmission() {
             // Upload files first
             let mainImagePath = 'images/robots/placeholder.jpg'; // Default
             let galleryPaths = [];
+            let videoPaths = [];
             
             // Upload main image if one was selected
             if (mainImageFile) {
@@ -328,8 +374,18 @@ function initFormSubmission() {
                 }
             }
             
+            // Upload video files if any were selected
+            if (videoFiles.length > 0) {
+                try {
+                    videoPaths = await uploadMultipleFiles(videoFiles, 'videos');
+                } catch (error) {
+                    console.error('Error uploading video files:', error);
+                    alert('There was an error uploading some video files.');
+                }
+            }
+            
             // Get form data
-            const robotData = await getFormData(mainImagePath, galleryPaths);
+            const robotData = await getFormData(mainImagePath, galleryPaths, videoPaths);
             
             // Validate required fields
             if (!robotData.name || !robotData.category) {
@@ -387,7 +443,7 @@ function initFormSubmission() {
                 });
                 
                 // Get form data
-                const robotData = await getFormData(mainImageTemp, galleryTemp);
+                const robotData = await getFormData(mainImageTemp, galleryTemp, []);
                 
                 // Store in session storage for preview
                 sessionStorage.setItem('robotPreview', JSON.stringify(robotData));
@@ -405,9 +461,10 @@ function initFormSubmission() {
      * Get all form data as an object
      * @param {string} mainImagePath - Path to the main image
      * @param {Array} galleryPaths - Paths to gallery images
+     * @param {Array} videoPaths - Paths to uploaded video files
      * @returns {Object} Robot data
      */
-    async function getFormData(mainImagePath, galleryPaths) {
+    async function getFormData(mainImagePath, galleryPaths, videoPaths) {
         // Basic info
         const name = document.getElementById('robot-name').value;
         const manufacturer = document.getElementById('robot-manufacturer').value;
@@ -444,8 +501,44 @@ function initFormSubmission() {
         
         videoInputs.forEach(input => {
             if (input.value) {
-                videoList.push(input.value);
+                const url = input.value.trim();
+                const youtubeId = extractYouTubeID(url);
+                const vimeoId = extractVimeoID(url);
+                
+                if (youtubeId) {
+                    videoList.push({
+                        type: 'youtube',
+                        id: youtubeId,
+                        title: `${name} YouTube Video`,
+                        url: url
+                    });
+                } else if (vimeoId) {
+                    videoList.push({
+                        type: 'vimeo',
+                        id: vimeoId,
+                        title: `${name} Vimeo Video`,
+                        url: url
+                    });
+                } else {
+                    // Might be a direct file URL
+                    videoList.push({
+                        type: 'file',
+                        id: null,
+                        title: `${name} Video`,
+                        url: url
+                    });
+                }
             }
+        });
+        
+        // Add any uploaded video files
+        videoPaths.forEach((path, index) => {
+            videoList.push({
+                type: 'file',
+                id: null,
+                title: `${name} Video ${index + 1}`,
+                url: path
+            });
         });
         
         // Get references
@@ -464,7 +557,48 @@ function initFormSubmission() {
         const tagsList = tags ? tags.split(',').map(tag => tag.trim()) : [];
         
         // Formatted HTML content from full description
-        const formattedContent = fullDesc ? `<p>${fullDesc.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>` : '';
+        let formattedContent = '';
+        if (fullDesc) {
+            formattedContent = `<p>${fullDesc.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+            
+            // Add any video embeds to the content if there are videos
+            if (videoList.length > 0) {
+                formattedContent += '<h3>Videos</h3>';
+                
+                videoList.forEach(video => {
+                    if (video.type === 'youtube') {
+                        formattedContent += `
+                            <div class="video-container">
+                                <iframe src="https://www.youtube-nocookie.com/embed/${video.id}" 
+                                    title="${video.title}" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        `;
+                    } else if (video.type === 'vimeo') {
+                        formattedContent += `
+                            <div class="video-container">
+                                <iframe src="https://player.vimeo.com/video/${video.id}" 
+                                    title="${video.title}" 
+                                    allow="autoplay; fullscreen; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        `;
+                    } else if (video.type === 'file') {
+                        formattedContent += `
+                            <div class="video-container">
+                                <video controls preload="metadata">
+                                    <source src="../${video.url}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        `;
+                    }
+                });
+            }
+        }
         
         // Combine features from capabilities and applications
         const features = [...capabilitiesList, ...applicationsList];
@@ -511,6 +645,7 @@ function initFormSubmission() {
         // Reset files
         mainImageFile = null;
         additionalImageFiles = [];
+        videoFiles = [];
         
         // Reset main image
         const mainImagePreview = document.getElementById('main-image-preview');
@@ -539,6 +674,10 @@ function initFormSubmission() {
                 const input = firstInput.querySelector('input');
                 
                 if (input) input.value = '';
+                
+                // Remove any video previews
+                const videoPreview = firstInput.querySelector('.video-preview');
+                if (videoPreview) videoPreview.remove();
                 
                 // Make sure the button is an add button
                 const button = firstInput.querySelector('button');
