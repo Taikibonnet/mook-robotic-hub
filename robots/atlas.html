@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../css/robot-detail.css">
     <link rel="stylesheet" href="../css/fix-scroll.css">
     <link rel="stylesheet" href="../css/encyclopedia-fix.css">
+    <link rel="stylesheet" href="../css/robot-detail-fix.css">
     <style>
         .admin-button {
             position: fixed;
@@ -40,40 +41,11 @@
             font-size: 24px;
         }
         
-        /* Fix for robot hero section */
+        /* Additional inline styles for specific fixes */
         .robot-hero {
-            padding: 2rem;
+            background-color: var(--background-light);
         }
         
-        .robot-hero-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-        
-        /* Fix for robot image display */
-        .robot-hero-image {
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            background-color: var(--card-bg);
-        }
-        
-        .robot-hero-image img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            display: block;
-        }
-        
-        /* Categories styling */
         .robot-categories {
             display: flex;
             gap: 1rem;
@@ -82,7 +54,7 @@
         
         .robot-category,
         .robot-year {
-            background-color: rgba(var(--primary-color-rgb), 0.1);
+            background-color: rgba(0, 180, 216, 0.1);
             color: var(--primary-color);
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
@@ -90,35 +62,11 @@
             font-weight: 500;
         }
         
-        .robot-manufacturer {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
-        
-        /* Robot content container fixes */
-        .robot-content-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-        
-        /* Quick facts styling adjustment */
-        .quick-facts li {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 0.8rem;
-        }
-        
-        .quick-facts li i {
-            color: var(--primary-color);
-            margin-right: 0.5rem;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .fact-label {
-            margin-right: 0.5rem;
+        /* Preload the image to prevent lag */
+        body::after {
+            content: "";
+            display: none;
+            background-image: url('../images/robots/placeholder.jpg');
         }
     </style>
 </head>
@@ -335,6 +283,32 @@
 
     <script src="../js/main.js"></script>
     <script src="../js/auth.js"></script>
+    <script>
+        // Add this script to preload images and ensure they display properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preload the main robot image
+            const mainImage = document.getElementById('robot-main-image');
+            if (mainImage) {
+                const img = new Image();
+                img.onload = function() {
+                    mainImage.src = this.src;
+                    mainImage.classList.add('loaded');
+                };
+                img.src = '../images/robots/placeholder.jpg';
+            }
+            
+            // Preload gallery images
+            const galleryImages = document.querySelectorAll('.gallery-image');
+            galleryImages.forEach(function(image) {
+                const img = new Image();
+                img.onload = function() {
+                    image.src = this.src;
+                    image.classList.add('loaded');
+                };
+                img.src = '../images/robots/placeholder.jpg';
+            });
+        });
+    </script>
     <script type="module" src="../js/robot-detail.js"></script>
 </body>
 </html>
