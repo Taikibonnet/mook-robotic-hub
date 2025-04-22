@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/encyclopedia.css">
     <link rel="stylesheet" href="../css/robot-detail.css">
+    <link rel="stylesheet" href="../css/fix-scroll.css">
     <style>
         .admin-button {
             position: fixed;
@@ -36,6 +37,87 @@
         
         .admin-button i {
             font-size: 24px;
+        }
+        
+        /* Fix for robot hero section */
+        .robot-hero {
+            padding: 2rem;
+        }
+        
+        .robot-hero-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        /* Fix for robot image display */
+        .robot-hero-image {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            background-color: var(--card-bg);
+        }
+        
+        .robot-hero-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* Categories styling */
+        .robot-categories {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .robot-category,
+        .robot-year {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .robot-manufacturer {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        /* Robot content container fixes */
+        .robot-content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Quick facts styling adjustment */
+        .quick-facts li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+        
+        .quick-facts li i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .fact-label {
+            margin-right: 0.5rem;
         }
     </style>
 </head>
@@ -81,7 +163,7 @@
         <section class="robot-hero">
             <div class="robot-hero-container">
                 <div class="robot-hero-image">
-                    <img src="../images/robots/atlas.jpg" alt="Atlas" onerror="this.src='../images/robots/placeholder.jpg'">
+                    <img src="../images/robots/placeholder.jpg" alt="Atlas Robot" id="robot-main-image">
                 </div>
                 <div class="robot-hero-info">
                     <div class="robot-categories">
@@ -149,10 +231,10 @@
                     <h2>Image Gallery</h2>
                     <div class="gallery-grid">
                         <div class="gallery-item">
-                            <img src="../images/robots/atlas-1.jpg" alt="Atlas" onerror="this.src='../images/robots/placeholder.jpg'">
+                            <img src="../images/robots/placeholder.jpg" alt="Atlas in action" class="gallery-image">
                         </div>
                         <div class="gallery-item">
-                            <img src="../images/robots/atlas-2.jpg" alt="Atlas" onerror="this.src='../images/robots/placeholder.jpg'">
+                            <img src="../images/robots/placeholder.jpg" alt="Atlas closeup" class="gallery-image">
                         </div>
                     </div>
                 </section>
