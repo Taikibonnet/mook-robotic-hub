@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimus - MOOK Robotics Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/encyclopedia.css">
+    <link rel="stylesheet" href="../css/robot-detail.css">
+    <link rel="stylesheet" href="../css/fix-scroll.css">
+    <link rel="stylesheet" href="../css/encyclopedia-fix.css">
+    <link rel="stylesheet" href="../css/robot-detail-fix.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
+                <svg width="50" height="50" viewBox="0 0 50 50" class="logo-svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                    <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
+                    <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
+                </svg>
+                <span>MOOK Robotics Hub</span>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html" class="active">Encyclopedia</a>
+                <a href="../news.html">News</a>
+                <a href="../about.html">About</a>
+            </div>
+            <div class="nav-auth">
+                <button id="login-btn" class="btn btn-primary">Login</button>
+                <button id="signup-btn" class="btn btn-outline">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="robot-breadcrumb">
+            <div class="breadcrumb-container">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="index.html">Encyclopedia</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Optimus</span>
+            </div>
+        </div>
+
+        <section class="robot-hero">
+            <div class="robot-hero-container">
+                <div class="robot-hero-image">
+                    <img src="../images/robots/placeholder.jpg" alt="Optimus Robot" id="robot-main-image">
+                </div>
+                <div class="robot-hero-info">
+                    <div class="robot-categories">
+                        <span class="robot-category">Humanoid</span>
+                        <span class="robot-year">2022</span>
+                    </div>
+                    <h1>Optimus</h1>
+                    <p class="robot-manufacturer">Tesla</p>
+                    <p class="robot-description">Tesla Optimus is a humanoid robot designed to perform manual tasks, blending AI with robotics for future labor automation.</p>
+                    <div class="robot-actions">
+                        <a href="#specifications" class="btn btn-primary">Specifications</a>
+                        <a href="#features" class="btn btn-outline">Features</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="robot-content-container">
+            <div class="robot-main-content">
+                <section id="overview" class="robot-section">
+                    <h2>Overview</h2>
+                    <div class="robot-content">
+                        <p>Optimus, also known as Tesla Bot, is a humanoid robot developed by Tesla. It was first announced in August 2021 at Tesla's AI Day event and was designed to perform tasks that are unsafe, repetitive, or boring for humans.</p>
+                        <p>The robot is intended to navigate through a world built for humans and aims to eliminate dangerous, repetitive, and boring tasks. Tesla CEO Elon Musk has stated that the robot could eventually run errands, like grocery shopping, or perform household chores.</p>
+                    </div>
+                </section>
+
+                <section id="features" class="robot-section">
+                    <h2>Features</h2>
+                    <ul class="features-list">
+                        <li>Advanced AI capabilities powered by Tesla's neural networks</li>
+                        <li>Autopilot computer for autonomous movement and task handling</li>
+                        <li>Human-like hands with opposable thumbs for manipulating objects</li>
+                        <li>Vision-based object recognition</li>
+                        <li>Natural language processing for verbal interaction</li>
+                    </ul>
+                </section>
+
+                <section id="specifications" class="robot-section">
+                    <h2>Specifications</h2>
+                    <div class="specs-container">
+                        <div class="specs-column">
+                            <div class="spec-group">
+                                <h3>Technical Details</h3>
+                                <div class="spec-item">
+                                    <span class="spec-label">Height</span>
+                                    <span class="spec-value">5'8" (173 cm)</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Weight</span>
+                                    <span class="spec-value">Approximately 125 lbs (57 kg)</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Max Speed</span>
+                                    <span class="spec-value">5 mph (8 km/h)</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Lifting Capacity</span>
+                                    <span class="spec-value">Up to 45 lbs (20 kg)</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Power Source</span>
+                                    <span class="spec-value">Rechargeable lithium-ion battery</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Operating Time</span>
+                                    <span class="spec-value">Estimated 8-10 hours</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="gallery" class="robot-section">
+                    <h2>Image Gallery</h2>
+                    <div class="gallery-grid">
+                        <div class="gallery-item">
+                            <img src="../images/robots/placeholder.jpg" alt="Optimus robot front view" class="gallery-image">
+                        </div>
+                        <div class="gallery-item">
+                            <img src="../images/robots/placeholder.jpg" alt="Optimus robot performing a task" class="gallery-image">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="robot-sidebar">
+                <div class="sidebar-section">
+                    <h3>Quick Facts</h3>
+                    <ul class="quick-facts">
+                        <li>
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="fact-label">Year:</span>
+                            <span class="fact-value">2022</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-building"></i>
+                            <span class="fact-label">Manufacturer:</span>
+                            <span class="fact-value">Tesla</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-tag"></i>
+                            <span class="fact-label">Category:</span>
+                            <span class="fact-value">Humanoid</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>On This Page</h3>
+                    <ul class="page-nav">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#specifications">Specifications</a></li>
+                        <li><a href="#gallery">Image Gallery</a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Admin Actions</h3>
+                    <ul class="page-nav">
+                        <li><a href="../admin/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="../admin/edit-robot.html?id=optimus"><i class="fas fa-edit"></i> Edit This Robot</a></li>
+                        <li><a href="../admin/add-robot.html"><i class="fas fa-plus-circle"></i> Add New Robot</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>MOOK Robotics Hub</h3>
+                <p>Your interactive guide to the world of robotics</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="index.html">Encyclopedia</a></li>
+                    <li><a href="../news.html">News</a></li>
+                    <li><a href="../about.html">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
+                    <li><a href="../contact.html">Contact Form</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#signup">Sign Up</a></li>
+                    <li><a href="../my-account.html">My Account</a></li>
+                    <li><a href="../admin/dashboard.html">Admin</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Simple script to handle image loading without the complex mechanisms that might be causing issues
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simple function to ensure images load correctly
+            function handleImageLoading() {
+                const images = document.querySelectorAll('img');
+                images.forEach(function(img) {
+                    // Set error handler for all images
+                    img.onerror = function() {
+                        this.src = '../images/robots/placeholder.jpg';
+                    };
+                });
+            }
+
+            // Run the image handler
+            handleImageLoading();
+            
+            // Enable smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
