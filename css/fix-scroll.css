@@ -1,0 +1,25 @@
+/* Fix for unwanted horizontal scrollbar */
+html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+    position: relative;
+}
+
+/* Fix for any potential overflow elements */
+section, 
+header, 
+footer, 
+.container, 
+.hero, 
+.about-container,
+.robot-cards,
+.news-container,
+.footer-content {
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+/* Ensure all children elements don't cause overflow */
+* {
+    max-width: 100%;
+}
