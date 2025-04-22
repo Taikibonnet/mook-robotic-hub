@@ -9,134 +9,457 @@
     <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/encyclopedia.css">
     <link rel="stylesheet" href="../css/robot-detail.css">
-</head>
-<body>
-    <div id="robot-content-container">
-        <div class="loading-container">
-            <div class="loading-spinner"></div>
-            <p>Loading robot information...</p>
-        </div>
-    </div>
-
-    <script type="module">
-        import { getRobotHtml } from '../js/robot-service.js';
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadDynamicRobotContent();
-        });
-
-        /**
-         * Load dynamic robot content from localStorage
-         */
-        function loadDynamicRobotContent() {
-            // Get slug from URL parameters
-            const params = new URLSearchParams(window.location.search);
-            const slug = params.get('slug');
-            
-            if (!slug) {
-                displayError('Robot not found');
-                return;
-            }
-            
-            // Get HTML content for this robot
-            const htmlContent = getRobotHtml(slug);
-            
-            if (!htmlContent) {
-                displayError('Robot content not found');
-                return;
-            }
-            
-            // Set the HTML content
-            // We can't completely replace the page content, but we can replace the body
-            // This is a simplified approach for a static site
-            document.body.innerHTML = htmlContent.split('<body>')[1].split('</body>')[0];
-            
-            // Append necessary scripts
-            appendScripts();
-        }
-        
-        /**
-         * Display an error message
-         * @param {string} message - Error message
-         */
-        function displayError(message) {
-            const container = document.getElementById('robot-content-container');
-            container.innerHTML = `
-                <div class="error-message">
-                    <h2>Error</h2>
-                    <p>${message}</p>
-                    <p><a href="index.html">Return to Encyclopedia</a></p>
-                </div>
-            `;
-        }
-        
-        /**
-         * Append necessary scripts to the page
-         */
-        function appendScripts() {
-            // Add main.js
-            const mainScript = document.createElement('script');
-            mainScript.src = '../js/main.js';
-            document.body.appendChild(mainScript);
-            
-            // Add auth.js
-            const authScript = document.createElement('script');
-            authScript.src = '../js/auth.js';
-            document.body.appendChild(authScript);
-        }
-    </script>
-    
+    <link rel="stylesheet" href="../css/fix-scroll.css">
+    <link rel="stylesheet" href="../css/encyclopedia-fix.css">
+    <link rel="stylesheet" href="../css/robot-detail-fix.css">
     <style>
-        .loading-container {
+        /* Admin image upload styles */
+        .robot-hero-image {
+            min-height: 350px;
+            max-height: 400px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            font-family: var(--font-family);
-            color: var(--text-color);
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 20px;
+        .robot-hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* Ensure the image doesn't overflow */
+        .robot-hero-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 2rem;
         }
         
-        .error-message {
-            text-align: center;
-            padding: 50px;
-            max-width: 600px;
-            margin: 0 auto;
+        .robot-hero-image {
+            flex: 0 0 350px;
         }
         
-        .error-message h2 {
-            color: #e74c3c;
-            margin-bottom: 20px;
+        .robot-hero-info {
+            flex: 1;
+            min-width: 300px;
         }
         
-        .error-message a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
+        /* Make sure the admin uploaded image is displayed properly */
+        .admin-uploaded-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
         
-        .error-message a:hover {
-            background-color: var(--primary-dark-color);
+        /* Fix for image loading */
+        .image-loading {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-loaded {
+            opacity: 1;
         }
     </style>
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo">
+                <svg width="50" height="50" viewBox="0 0 50 50" class="logo-svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                    <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
+                    <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
+                    <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
+                </svg>
+                <span>MOOK Robotics Hub</span>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html" class="active">Encyclopedia</a>
+                <a href="../news.html">News</a>
+                <a href="../about.html">About</a>
+                <a href="../admin/dashboard.html" class="admin-link"><i class="fas fa-cog"></i> Admin</a>
+            </div>
+            <div class="nav-auth">
+                <button id="login-btn" class="btn btn-primary">Login</button>
+                <button id="signup-btn" class="btn btn-outline">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="robot-breadcrumb">
+            <div class="breadcrumb-container">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="index.html">Encyclopedia</a>
+                <i class="fas fa-chevron-right"></i>
+                <span id="robot-name">Robot Detail</span>
+            </div>
+        </div>
+
+        <section class="robot-hero">
+            <div class="robot-hero-container">
+                <!-- This is where the admin-uploaded image will appear -->
+                <div class="robot-hero-image">
+                    <img src="../images/robots/placeholder.jpg" alt="Robot Image" id="robot-main-image" class="image-loading admin-uploaded-image">
+                </div>
+                <div class="robot-hero-info">
+                    <div class="robot-categories">
+                        <span id="robot-category" class="robot-category">Category</span>
+                        <span id="robot-year" class="robot-year">Year</span>
+                    </div>
+                    <h1 id="robot-title">Robot Name</h1>
+                    <p id="robot-manufacturer" class="robot-manufacturer">Manufacturer</p>
+                    <p id="robot-description" class="robot-description">Description of the robot</p>
+                    <div class="robot-actions">
+                        <a href="#specifications" class="btn btn-primary">Specifications</a>
+                        <a href="#features" class="btn btn-outline">Features</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="robot-content-container">
+            <div class="robot-main-content">
+                <section id="overview" class="robot-section">
+                    <h2>Overview</h2>
+                    <div id="robot-overview" class="robot-content">
+                        <p>Robot overview content will be loaded here.</p>
+                    </div>
+                </section>
+
+                <section id="features" class="robot-section">
+                    <h2>Features</h2>
+                    <ul id="robot-features" class="features-list">
+                        <li>Feature 1</li>
+                    </ul>
+                </section>
+
+                <section id="specifications" class="robot-section">
+                    <h2>Specifications</h2>
+                    <div class="specs-container">
+                        <div class="specs-column">
+                            <div class="spec-group">
+                                <h3>Technical Details</h3>
+                                <div id="robot-specs-container">
+                                    <!-- Specifications will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="gallery" class="robot-section">
+                    <h2>Image Gallery</h2>
+                    <div id="robot-gallery" class="gallery-grid">
+                        <!-- Gallery will be loaded here -->
+                    </div>
+                </section>
+            </div>
+
+            <aside class="robot-sidebar">
+                <div class="sidebar-section">
+                    <h3>Quick Facts</h3>
+                    <ul class="quick-facts">
+                        <li>
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="fact-label">Year:</span>
+                            <span id="quick-year" class="fact-value">Year</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-building"></i>
+                            <span class="fact-label">Manufacturer:</span>
+                            <span id="quick-manufacturer" class="fact-value">Manufacturer</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-tag"></i>
+                            <span class="fact-label">Category:</span>
+                            <span id="quick-category" class="fact-value">Category</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>On This Page</h3>
+                    <ul class="page-nav">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#specifications">Specifications</a></li>
+                        <li><a href="#gallery">Image Gallery</a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section admin-actions">
+                    <h3>Admin Actions</h3>
+                    <ul class="page-nav">
+                        <li><a href="../admin/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="../admin/edit-robot.html" id="edit-this-robot"><i class="fas fa-edit"></i> Edit This Robot</a></li>
+                        <li><a href="../admin/add-robot.html"><i class="fas fa-plus-circle"></i> Add New Robot</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>MOOK Robotics Hub</h3>
+                <p>Your interactive guide to the world of robotics</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="index.html">Encyclopedia</a></li>
+                    <li><a href="../news.html">News</a></li>
+                    <li><a href="../about.html">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="mailto:info@mookrobotics.com">info@mookrobotics.com</a></li>
+                    <li><a href="../contact.html">Contact Form</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#signup">Sign Up</a></li>
+                    <li><a href="../my-account.html">My Account</a></li>
+                    <li><a href="../admin/dashboard.html">Admin</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+        
+        // Load robot data based on the URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const robotId = getUrlParameter('id');
+            if (robotId) {
+                fetchRobotData(robotId);
+            } else {
+                console.error('No robot ID provided in URL');
+                document.getElementById('robot-title').textContent = 'Robot Not Found';
+                document.getElementById('robot-description').textContent = 'Please select a robot from the encyclopedia.';
+            }
+            
+            // Set up the edit link for admins
+            const editLink = document.getElementById('edit-this-robot');
+            if (editLink && robotId) {
+                editLink.href = `../admin/edit-robot.html?id=${robotId}`;
+            }
+        });
+        
+        // Function to fetch robot data
+        function fetchRobotData(robotId) {
+            // In a real implementation, this would fetch data from an API or database
+            // For this example, we'll use dummy data
+            fetch(`../data/robots/${robotId}.json`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Robot data not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    populateRobotData(data);
+                })
+                .catch(error => {
+                    console.error('Error loading robot data:', error);
+                    // Use placeholder data if the fetch fails
+                    populateRobotData(getDummyRobotData(robotId));
+                });
+        }
+        
+        // Function to populate the page with robot data
+        function populateRobotData(robot) {
+            // Set main robot information
+            document.getElementById('robot-name').textContent = robot.name;
+            document.getElementById('robot-title').textContent = robot.name;
+            document.getElementById('robot-category').textContent = robot.category;
+            document.getElementById('robot-year').textContent = robot.year;
+            document.getElementById('robot-manufacturer').textContent = robot.manufacturer;
+            document.getElementById('robot-description').textContent = robot.description;
+            
+            // Set quick facts
+            document.getElementById('quick-year').textContent = robot.year;
+            document.getElementById('quick-manufacturer').textContent = robot.manufacturer;
+            document.getElementById('quick-category').textContent = robot.category;
+            
+            // Set overview
+            const overviewContainer = document.getElementById('robot-overview');
+            overviewContainer.innerHTML = '';
+            if (robot.overview && robot.overview.length > 0) {
+                robot.overview.forEach(paragraph => {
+                    const p = document.createElement('p');
+                    p.textContent = paragraph;
+                    overviewContainer.appendChild(p);
+                });
+            } else {
+                const p = document.createElement('p');
+                p.textContent = 'No overview available for this robot.';
+                overviewContainer.appendChild(p);
+            }
+            
+            // Set features
+            const featuresContainer = document.getElementById('robot-features');
+            featuresContainer.innerHTML = '';
+            if (robot.features && robot.features.length > 0) {
+                robot.features.forEach(feature => {
+                    const li = document.createElement('li');
+                    li.textContent = feature;
+                    featuresContainer.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No features listed for this robot.';
+                featuresContainer.appendChild(li);
+            }
+            
+            // Set specifications
+            const specsContainer = document.getElementById('robot-specs-container');
+            specsContainer.innerHTML = '';
+            if (robot.specifications && Object.keys(robot.specifications).length > 0) {
+                for (const [key, value] of Object.entries(robot.specifications)) {
+                    const specItem = document.createElement('div');
+                    specItem.className = 'spec-item';
+                    
+                    const specLabel = document.createElement('span');
+                    specLabel.className = 'spec-label';
+                    specLabel.textContent = key;
+                    
+                    const specValue = document.createElement('span');
+                    specValue.className = 'spec-value';
+                    specValue.textContent = value;
+                    
+                    specItem.appendChild(specLabel);
+                    specItem.appendChild(specValue);
+                    specsContainer.appendChild(specItem);
+                }
+            } else {
+                const p = document.createElement('p');
+                p.textContent = 'No specifications available for this robot.';
+                specsContainer.appendChild(p);
+            }
+            
+            // Set gallery
+            const galleryContainer = document.getElementById('robot-gallery');
+            galleryContainer.innerHTML = '';
+            if (robot.gallery && robot.gallery.length > 0) {
+                robot.gallery.forEach(image => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = image.url;
+                    img.alt = image.alt || robot.name;
+                    img.className = 'image-loading';
+                    img.onload = function() {
+                        this.classList.remove('image-loading');
+                        this.classList.add('image-loaded');
+                    };
+                    img.onerror = function() {
+                        this.src = '../images/robots/placeholder.jpg';
+                    };
+                    
+                    galleryItem.appendChild(img);
+                    galleryContainer.appendChild(galleryItem);
+                });
+            } else {
+                const p = document.createElement('p');
+                p.textContent = 'No gallery images available for this robot.';
+                galleryContainer.appendChild(p);
+            }
+            
+            // Set main image
+            const mainImage = document.getElementById('robot-main-image');
+            if (robot.image) {
+                mainImage.src = robot.image;
+                mainImage.alt = robot.name;
+            } else {
+                mainImage.src = '../images/robots/placeholder.jpg';
+                mainImage.alt = 'Placeholder image for ' + robot.name;
+            }
+            
+            // Handle image loading
+            mainImage.onload = function() {
+                this.classList.remove('image-loading');
+                this.classList.add('image-loaded');
+            };
+            
+            mainImage.onerror = function() {
+                this.src = '../images/robots/placeholder.jpg';
+                this.classList.remove('image-loading');
+                this.classList.add('image-loaded');
+            };
+            
+            // Update page title
+            document.title = `${robot.name} - MOOK Robotics Hub`;
+        }
+        
+        // Dummy data for testing
+        function getDummyRobotData(robotId) {
+            return {
+                id: robotId,
+                name: robotId.charAt(0).toUpperCase() + robotId.slice(1).replace(/-/g, ' '),
+                category: 'Humanoid',
+                year: '2023',
+                manufacturer: 'MOOK Robotics',
+                description: 'An advanced robot designed for various tasks.',
+                image: '../images/robots/placeholder.jpg',
+                overview: [
+                    'This is a placeholder description for this robot.',
+                    'More details about the robot would appear here in a real implementation.'
+                ],
+                features: [
+                    'Advanced AI capabilities',
+                    'Robust movement systems',
+                    'Sophisticated sensors'
+                ],
+                specifications: {
+                    'Height': '1.8 meters',
+                    'Weight': '80 kg',
+                    'Power Source': 'Rechargeable battery',
+                    'Battery Life': '8 hours'
+                },
+                gallery: [
+                    { url: '../images/robots/placeholder.jpg', alt: 'Robot front view' },
+                    { url: '../images/robots/placeholder.jpg', alt: 'Robot side view' }
+                ]
+            };
+        }
+    </script>
 </body>
 </html>
