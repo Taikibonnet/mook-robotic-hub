@@ -9,6 +9,66 @@
     <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/encyclopedia.css">
     <link rel="stylesheet" href="../css/robot-detail.css">
+    <link rel="stylesheet" href="../css/fix-scroll.css">
+    <link rel="stylesheet" href="../css/encyclopedia-fix.css">
+    <link rel="stylesheet" href="../css/robot-detail-fix.css">
+    <style>
+        .admin-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .admin-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+        }
+        
+        .admin-button i {
+            font-size: 24px;
+        }
+        
+        /* Additional inline styles for specific fixes */
+        .robot-hero {
+            background-color: var(--background-light);
+        }
+        
+        .robot-categories {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .robot-category,
+        .robot-year {
+            background-color: rgba(0, 180, 216, 0.1);
+            color: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        /* Preload the image to prevent lag */
+        body::after {
+            content: "";
+            display: none;
+            background-image: url('../images/robots/placeholder.jpg');
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -51,7 +111,7 @@
         <section class="robot-hero">
             <div class="robot-hero-container">
                 <div class="robot-hero-image">
-                    <img src="../images/robots/placeholder.jpg" alt="Robot" onerror="this.src='../images/robots/placeholder.jpg'">
+                    <img src="../images/robots/placeholder.jpg" alt="Spot Robot" id="robot-main-image">
                 </div>
                 <div class="robot-hero-info">
                     <div class="robot-categories">
@@ -60,7 +120,7 @@
                     </div>
                     <h1>Spot</h1>
                     <p class="robot-manufacturer">Boston Dynamics</p>
-                    <p class="robot-description">Loading description...</p>
+                    <p class="robot-description">Agile mobile robot that navigates terrain with unprecedented mobility</p>
                     <div class="robot-actions">
                         <a href="#specifications" class="btn btn-primary">Specifications</a>
                         <a href="#features" class="btn btn-outline">Features</a>
@@ -74,14 +134,19 @@
                 <section id="overview" class="robot-section">
                     <h2>Overview</h2>
                     <div class="robot-content">
-                        <p>Loading content...</p>
+                        <p>Spot is a quadruped robot developed by Boston Dynamics. It is known for its remarkable mobility and stability on various terrains. Spot can navigate rough ground, climb stairs, and avoid obstacles with ease.</p>
+                        <p>This versatile robot is designed for a range of applications including industrial inspection, construction monitoring, public safety, and entertainment. Its ability to operate in environments that are difficult for wheeled or tracked vehicles makes it particularly valuable for tasks in complex spaces.</p>
                     </div>
                 </section>
 
                 <section id="features" class="robot-section">
                     <h2>Features</h2>
                     <ul class="features-list">
-                        <li>Loading features...</li>
+                        <li>360° perception for obstacle avoidance</li>
+                        <li>Autonomous navigation capabilities</li>
+                        <li>Can carry payloads up to 14 kg</li>
+                        <li>Weather and dust resistant design</li>
+                        <li>Runtime of approximately 90 minutes</li>
                     </ul>
                 </section>
 
@@ -91,7 +156,22 @@
                         <div class="specs-column">
                             <div class="spec-group">
                                 <h3>Technical Details</h3>
-                                <p>Loading specifications...</p>
+                                <div class="spec-item">
+                                    <span class="spec-label">Height</span>
+                                    <span class="spec-value">0.84 meters</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Weight</span>
+                                    <span class="spec-value">32.5 kg</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Power Source</span>
+                                    <span class="spec-value">Electric (Rechargeable Battery)</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Maximum Speed</span>
+                                    <span class="spec-value">1.6 m/s</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -100,7 +180,12 @@
                 <section id="gallery" class="robot-section">
                     <h2>Image Gallery</h2>
                     <div class="gallery-grid">
-                        <p>Loading images...</p>
+                        <div class="gallery-item">
+                            <img src="../images/robots/placeholder.jpg" alt="Spot in action" class="gallery-image">
+                        </div>
+                        <div class="gallery-item">
+                            <img src="../images/robots/placeholder.jpg" alt="Spot closeup" class="gallery-image">
+                        </div>
                     </div>
                 </section>
             </div>
@@ -112,17 +197,17 @@
                         <li>
                             <i class="fas fa-calendar-alt"></i>
                             <span class="fact-label">Year:</span>
-                            <span class="fact-value">Loading...</span>
+                            <span class="fact-value">2015</span>
                         </li>
                         <li>
                             <i class="fas fa-building"></i>
                             <span class="fact-label">Manufacturer:</span>
-                            <span class="fact-value">Loading...</span>
+                            <span class="fact-value">Boston Dynamics</span>
                         </li>
                         <li>
                             <i class="fas fa-tag"></i>
                             <span class="fact-label">Category:</span>
-                            <span class="fact-value">Loading...</span>
+                            <span class="fact-value">Quadruped</span>
                         </li>
                     </ul>
                 </div>
@@ -134,6 +219,15 @@
                         <li><a href="#features">Features</a></li>
                         <li><a href="#specifications">Specifications</a></li>
                         <li><a href="#gallery">Image Gallery</a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Admin Actions</h3>
+                    <ul class="page-nav">
+                        <li><a href="../admin/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="../admin/add-robot.html"><i class="fas fa-plus-circle"></i> Add New Robot</a></li>
+                        <li><a href="../admin/robots.html"><i class="fas fa-edit"></i> Edit Robots</a></li>
                     </ul>
                 </div>
             </aside>
@@ -183,8 +277,39 @@
         </div>
     </footer>
 
+    <!-- Floating Admin Button -->
+    <a href="../admin/dashboard.html" class="admin-button" title="Go to Admin Dashboard">
+        <i class="fas fa-cogs"></i>
+    </a>
+
     <script src="../js/main.js"></script>
     <script src="../js/auth.js"></script>
+    <script>
+        // Add this script to preload images and ensure they display properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preload the main robot image
+            const mainImage = document.getElementById('robot-main-image');
+            if (mainImage) {
+                const img = new Image();
+                img.onload = function() {
+                    mainImage.src = this.src;
+                    mainImage.classList.add('loaded');
+                };
+                img.src = '../images/robots/placeholder.jpg';
+            }
+            
+            // Preload gallery images
+            const galleryImages = document.querySelectorAll('.gallery-image');
+            galleryImages.forEach(function(image) {
+                const img = new Image();
+                img.onload = function() {
+                    image.src = this.src;
+                    image.classList.add('loaded');
+                };
+                img.src = '../images/robots/placeholder.jpg';
+            });
+        });
+    </script>
     <script type="module" src="../js/robot-detail.js"></script>
 </body>
 </html>
