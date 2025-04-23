@@ -55,7 +55,7 @@ function enhanceRobotData(robot) {
     // Extract video IDs from content if they exist
     if (enhancedRobot.content) {
         // Look for YouTube embeds and add to videos array if not already present
-        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?/g;
+        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/embed\/|youtube-nocookie\.com\/embed\/)([a-zA-Z0-9_-]{11})(?:\?.*)?/g;
         let youtubeMatch;
         while ((youtubeMatch = youtubeRegex.exec(enhancedRobot.content)) !== null) {
             const videoId = youtubeMatch[1];
@@ -241,7 +241,8 @@ function extractYouTubeID(url) {
     const patterns = [
         /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(?:&.*)?/,
         /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:\?.*)?/,
-        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?/
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?/,
+        /(?:https?:\/\/)?(?:www\.)?youtube-nocookie\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?/
     ];
     
     for (const pattern of patterns) {
@@ -278,6 +279,27 @@ function extractVimeoID(url) {
     return null;
 }
 
+/**
+ * Helper function to get the URL for a file
+ * @param {string} path - File path
+ * @returns {string} Complete URL
+ */
+function getFileUrl(path) {
+    // If it's already an absolute URL, return it
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+    
+    // If it's a placeholder, return the default image
+    if (!path) {
+        return '../images/robots/placeholder.jpg';
+    }
+    
+    // Otherwise, prefix with the base path
+    // If the path already starts with '../', don't add it again
+    return path.startsWith('../') ? path : `../${path}`;
+}
+
 // Export functions
 export {
     getAllRobots,
@@ -288,5 +310,6 @@ export {
     deleteRobot,
     createSlug,
     extractYouTubeID,
-    extractVimeoID
+    extractVimeoID,
+    getFileUrl
 };
