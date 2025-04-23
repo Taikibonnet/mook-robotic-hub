@@ -1,289 +1,222 @@
 /**
- * MOOK Robotics Hub - Admin Panel JavaScript
- * 
- * This file contains functionality for the admin dashboard and other admin pages.
+ * Admin dashboard functionality for MOOK Robotics Hub
  */
 
+import { getAllRobots, deleteRobot } from './robot-service.js';
+
 document.addEventListener('DOMContentLoaded', function() {
-    initAdminPanel();
-    setupFileUploads();
-    setupDynamicInputs();
+    // Check if we're on the admin page
+    if (document.querySelector('.admin-dashboard')) {
+        initAdminDashboard();
+    }
 });
 
 /**
- * Initialize admin panel functionality
+ * Initialize the admin dashboard
  */
-function initAdminPanel() {
-    // Toggle sidebar
-    const toggleSidebarBtn = document.getElementById('toggle-sidebar');
-    const adminSidebar = document.querySelector('.admin-sidebar');
-    const adminMain = document.querySelector('.admin-main');
+function initAdminDashboard() {
+    console.log('Initializing admin dashboard...');
     
-    if (toggleSidebarBtn && adminSidebar && adminMain) {
-        toggleSidebarBtn.addEventListener('click', function() {
-            adminSidebar.classList.toggle('collapsed');
-            adminMain.classList.toggle('expanded');
+    // Load robots
+    loadRobots();
+    
+    // Initialize tabs
+    initTabs();
+    
+    // Init add robot button
+    const addRobotBtn = document.getElementById('add-robot-btn');
+    if (addRobotBtn) {
+        addRobotBtn.addEventListener('click', function() {
+            window.location.href = 'add-robot.html';
         });
     }
     
-    // Admin logout
-    const logoutBtn = document.getElementById('admin-logout');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (confirm('Are you sure you want to log out?')) {
-                // Clear admin session
-                localStorage.removeItem('mookRoboticsUser');
-                
-                // Redirect to home page
-                window.location.href = '../index.html';
-            }
+    // Init add news button
+    const addNewsBtn = document.getElementById('add-news-btn');
+    if (addNewsBtn) {
+        addNewsBtn.addEventListener('click', function() {
+            window.location.href = 'add-news.html';
         });
-    }
-    
-    // Check if user is logged in as admin
-    checkAdminAuth();
-    
-    // Add any animations or special effects
-    addAdminUIEffects();
-}
-
-/**
- * Check if user is authenticated as admin
- */
-function checkAdminAuth() {
-    const user = JSON.parse(localStorage.getItem('mookRoboticsUser') || '{}');
-    
-    // If not logged in or not an admin, redirect
-    if (!user.email || user.isAdmin !== true) {
-        alert('You must be logged in as an administrator to access this page.');
-        window.location.href = '../index.html';
     }
 }
 
 /**
- * Add UI animations and effects for admin panel
+ * Load robots for the admin dashboard
  */
-function addAdminUIEffects() {
-    // Add hover effects to stat cards
-    const statCards = document.querySelectorAll('.stat-card');
-    statCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            const icon = this.querySelector('.stat-icon');
-            if (icon) {
-                icon.style.transform = 'scale(1.1) rotate(10deg)';
-                icon.style.transition = 'transform 0.3s ease';
-            }
-        });
+function loadRobots() {
+    console.log('Loading robots for admin dashboard...');
+    
+    const robotsContainer = document.getElementById('admin-robots-list');
+    if (!robotsContainer) {
+        console.error('Robots container not found');
+        return;
+    }
+    
+    // Clear loading message
+    robotsContainer.innerHTML = '';
+    
+    // Get all robots
+    try {
+        const robots = getAllRobots();
         
-        card.addEventListener('mouseleave', function() {
-            const icon = this.querySelector('.stat-icon');
-            if (icon) {
-                icon.style.transform = '';
-            }
-        });
-    });
-    
-    // Add subtle animation to table rows
-    const tableRows = document.querySelectorAll('.admin-table tbody tr');
-    tableRows.forEach(row => {
-        row.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateX(5px)';
-            this.style.transition = 'transform 0.2s ease';
-        });
-        
-        row.addEventListener('mouseleave', function() {
-            this.style.transform = '';
-        });
-    });
-}
-
-/**
- * Set up file upload functionality
- */
-function setupFileUploads() {
-    // File upload zones
-    const fileUploads = document.querySelectorAll('.file-upload');
-    
-    fileUploads.forEach(upload => {
-        // Highlight drop zone on drag over
-        upload.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('file-upload-active');
-        });
-        
-        upload.addEventListener('dragleave', function() {
-            this.classList.remove('file-upload-active');
-        });
-        
-        // Handle file drop
-        upload.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('file-upload-active');
-            
-            // Find the associated file input
-            const fileInput = this.querySelector('input[type="file"]');
-            if (fileInput && e.dataTransfer.files.length > 0) {
-                // Check if multiple files are allowed
-                if (fileInput.multiple) {
-                    fileInput.files = e.dataTransfer.files;
-                } else {
-                    // Only take the first file if multiple aren't allowed
-                    const tempFileList = new DataTransfer();
-                    tempFileList.items.add(e.dataTransfer.files[0]);
-                    fileInput.files = tempFileList.files;
-                }
-                
-                // Trigger change event
-                const event = new Event('change', { bubbles: true });
-                fileInput.dispatchEvent(event);
-            }
-        });
-    });
-    
-    // Additional images handling
-    const additionalImagesInput = document.getElementById('additional-images-input');
-    const additionalImagesPreview = document.getElementById('additional-images-preview');
-    
-    if (additionalImagesInput && additionalImagesPreview) {
-        additionalImagesInput.addEventListener('change', function() {
-            additionalImagesPreview.innerHTML = ''; // Clear existing previews
-            
-            if (this.files) {
-                const maxFiles = 5;
-                const filesCount = Math.min(this.files.length, maxFiles);
-                
-                for (let i = 0; i < filesCount; i++) {
-                    const file = this.files[i];
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const previewContainer = document.createElement('div');
-                        previewContainer.className = 'gallery-item';
-                        
-                        const previewImg = document.createElement('img');
-                        previewImg.src = e.target.result;
-                        previewImg.alt = 'Preview';
-                        
-                        const removeBtn = document.createElement('button');
-                        removeBtn.className = 'remove-gallery-item';
-                        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-                        removeBtn.addEventListener('click', function() {
-                            previewContainer.remove();
-                            // Note: This doesn't actually remove the file from the FileList
-                            // In a real app, you'd need to use DataTransfer to create a new FileList
-                        });
-                        
-                        previewContainer.appendChild(previewImg);
-                        previewContainer.appendChild(removeBtn);
-                        additionalImagesPreview.appendChild(previewContainer);
-                    };
-                    
-                    reader.readAsDataURL(file);
-                }
-                
-                document.getElementById('additional-images-upload').style.display = 'none';
-                additionalImagesPreview.style.display = 'flex';
-            }
-        });
-    }
-}
-
-/**
- * Set up dynamic input fields (for references, video URLs, etc.)
- */
-function setupDynamicInputs() {
-    // Video URL inputs
-    setupDynamicInputField('video-urls', 'add-video-btn', 'video-url-input');
-    
-    // References
-    setupDynamicInputField('references', 'add-reference-btn', 'reference-input');
-}
-
-/**
- * Create functionality for dynamic input fields
- * @param {string} containerId - The ID of the container element
- * @param {string} addBtnClass - The class name of the add button
- * @param {string} inputClass - The class name of the input wrapper
- */
-function setupDynamicInputField(containerId, addBtnClass, inputClass) {
-    const container = document.getElementById(containerId);
-    
-    if (container) {
-        // Add new input field
-        container.addEventListener('click', function(e) {
-            if (e.target.classList.contains(addBtnClass) || e.target.parentElement.classList.contains(addBtnClass)) {
-                const btn = e.target.classList.contains(addBtnClass) ? e.target : e.target.parentElement;
-                const inputWrapper = btn.closest('.' + inputClass);
-                
-                // Clone the input wrapper
-                const newInputWrapper = inputWrapper.cloneNode(true);
-                
-                // Clear the input value
-                const input = newInputWrapper.querySelector('input');
-                if (input) {
-                    input.value = '';
-                }
-                
-                // Change the add button to remove button for the original input
-                btn.innerHTML = '<i class="fas fa-minus"></i>';
-                btn.classList.remove(addBtnClass);
-                btn.classList.add('remove-input-btn');
-                
-                // Add the new input wrapper
-                container.appendChild(newInputWrapper);
-            }
-            
-            // Remove input field
-            if (e.target.classList.contains('remove-input-btn') || e.target.parentElement.classList.contains('remove-input-btn')) {
-                const btn = e.target.classList.contains('remove-input-btn') ? e.target : e.target.parentElement;
-                const inputWrapper = btn.closest('.' + inputClass);
-                
-                inputWrapper.remove();
-            }
-        });
-    }
-}
-
-/**
- * Validates form data before submission
- * @param {HTMLFormElement} form - The form to validate
- * @returns {boolean} Whether the form is valid
- */
-function validateForm(form) {
-    let isValid = true;
-    
-    // Get all required fields
-    const requiredFields = form.querySelectorAll('[required]');
-    
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-            
-            // Add error styling
-            field.classList.add('input-error');
-            
-            // Find or create error message
-            let errorMsg = field.nextElementSibling;
-            if (!errorMsg || !errorMsg.classList.contains('error-message')) {
-                errorMsg = document.createElement('p');
-                errorMsg.className = 'error-message';
-                field.parentNode.insertBefore(errorMsg, field.nextSibling);
-            }
-            
-            errorMsg.textContent = 'This field is required';
-        } else {
-            // Remove error styling if field is valid
-            field.classList.remove('input-error');
-            
-            // Remove error message if it exists
-            const errorMsg = field.nextElementSibling;
-            if (errorMsg && errorMsg.classList.contains('error-message')) {
-                errorMsg.remove();
-            }
+        if (robots.length === 0) {
+            robotsContainer.innerHTML = '<p class="no-items">No robots found.</p>';
+            return;
         }
+        
+        // Sort robots by name
+        robots.sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Add each robot to the list
+        robots.forEach(robot => {
+            const robotItem = document.createElement('div');
+            robotItem.className = 'admin-item';
+            robotItem.innerHTML = `
+                <div class="admin-item-image">
+                    <img src="${robot.mainImage || '../images/robots/placeholder.jpg'}" alt="${robot.name}" onerror="this.src='../images/robots/placeholder.jpg'">
+                </div>
+                <div class="admin-item-info">
+                    <h3>${robot.name}</h3>
+                    <p>${robot.manufacturer || 'Unknown manufacturer'} | ${robot.year || 'Year unknown'}</p>
+                </div>
+                <div class="admin-item-actions">
+                    <button class="btn btn-small edit-item" data-id="${robot.id}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-small btn-danger delete-item" data-id="${robot.id}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+            
+            robotsContainer.appendChild(robotItem);
+            
+            // Add event listeners
+            const editBtn = robotItem.querySelector('.edit-item');
+            const deleteBtn = robotItem.querySelector('.delete-item');
+            
+            editBtn.addEventListener('click', function() {
+                const robotId = this.getAttribute('data-id');
+                window.location.href = `edit-robot.html?id=${robotId}`;
+            });
+            
+            deleteBtn.addEventListener('click', function() {
+                const robotId = this.getAttribute('data-id');
+                deleteRobotItem(robotId, robotItem);
+            });
+        });
+    } catch (error) {
+        console.error('Error loading robots:', error);
+        robotsContainer.innerHTML = '<p class="error-message">Error loading robots. Please try again.</p>';
+    }
+}
+
+/**
+ * Delete a robot
+ * @param {string} id - Robot ID
+ * @param {Element} element - DOM element to remove on success
+ */
+function deleteRobotItem(id, element) {
+    // Show confirmation dialog
+    if (confirm('Are you sure you want to delete this robot? This action cannot be undone.')) {
+        try {
+            const success = deleteRobot(id);
+            
+            if (success) {
+                // Remove element from DOM
+                element.remove();
+                
+                // If no robots left, show message
+                const robotsContainer = document.getElementById('admin-robots-list');
+                if (robotsContainer.children.length === 0) {
+                    robotsContainer.innerHTML = '<p class="no-items">No robots found.</p>';
+                }
+                
+                // Show success message
+                showMessage('Robot deleted successfully.', 'success');
+            } else {
+                showMessage('Failed to delete robot.', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting robot:', error);
+            showMessage('Error deleting robot: ' + error.message, 'error');
+        }
+    }
+}
+
+/**
+ * Initialize tab navigation
+ */
+function initTabs() {
+    const tabs = document.querySelectorAll('.admin-tab');
+    const tabContents = document.querySelectorAll('.admin-tab-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all tab contents
+            tabContents.forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show the selected tab content
+            const tabId = this.getAttribute('data-tab');
+            const tabContent = document.getElementById(tabId);
+            if (tabContent) {
+                tabContent.style.display = 'block';
+            }
+        });
     });
     
-    return isValid;
+    // Activate the first tab by default
+    if (tabs.length > 0) {
+        tabs[0].click();
+    }
+}
+
+/**
+ * Show a temporary message
+ * @param {string} message - Message to display
+ * @param {string} type - Message type (success, error, info)
+ */
+function showMessage(message, type = 'info') {
+    // Check if message container exists, if not create it
+    let messageContainer = document.querySelector('.message-container');
+    
+    if (!messageContainer) {
+        messageContainer = document.createElement('div');
+        messageContainer.className = 'message-container';
+        document.body.appendChild(messageContainer);
+    }
+    
+    // Create message element
+    const messageElement = document.createElement('div');
+    messageElement.className = `message message-${type}`;
+    messageElement.innerHTML = `
+        <div class="message-content">
+            <span>${message}</span>
+            <button class="message-close"><i class="fas fa-times"></i></button>
+        </div>
+    `;
+    
+    // Add to container
+    messageContainer.appendChild(messageElement);
+    
+    // Add close button event
+    const closeBtn = messageElement.querySelector('.message-close');
+    closeBtn.addEventListener('click', function() {
+        messageElement.remove();
+    });
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (messageElement.parentNode === messageContainer) {
+            messageElement.remove();
+        }
+    }, 5000);
 }

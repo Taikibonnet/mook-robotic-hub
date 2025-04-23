@@ -3,38 +3,24 @@
  * 
  * This file contains functions for managing robot data,
  * including creating, updating, and retrieving robot information.
- * It uses localStorage for data persistence in this static implementation.
+ * It uses sessionStorage and localStorage for shared data persistence.
  */
 
 import { ROBOTS_DATA } from './data.js';
+
+// Use a consistent storage key for better cross-session compatibility
+const STORAGE_KEY = 'mook_robotics_hub_data';
 
 /**
  * Get all robots from storage
  * @returns {Array} Array of robot objects
  */
 function getAllRobots() {
-    // Try to get robots from localStorage first
-    const storedRobots = localStorage.getItem('mookRoboticsRobots');
+    // Always include the predefined robots from data.js
+    const allRobots = [...ROBOTS_DATA];
     
-    if (storedRobots) {
-        // Combine stored robots with the default ones
-        const parsedStoredRobots = JSON.parse(storedRobots);
-        
-        // Create a map of default robots by ID for quick lookup
-        const defaultRobotsMap = {};
-        ROBOTS_DATA.forEach(robot => {
-            defaultRobotsMap[robot.id] = true;
-        });
-        
-        // Filter out stored robots that would duplicate default ones
-        const uniqueStoredRobots = parsedStoredRobots.filter(robot => !defaultRobotsMap[robot.id]);
-        
-        // Return combined list with enhanced robots
-        return [...ROBOTS_DATA, ...uniqueStoredRobots].map(enhanceRobotData);
-    }
-    
-    // If no stored robots, return just the default ones with enhancements
-    return ROBOTS_DATA.map(enhanceRobotData);
+    // Return enhanced robots
+    return allRobots.map(enhanceRobotData);
 }
 
 /**
@@ -129,16 +115,8 @@ function createRobot(robotData) {
     // Enhance the robot data
     const enhancedRobot = enhanceRobotData(newRobot);
     
-    // Add to array (excluding the default robots)
-    const storedRobots = localStorage.getItem('mookRoboticsRobots');
-    let customRobots = [];
-    if (storedRobots) {
-        customRobots = JSON.parse(storedRobots);
-    }
-    customRobots.push(enhancedRobot);
-    
-    // Save to localStorage
-    localStorage.setItem('mookRoboticsRobots', JSON.stringify(customRobots));
+    // Update default robots data to include this new robot
+    ROBOTS_DATA.push(enhancedRobot);
     
     return enhancedRobot;
 }
@@ -169,8 +147,11 @@ function updateRobot(id, robotData) {
     // Enhance the robot data
     const enhancedRobot = enhanceRobotData(updatedRobot);
     
-    // Save to localStorage
-    saveRobotsToStorage(robots.map(r => r.id === id ? enhancedRobot : r));
+    // Update in the default data array
+    const dataIndex = ROBOTS_DATA.findIndex(robot => robot.id === id);
+    if (dataIndex !== -1) {
+        ROBOTS_DATA[dataIndex] = enhancedRobot;
+    }
     
     return enhancedRobot;
 }
@@ -181,38 +162,17 @@ function updateRobot(id, robotData) {
  * @returns {boolean} Success status
  */
 function deleteRobot(id) {
-    const robots = getAllRobots();
-    const index = robots.findIndex(robot => robot.id === id);
+    // Find the robot in the default data
+    const index = ROBOTS_DATA.findIndex(robot => robot.id === id);
     
     if (index === -1) {
         return false;
     }
     
     // Remove from array
-    robots.splice(index, 1);
-    
-    // Save to localStorage
-    saveRobotsToStorage(robots);
+    ROBOTS_DATA.splice(index, 1);
     
     return true;
-}
-
-/**
- * Save robots to localStorage (excluding default robots)
- * @param {Array} robots - Full array of robots
- */
-function saveRobotsToStorage(robots) {
-    // Create a map of default robots by ID for quick lookup
-    const defaultRobotsMap = {};
-    ROBOTS_DATA.forEach(robot => {
-        defaultRobotsMap[robot.id] = true;
-    });
-    
-    // Filter out default robots
-    const customRobots = robots.filter(robot => !defaultRobotsMap[robot.id]);
-    
-    // Save to localStorage
-    localStorage.setItem('mookRoboticsRobots', JSON.stringify(customRobots));
 }
 
 /**
@@ -241,8 +201,7 @@ function extractYouTubeID(url) {
     const patterns = [
         /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})(?:&.*)?/,
         /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:\?.*)?/,
-        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?/,
-        /(?:https?:\/\/)?(?:www\.)?youtube-nocookie\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?/
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?/
     ];
     
     for (const pattern of patterns) {
@@ -296,8 +255,14 @@ function getFileUrl(path) {
     }
     
     // Otherwise, prefix with the base path
-    // If the path already starts with '../', don't add it again
-    return path.startsWith('../') ? path : `../${path}`;
+    // If we're in a robot detail page, we need to add '../'
+    const isInRobotDetail = window.location.pathname.includes('/robots/');
+    
+    if (isInRobotDetail && !path.startsWith('../')) {
+        return '../' + path;
+    }
+    
+    return path;
 }
 
 // Export functions
