@@ -9,62 +9,61 @@
     <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/encyclopedia.css">
     <link rel="stylesheet" href="../css/robot-detail.css">
+    <link rel="stylesheet" href="../css/robot-detail-fix.css">
     <style>
-        .admin-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
+        /* Additional inline styles for this page */
+        .robot-hero-container {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .admin-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-        }
-        
-        .admin-button i {
-            font-size: 24px;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
         }
 
-        /* Content formatting improvements */
+        .robot-hero-image {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: 400px; /* Fixed height for consistency */
+            position: relative;
+        }
+
+        .robot-hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .robot-hero-info {
+            flex: 2;
+            min-width: 300px;
+            padding: 1rem 0;
+        }
+
+        /* Media display improvements */
         .robot-content img {
             max-width: 100%;
             height: auto;
             display: block;
             margin: 1.5rem auto;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .robot-content iframe {
-            width: 100%;
-            aspect-ratio: 16/9;
-            margin: 1.5rem auto;
-            border-radius: var(--border-radius);
-            border: none;
-            box-shadow: var(--shadow);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .video-container {
             position: relative;
+            width: 100%;
             padding-bottom: 56.25%; /* 16:9 aspect ratio */
             height: 0;
             overflow: hidden;
             margin: 1.5rem 0;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .video-container iframe,
@@ -77,100 +76,33 @@
             border: none;
         }
 
-        .preview-notice {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            padding: 10px 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        
-        .preview-notice i {
-            margin-right: 10px;
-            font-size: 1.2em;
+        /* Gallery improvements */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
 
-        /* Image loading animation */
-        .image-loading {
-            position: relative;
-            background-color: var(--background-light);
+        .gallery-item {
+            border-radius: 8px;
             overflow: hidden;
+            height: 180px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
-        .image-loading::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
+        .gallery-item img {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: loading-animation 1.5s infinite;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            display: block;
         }
 
-        @keyframes loading-animation {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        /* Lightbox for gallery images */
-        #lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #lightbox-content {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        #lightbox-content img {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: 4px;
-        }
-
-        #lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-        }
-
-        #lightbox-next,
-        #lightbox-prev {
-            position: absolute;
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        #lightbox-next {
-            right: 30px;
-        }
-
-        #lightbox-prev {
-            left: 30px;
+        .gallery-item:hover img {
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -192,8 +124,8 @@
                 <a href="../index.html">Home</a>
                 <a href="index.html" class="active">Encyclopedia</a>
                 <a href="../news.html">News</a>
-                <a href="../about.html">About</a>
-                <a href="../admin/dashboard.html" class="admin-link"><i class="fas fa-cog"></i> Admin</a>
+                <a href="../index.html#about">About</a>
+                <a href="../admin/dashboard.html" class="admin-link" style="display: none;"><i class="fas fa-cog"></i> Admin</a>
             </div>
             <div class="nav-auth">
                 <button id="login-btn" class="btn btn-primary">Login</button>
@@ -215,20 +147,17 @@
 
         <section class="robot-hero">
             <div class="robot-hero-container">
-                <div class="robot-hero-image image-loading">
-                    <img src="../images/robots/placeholder.jpg" alt="Robot" 
-                         loading="eager"
-                         onload="this.parentElement.classList.remove('image-loading')"
-                         onerror="this.src='../images/robots/placeholder.jpg'; this.parentElement.classList.remove('image-loading')">
+                <div class="robot-hero-image">
+                    <img id="robot-main-image" src="../images/robots/placeholder.jpg" alt="Robot" loading="eager">
                 </div>
                 <div class="robot-hero-info">
                     <div class="robot-categories">
-                        <span class="robot-category">Category</span>
-                        <span class="robot-year">Year</span>
+                        <span id="robot-category" class="robot-category">Category</span>
+                        <span id="robot-year" class="robot-year">Year</span>
                     </div>
-                    <h1>Robot Name</h1>
-                    <p class="robot-manufacturer">Manufacturer</p>
-                    <p class="robot-description">Loading description...</p>
+                    <h1 id="robot-title">Robot Name</h1>
+                    <p id="robot-manufacturer" class="robot-manufacturer">Manufacturer</p>
+                    <p id="robot-description" class="robot-description">Loading description...</p>
                     <div class="robot-actions">
                         <a href="#specifications" class="btn btn-primary">Specifications</a>
                         <a href="#features" class="btn btn-outline">Features</a>
@@ -241,14 +170,14 @@
             <div class="robot-main-content">
                 <section id="overview" class="robot-section">
                     <h2>Overview</h2>
-                    <div class="robot-content">
+                    <div id="robot-overview" class="robot-content">
                         <p>Loading content...</p>
                     </div>
                 </section>
 
                 <section id="features" class="robot-section">
                     <h2>Features</h2>
-                    <ul class="features-list">
+                    <ul id="robot-features" class="features-list">
                         <li>Loading features...</li>
                     </ul>
                 </section>
@@ -256,11 +185,9 @@
                 <section id="specifications" class="robot-section">
                     <h2>Specifications</h2>
                     <div class="specs-container">
-                        <div class="specs-column">
-                            <div class="spec-group">
-                                <h3>Technical Details</h3>
-                                <p>Loading specifications...</p>
-                            </div>
+                        <div id="robot-specs-container" class="spec-group">
+                            <h3>Technical Details</h3>
+                            <p>Loading specifications...</p>
                         </div>
                     </div>
                 </section>
@@ -274,7 +201,7 @@
 
                 <section id="gallery" class="robot-section">
                     <h2>Image Gallery</h2>
-                    <div class="gallery-grid">
+                    <div id="robot-gallery" class="gallery-grid">
                         <p>Loading images...</p>
                     </div>
                 </section>
@@ -287,17 +214,17 @@
                         <li>
                             <i class="fas fa-calendar-alt"></i>
                             <span class="fact-label">Year:</span>
-                            <span class="fact-value">Loading...</span>
+                            <span id="quick-year" class="fact-value">Loading...</span>
                         </li>
                         <li>
                             <i class="fas fa-building"></i>
                             <span class="fact-label">Manufacturer:</span>
-                            <span class="fact-value">Loading...</span>
+                            <span id="quick-manufacturer" class="fact-value">Loading...</span>
                         </li>
                         <li>
                             <i class="fas fa-tag"></i>
                             <span class="fact-label">Category:</span>
-                            <span class="fact-value">Loading...</span>
+                            <span id="quick-category" class="fact-value">Loading...</span>
                         </li>
                     </ul>
                 </div>
@@ -313,12 +240,12 @@
                     </ul>
                 </div>
                 
-                <div class="sidebar-section">
+                <div class="sidebar-section admin-only" style="display: none;">
                     <h3>Admin Actions</h3>
                     <ul class="page-nav">
                         <li><a href="../admin/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                         <li><a href="../admin/add-robot.html"><i class="fas fa-plus-circle"></i> Add New Robot</a></li>
-                        <li><a href="../admin/robots.html"><i class="fas fa-edit"></i> Edit Robots</a></li>
+                        <li><a id="edit-this-robot" href="../admin/edit-robot.html"><i class="fas fa-edit"></i> Edit This Robot</a></li>
                     </ul>
                 </div>
             </aside>
@@ -326,7 +253,7 @@
     </main>
 
     <!-- Lightbox for gallery images -->
-    <div id="lightbox">
+    <div id="lightbox" style="display: none;">
         <div id="lightbox-close"><i class="fas fa-times"></i></div>
         <div id="lightbox-prev"><i class="fas fa-chevron-left"></i></div>
         <div id="lightbox-content"></div>
@@ -351,7 +278,7 @@
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="index.html">Encyclopedia</a></li>
                     <li><a href="../news.html">News</a></li>
-                    <li><a href="../about.html">About</a></li>
+                    <li><a href="../index.html#about">About</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -364,10 +291,9 @@
             <div class="footer-section">
                 <h3>Account</h3>
                 <ul>
-                    <li><a href="#login">Login</a></li>
-                    <li><a href="#signup">Sign Up</a></li>
+                    <li><a href="#login" id="footer-login">Login</a></li>
+                    <li><a href="#signup" id="footer-signup">Sign Up</a></li>
                     <li><a href="../my-account.html">My Account</a></li>
-                    <li><a href="../admin/dashboard.html">Admin</a></li>
                 </ul>
             </div>
         </div>
@@ -375,11 +301,6 @@
             <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
         </div>
     </footer>
-
-    <!-- Floating Admin Button -->
-    <a href="../admin/dashboard.html" class="admin-button" title="Go to Admin Dashboard">
-        <i class="fas fa-cogs"></i>
-    </a>
 
     <script src="../js/main.js"></script>
     <script src="../js/auth.js"></script>
@@ -391,6 +312,15 @@
             const urlParams = new URLSearchParams(window.location.search);
             const slug = urlParams.get('slug');
             const isPreview = urlParams.get('preview') === 'true';
+            const isAdmin = localStorage.getItem('isAdmin') === 'true' || urlParams.get('admin') === 'true';
+            
+            // Show admin elements if user is admin
+            if (isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'block';
+                });
+                document.querySelector('.admin-link').style.display = 'inline-block';
+            }
             
             let robot;
             
@@ -430,6 +360,14 @@
             
             // Populate the page with robot data
             renderRobotDetails(robot);
+            
+            // Set up edit link for this robot
+            if (isAdmin) {
+                const editLink = document.getElementById('edit-this-robot');
+                if (editLink) {
+                    editLink.href = `../admin/edit-robot.html?id=${robot.id}`;
+                }
+            }
         });
         
         /**
@@ -444,34 +382,57 @@
             document.getElementById('robot-name-breadcrumb').textContent = robot.name;
             
             // Update main image
-            const mainImage = document.querySelector('.robot-hero-image img');
+            const mainImage = document.getElementById('robot-main-image');
             if (mainImage) {
                 mainImage.src = `../${robot.mainImage || 'images/robots/placeholder.jpg'}`;
                 mainImage.alt = robot.name;
                 mainImage.onerror = function() {
                     this.src = '../images/robots/placeholder.jpg';
-                    this.parentElement.classList.remove('image-loading');
                 };
             }
             
             // Update hero section
-            document.querySelector('.robot-hero-info h1').textContent = robot.name;
-            document.querySelector('.robot-category').textContent = robot.category || 'Uncategorized';
-            document.querySelector('.robot-year').textContent = robot.year || 'Unknown Year';
-            document.querySelector('.robot-manufacturer').textContent = robot.manufacturer || 'Unknown Manufacturer';
-            document.querySelector('.robot-description').textContent = robot.description || 'No description available.';
+            document.getElementById('robot-title').textContent = robot.name;
+            document.getElementById('robot-category').textContent = robot.category || 'Uncategorized';
+            document.getElementById('robot-year').textContent = robot.year || 'Unknown Year';
+            document.getElementById('robot-manufacturer').textContent = robot.manufacturer || 'Unknown Manufacturer';
+            document.getElementById('robot-description').textContent = robot.description || 'No description available.';
             
             // Update overview content
-            const contentElement = document.querySelector('.robot-content');
+            const contentElement = document.getElementById('robot-overview');
             if (contentElement) {
                 contentElement.innerHTML = robot.content || `<p>${robot.description || 'No detailed content available for this robot yet.'}</p>`;
                 
-                // Process video embeds if present in content
-                processVideoEmbeds(contentElement);
+                // Process images in content to ensure they load correctly
+                const contentImages = contentElement.querySelectorAll('img');
+                contentImages.forEach(img => {
+                    // Make image paths relative to the root
+                    if (img.src && !img.src.startsWith('http')) {
+                        img.src = img.src.replace(/^\.\.\//g, '../');
+                    }
+                    
+                    // Add error handler
+                    img.onerror = function() {
+                        this.src = '../images/robots/placeholder.jpg';
+                    };
+                });
+                
+                // Process videos in content
+                const iframes = contentElement.querySelectorAll('iframe');
+                iframes.forEach(iframe => {
+                    // Wrap iframes in video containers for responsive display
+                    const parent = iframe.parentElement;
+                    if (!parent.classList.contains('video-container')) {
+                        const videoContainer = document.createElement('div');
+                        videoContainer.className = 'video-container';
+                        parent.insertBefore(videoContainer, iframe);
+                        videoContainer.appendChild(iframe);
+                    }
+                });
             }
             
             // Update features list
-            const featuresList = document.querySelector('.features-list');
+            const featuresList = document.getElementById('robot-features');
             if (featuresList) {
                 if (robot.features && robot.features.length > 0) {
                     featuresList.innerHTML = robot.features.map(feature => `<li>${feature}</li>`).join('');
@@ -481,28 +442,26 @@
             }
             
             // Update specifications
-            const specGroup = document.querySelector('.spec-group');
-            if (specGroup && robot.specifications) {
+            const specContainer = document.getElementById('robot-specs-container');
+            if (specContainer && robot.specifications) {
                 // Clear existing specs (keeping the h3 title)
-                while (specGroup.children.length > 1) {
-                    specGroup.removeChild(specGroup.lastChild);
-                }
+                specContainer.innerHTML = '<h3>Technical Details</h3>';
                 
                 // Add new specs
-                if (Object.keys(robot.specifications).length > 0) {
+                if (robot.specifications && Object.keys(robot.specifications).length > 0) {
                     Object.entries(robot.specifications).forEach(([key, value]) => {
                         const specItem = document.createElement('div');
                         specItem.className = 'spec-item';
                         
                         specItem.innerHTML = `
-                            <span class="spec-label">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                            <span class="spec-label">${key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}</span>
                             <span class="spec-value">${value}</span>
                         `;
                         
-                        specGroup.appendChild(specItem);
+                        specContainer.appendChild(specItem);
                     });
                 } else {
-                    specGroup.innerHTML += '<p>No specifications available.</p>';
+                    specContainer.innerHTML += '<p>No specifications available.</p>';
                 }
             }
             
@@ -554,21 +513,35 @@
             }
             
             // Update gallery
-            const galleryGrid = document.querySelector('.gallery-grid');
+            const galleryGrid = document.getElementById('robot-gallery');
             if (galleryGrid) {
                 if (robot.gallery && robot.gallery.length > 0) {
-                    galleryGrid.innerHTML = robot.gallery.map((image, index) => `
-                        <div class="gallery-item image-loading">
-                            <img 
-                                src="../${image}" 
-                                alt="${robot.name}" 
-                                loading="lazy"
-                                data-index="${index}"
-                                onload="this.parentElement.classList.remove('image-loading')"
-                                onerror="this.src='../images/robots/placeholder.jpg'; this.parentElement.classList.remove('image-loading')"
-                                onclick="openLightbox(${index})">
-                        </div>
-                    `).join('');
+                    galleryGrid.innerHTML = '';
+                    
+                    // Create gallery items
+                    robot.gallery.forEach((imagePath, index) => {
+                        const galleryItem = document.createElement('div');
+                        galleryItem.className = 'gallery-item';
+                        
+                        const img = document.createElement('img');
+                        img.src = `../${imagePath}`;
+                        img.alt = `${robot.name} - Image ${index + 1}`;
+                        img.dataset.index = index;
+                        img.loading = 'lazy';
+                        
+                        // Handle image errors
+                        img.onerror = function() {
+                            this.src = '../images/robots/placeholder.jpg';
+                        };
+                        
+                        // Open lightbox on click
+                        img.onclick = function() {
+                            openLightbox(index);
+                        };
+                        
+                        galleryItem.appendChild(img);
+                        galleryGrid.appendChild(galleryItem);
+                    });
                     
                     // Set up gallery lightbox functionality
                     setupGalleryLightbox(robot.gallery);
@@ -578,36 +551,9 @@
             }
             
             // Update quick facts sidebar
-            const quickFacts = document.querySelector('.quick-facts');
-            if (quickFacts) {
-                const yearFact = quickFacts.querySelector('li:nth-child(1) .fact-value');
-                const manufacturerFact = quickFacts.querySelector('li:nth-child(2) .fact-value');
-                const categoryFact = quickFacts.querySelector('li:nth-child(3) .fact-value');
-                
-                if (yearFact) yearFact.textContent = robot.year || 'Unknown';
-                if (manufacturerFact) manufacturerFact.textContent = robot.manufacturer || 'Unknown';
-                if (categoryFact) categoryFact.textContent = robot.category || 'Unspecified';
-            }
-        }
-        
-        /**
-         * Process video embeds in content
-         * @param {HTMLElement} contentElement - The content element
-         */
-        function processVideoEmbeds(contentElement) {
-            // Find all iframes in content
-            const iframes = contentElement.querySelectorAll('iframe');
-            
-            iframes.forEach(iframe => {
-                const parent = iframe.parentElement;
-                // If the iframe is not already in a video container, wrap it
-                if (!parent.classList.contains('video-container')) {
-                    const videoContainer = document.createElement('div');
-                    videoContainer.className = 'video-container';
-                    parent.insertBefore(videoContainer, iframe);
-                    videoContainer.appendChild(iframe);
-                }
-            });
+            document.getElementById('quick-year').textContent = robot.year || 'Unknown';
+            document.getElementById('quick-manufacturer').textContent = robot.manufacturer || 'Unknown';
+            document.getElementById('quick-category').textContent = robot.category || 'Unspecified';
         }
         
         /**
@@ -664,16 +610,16 @@
                 }
             });
             
-            // Close on ESC key
+            // Handle keyboard navigation
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+                if (lightbox.style.display !== 'flex') return;
+                
+                if (e.key === 'Escape') {
                     closeLightbox();
-                }
-                if (e.key === 'ArrowRight' && lightbox.style.display === 'flex' && galleryUrls.length > 1) {
+                } else if (e.key === 'ArrowRight' && galleryUrls.length > 1) {
                     currentIndex = (currentIndex + 1) % galleryUrls.length;
                     lightboxContent.innerHTML = `<img src="${galleryUrls[currentIndex]}" alt="Gallery image">`;
-                }
-                if (e.key === 'ArrowLeft' && lightbox.style.display === 'flex' && galleryUrls.length > 1) {
+                } else if (e.key === 'ArrowLeft' && galleryUrls.length > 1) {
                     currentIndex = (currentIndex - 1 + galleryUrls.length) % galleryUrls.length;
                     lightboxContent.innerHTML = `<img src="${galleryUrls[currentIndex]}" alt="Gallery image">`;
                 }
