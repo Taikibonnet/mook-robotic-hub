@@ -11,6 +11,30 @@
 <body>
   <header>
     <!-- Your navigation and header content -->
+    <nav class="main-nav">
+        <div class="logo">
+            <svg width="50" height="50" viewBox="0 0 50 50" class="logo-svg">
+                <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                <circle cx="25" cy="25" r="5" fill="var(--primary-color)" />
+                <path d="M25 10 L25 5" stroke="var(--primary-color)" stroke-width="2" />
+                <path d="M25 45 L25 40" stroke="var(--primary-color)" stroke-width="2" />
+                <path d="M10 25 L5 25" stroke="var(--primary-color)" stroke-width="2" />
+                <path d="M45 25 L40 25" stroke="var(--primary-color)" stroke-width="2" />
+            </svg>
+            <span>MOOK Robotics Hub</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="encyclopedia.html" class="active">Encyclopedia</a>
+            <a href="news.html">News</a>
+            <a href="#about">About</a>
+            <a href="/mook-robotic-hub/admin/dashboard.html">Admin</a>
+        </div>
+        <div class="nav-auth">
+            <button id="login-btn" class="btn btn-primary">Login</button>
+            <button id="signup-btn" class="btn btn-outline">Sign Up</button>
+        </div>
+    </nav>
   </header>
   
   <main>
@@ -27,6 +51,31 @@
   
   <footer>
     <!-- Your footer content -->
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>MOOK Robotics Hub</h3>
+            <p>Your interactive guide to the world of robotics</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="encyclopedia.html">Encyclopedia</a></li>
+                <li><a href="news.html">News</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="/mook-robotic-hub/admin/dashboard.html">Admin</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 MOOK Robotics Hub. All rights reserved.</p>
+    </div>
   </footer>
   
   <!-- Import the robots.js file -->
