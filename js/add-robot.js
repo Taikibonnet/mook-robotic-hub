@@ -4,167 +4,7 @@
  * This file contains code for handling the add robot form functionality.
  */
 
-import { createRobot, extractYouTubeID, extractVimeoID } from './robot-service.js';
-import { uploadFile, uploadMultipleFiles, getFileUrl } from './file-upload-service.js';
-
-// Track uploaded files
-let mainImageFile = null;
-let additionalImageFiles = [];
-let videoFiles = [];
-
-document.addEventListener('DOMContentLoaded', function() {
-    initImageUpload();
-    initVideoUrlsAndReferences();
-    initFormSubmission();
-});
-
-/**
- * Initialize image upload functionality
- */
-function initImageUpload() {
-    // Main image upload
-    const mainImageInput = document.getElementById('main-image-input');
-    const mainImagePreview = document.getElementById('main-image-preview');
-    const mainImagePreviewImg = document.getElementById('main-image-preview-img');
-    const removeMainImage = document.getElementById('remove-main-image');
-    const mainImageUpload = document.getElementById('main-image-upload');
-    
-    if (mainImageInput) {
-        // Handle file drop
-        const dropZone = mainImageUpload;
-        
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            dropZone.classList.add('file-upload-dragover');
-        });
-        
-        dropZone.addEventListener('dragleave', function() {
-            dropZone.classList.remove('file-upload-dragover');
-        });
-        
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('file-upload-dragover');
-            
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                mainImageInput.files = e.dataTransfer.files;
-                handleMainImageChange(e.dataTransfer.files[0]);
-            }
-        });
-        
-        // Handle file select
-        mainImageInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                handleMainImageChange(this.files[0]);
-            }
-        });
-    }
-    
-    function handleMainImageChange(file) {
-        // Store the file for later upload
-        mainImageFile = file;
-        
-        // Display preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            mainImagePreviewImg.src = e.target.result;
-            mainImagePreview.style.display = 'flex';
-            mainImageUpload.style.display = 'none';
-        }
-        reader.readAsDataURL(file);
-    }
-    
-    if (removeMainImage) {
-        removeMainImage.addEventListener('click', function() {
-            mainImageFile = null;
-            mainImageInput.value = '';
-            mainImagePreview.style.display = 'none';
-            mainImageUpload.style.display = 'block';
-        });
-    }
-    
-    // Additional images upload
-    const additionalImagesInput = document.getElementById('additional-images-input');
-    const additionalImagesPreview = document.getElementById('additional-images-preview');
-    const additionalImagesUpload = document.getElementById('additional-images-upload');
-    
-    if (additionalImagesInput) {
-        // Handle file drop
-        const dropZone = additionalImagesUpload;
-        
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            dropZone.classList.add('file-upload-dragover');
-        });
-        
-        dropZone.addEventListener('dragleave', function() {
-            dropZone.classList.remove('file-upload-dragover');
-        });
-        
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('file-upload-dragover');
-            
-            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                additionalImagesInput.files = e.dataTransfer.files;
-                handleAdditionalImagesChange(e.dataTransfer.files);
-            }
-        });
-        
-        // Handle file select
-        additionalImagesInput.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                handleAdditionalImagesChange(this.files);
-            }
-        });
-    }
-    
-    function handleAdditionalImagesChange(files) {
-        additionalImagesPreview.innerHTML = '';
-        additionalImageFiles = []; // Reset the additional images array
-        
-        // Limit to 5 images
-        const maxImages = Math.min(files.length, 5);
-        
-        for (let i = 0; i < maxImages; i++) {
-            const reader = new FileReader();
-            const file = files[i];
-            
-            // Store the file for later upload
-            additionalImageFiles.push(file);
-            
-            reader.onload = function(e) {
-                const galleryItem = document.createElement('div');
-                galleryItem.className = 'gallery-item';
-                const fileIndex = i; // Capture the current index
-                
-                galleryItem.innerHTML = `
-                    <img src="${e.target.result}" alt="Additional image">
-                    <button type="button" class="remove-gallery-image">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                
-                additionalImagesPreview.appendChild(galleryItem);
-                
-                // Add remove button functionality
-                galleryItem.querySelector('.remove-gallery-image').addEventListener('click', function() {
-                    galleryItem.remove();
-                    
-                    // Remove the file from the array
-                    additionalImageFiles = additionalImageFiles.filter((_, index) => index !== fileIndex);
-                    
-                    // If all images are removed, clear the input
-                    if (additionalImagesPreview.children.length === 0) {
-                        additionalImagesInput.value = '';
-                    }
-                });
-            }
-            
-            reader.readAsDataURL(file);
-        }
-    }
-}
+import { createRobot, extractYouTubeID, extractVimeoID 
 
 /**
  * Initialize video URLs and references
@@ -205,7 +45,7 @@ function initVideoUrlsAndReferences() {
                     firstButton.className = 'remove-video-btn';
                     firstButton.innerHTML = '<i class="fas fa-times"></i>';
                     
-                    // Remove the old event listener (this is tricky, but we'll recreate the button)
+                    // Remove the old event listener (recreate the button)
                     const newButton = firstButton.cloneNode(true);
                     firstButton.parentNode.replaceChild(newButton, firstButton);
                     
@@ -352,7 +192,6 @@ function initFormSubmission() {
             // Upload files first
             let mainImagePath = 'images/robots/placeholder.jpg'; // Default
             let galleryPaths = [];
-            let videoPaths = [];
             
             // Upload main image if one was selected
             if (mainImageFile) {
@@ -367,25 +206,15 @@ function initFormSubmission() {
             // Upload additional images if any were selected
             if (additionalImageFiles.length > 0) {
                 try {
-                    galleryPaths = await uploadMultipleFiles(additionalImageFiles, 'robots');
+                    galleryPaths = await Promise.all(additionalImageFiles.map(file => uploadFile(file, 'robots')));
                 } catch (error) {
                     console.error('Error uploading additional images:', error);
                     alert('There was an error uploading some additional images.');
                 }
             }
             
-            // Upload video files if any were selected
-            if (videoFiles.length > 0) {
-                try {
-                    videoPaths = await uploadMultipleFiles(videoFiles, 'videos');
-                } catch (error) {
-                    console.error('Error uploading video files:', error);
-                    alert('There was an error uploading some video files.');
-                }
-            }
-            
             // Get form data
-            const robotData = await getFormData(mainImagePath, galleryPaths, videoPaths);
+            const robotData = await getFormData(mainImagePath, galleryPaths);
             
             // Validate required fields
             if (!robotData.name || !robotData.category) {
@@ -443,7 +272,7 @@ function initFormSubmission() {
                 });
                 
                 // Get form data
-                const robotData = await getFormData(mainImageTemp, galleryTemp, []);
+                const robotData = await getFormData(mainImageTemp, galleryTemp);
                 
                 // Store in session storage for preview
                 sessionStorage.setItem('robotPreview', JSON.stringify(robotData));
@@ -461,10 +290,9 @@ function initFormSubmission() {
      * Get all form data as an object
      * @param {string} mainImagePath - Path to the main image
      * @param {Array} galleryPaths - Paths to gallery images
-     * @param {Array} videoPaths - Paths to uploaded video files
      * @returns {Object} Robot data
      */
-    async function getFormData(mainImagePath, galleryPaths, videoPaths) {
+    async function getFormData(mainImagePath, galleryPaths) {
         // Basic info
         const name = document.getElementById('robot-name').value;
         const manufacturer = document.getElementById('robot-manufacturer').value;
@@ -531,16 +359,6 @@ function initFormSubmission() {
             }
         });
         
-        // Add any uploaded video files
-        videoPaths.forEach((path, index) => {
-            videoList.push({
-                type: 'file',
-                id: null,
-                title: `${name} Video ${index + 1}`,
-                url: path
-            });
-        });
-        
         // Get references
         const referencesList = [];
         const referenceInputs = document.querySelectorAll('#references .reference-input input');
@@ -590,7 +408,7 @@ function initFormSubmission() {
                         formattedContent += `
                             <div class="video-container">
                                 <video controls preload="metadata">
-                                    <source src="../${video.url}" type="video/mp4">
+                                    <source src="${video.url}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
@@ -714,6 +532,173 @@ function initFormSubmission() {
                     button.innerHTML = '<i class="fas fa-plus"></i>';
                 }
             }
+        }
+    }
+} from './robot-service.js';
+import { uploadFile, uploadMultipleFiles } from './file-upload-service.js';
+
+// Track uploaded files
+let mainImageFile = null;
+let additionalImageFiles = [];
+let videoFiles = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    initImageUpload();
+    initVideoUrlsAndReferences();
+    initFormSubmission();
+    
+    // Check if we're logged in
+    const isAdmin = localStorage.getItem('isAdmin') === 'true';
+    if (!isAdmin) {
+        // Redirect to login
+        window.location.href = '../index.html';
+    }
+});
+
+/**
+ * Initialize image upload functionality
+ */
+function initImageUpload() {
+    // Main image upload
+    const mainImageInput = document.getElementById('main-image-input');
+    const mainImagePreview = document.getElementById('main-image-preview');
+    const mainImagePreviewImg = document.getElementById('main-image-preview-img');
+    const removeMainImage = document.getElementById('remove-main-image');
+    const mainImageUpload = document.getElementById('main-image-upload');
+    
+    if (mainImageInput) {
+        // Handle file drop
+        const dropZone = mainImageUpload;
+        
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('file-upload-dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('file-upload-dragover');
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('file-upload-dragover');
+            
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                mainImageInput.files = e.dataTransfer.files;
+                handleMainImageChange(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // Handle file select
+        mainImageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                handleMainImageChange(this.files[0]);
+            }
+        });
+    }
+    
+    function handleMainImageChange(file) {
+        // Store the file for later upload
+        mainImageFile = file;
+        
+        // Display preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            mainImagePreviewImg.src = e.target.result;
+            mainImagePreview.style.display = 'flex';
+            mainImageUpload.style.display = 'none';
+        }
+        reader.readAsDataURL(file);
+    }
+    
+    if (removeMainImage) {
+        removeMainImage.addEventListener('click', function() {
+            mainImageFile = null;
+            mainImageInput.value = '';
+            mainImagePreview.style.display = 'none';
+            mainImageUpload.style.display = 'block';
+        });
+    }
+    
+    // Additional images upload
+    const additionalImagesInput = document.getElementById('additional-images-input');
+    const additionalImagesPreview = document.getElementById('additional-images-preview');
+    const additionalImagesUpload = document.getElementById('additional-images-upload');
+    
+    if (additionalImagesInput) {
+        // Handle file drop
+        const dropZone = additionalImagesUpload;
+        
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('file-upload-dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('file-upload-dragover');
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('file-upload-dragover');
+            
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                additionalImagesInput.files = e.dataTransfer.files;
+                handleAdditionalImagesChange(e.dataTransfer.files);
+            }
+        });
+        
+        // Handle file select
+        additionalImagesInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                handleAdditionalImagesChange(this.files);
+            }
+        });
+    }
+    
+    function handleAdditionalImagesChange(files) {
+        additionalImagesPreview.innerHTML = '';
+        additionalImageFiles = []; // Reset the additional images array
+        
+        // Limit to 5 images
+        const maxImages = Math.min(files.length, 5);
+        
+        for (let i = 0; i < maxImages; i++) {
+            const reader = new FileReader();
+            const file = files[i];
+            
+            // Store the file for later upload
+            additionalImageFiles.push(file);
+            
+            reader.onload = function(e) {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                const fileIndex = i; // Capture the current index
+                
+                galleryItem.innerHTML = `
+                    <img src="${e.target.result}" alt="Additional image">
+                    <button type="button" class="remove-gallery-image">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                additionalImagesPreview.appendChild(galleryItem);
+                
+                // Add remove button functionality
+                galleryItem.querySelector('.remove-gallery-image').addEventListener('click', function() {
+                    galleryItem.remove();
+                    
+                    // Remove the file from the array
+                    additionalImageFiles = additionalImageFiles.filter((_, index) => index !== fileIndex);
+                    
+                    // If all images are removed, clear the input
+                    if (additionalImagesPreview.children.length === 0) {
+                        additionalImagesInput.value = '';
+                    }
+                });
+            }
+            
+            reader.readAsDataURL(file);
         }
     }
 }
