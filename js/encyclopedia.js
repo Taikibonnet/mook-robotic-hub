@@ -22,12 +22,44 @@ document.addEventListener('DOMContentLoaded', function() {
     initFilters();
     initSearch();
     initPagination();
+    checkAdminStatus();
 });
+
+/**
+ * Check if user is admin and show admin links if they are
+ */
+function checkAdminStatus() {
+    const isAdmin = localStorage.getItem('isAdmin') === 'true';
+    const adminLinks = document.querySelectorAll('.admin-link');
+    
+    if (isAdmin) {
+        adminLinks.forEach(link => {
+            link.style.display = 'inline-block';
+        });
+        
+        // Show the admin floating button if it exists
+        const adminButton = document.querySelector('.admin-button');
+        if (adminButton) {
+            adminButton.style.display = 'flex';
+        }
+    }
+}
 
 /**
  * Load robots from data source
  */
 async function loadRobots() {
+    // Show loading state
+    const robotsContainer = document.getElementById('robots-container');
+    if (robotsContainer) {
+        robotsContainer.innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading robots...</p>
+            </div>
+        `;
+    }
+    
     // Get robots
     allRobots = getAllRobots();
     
@@ -167,7 +199,9 @@ function filterRobots(searchTerm = '') {
  */
 function updateFilterOptions() {
     // Get unique manufacturers
-    const manufacturers = [...new Set(allRobots.map(robot => robot.manufacturer).filter(Boolean))];
+    const manufacturers = [...new Set(allRobots.map(robot => robot.manufacturer).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b));
+    
     const manufacturerSelect = document.getElementById('filter-manufacturer');
     
     if (manufacturerSelect) {
@@ -210,9 +244,12 @@ function updateFilterOptions() {
  * Update pagination controls based on filtered robots
  */
 function updatePagination() {
-    const totalPages = Math.ceil(filteredRobots.length / ROBOTS_PER_PAGE);
+    const totalPages = Math.ceil(filteredRobots.length / ROBOTS_PER_PAGE) || 1;
     const currentPageElement = document.getElementById('current-page');
     const totalPagesElement = document.getElementById('total-pages');
+    
+    // Make sure current page is within bounds
+    currentPage = Math.max(1, Math.min(currentPage, totalPages));
     
     if (currentPageElement) currentPageElement.textContent = currentPage;
     if (totalPagesElement) totalPagesElement.textContent = totalPages;
@@ -318,8 +355,12 @@ async function renderRobotPage(page) {
             const imgElement = robotCard.querySelector('img');
             imgElement.alt = robot.name;
             
-            // Use the file upload service to get the proper URL for the image
-            if (robot.mainImage) {
+            // Use the proper URL for the image
+            if (robot.mainImageUrl) {
+                // If we have a mainImageUrl property (from enhanceRobotData)
+                imgElement.src = robot.mainImageUrl;
+            } else if (robot.mainImage) {
+                // Otherwise use the getFileUrl helper or the path directly
                 imgElement.src = getFileUrl(robot.mainImage);
             } else {
                 imgElement.src = '../images/robots/placeholder.jpg';
