@@ -3,24 +3,66 @@
  * 
  * This file contains functions for managing robot data,
  * including creating, updating, and retrieving robot information.
- * It uses sessionStorage and localStorage for shared data persistence.
+ * It uses localStorage for data persistence across sessions.
  */
 
 import { ROBOTS_DATA } from './data.js';
+import { getFileUrl } from './file-upload-service.js';
 
 // Use a consistent storage key for better cross-session compatibility
-const STORAGE_KEY = 'mook_robotics_hub_data';
+const ROBOTS_STORAGE_KEY = 'mook_robotics_hub_robots';
+
+// Initialize with base data
+let robotsData = [...ROBOTS_DATA];
+
+// Load stored robots from localStorage
+(function loadStoredRobots() {
+    try {
+        const storedRobots = localStorage.getItem(ROBOTS_STORAGE_KEY);
+        if (storedRobots) {
+            // Merge static data with stored data (prefer stored data for duplicates)
+            const storedRobotsArray = JSON.parse(storedRobots);
+            
+            // Create a map of static robots by ID for quick lookup
+            const staticRobotsMap = new Map(ROBOTS_DATA.map(robot => [robot.id, robot]));
+            
+            // Add or update robots from storage
+            storedRobotsArray.forEach(robot => {
+                // If this is a new robot, add it
+                if (!staticRobotsMap.has(robot.id)) {
+                    robotsData.push(robot);
+                } else {
+                    // If it's an existing robot, update it in our array
+                    const index = robotsData.findIndex(r => r.id === robot.id);
+                    if (index !== -1) {
+                        robotsData[index] = robot;
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error loading robots from localStorage:', error);
+    }
+})();
+
+/**
+ * Save robots to localStorage
+ */
+function saveRobots() {
+    try {
+        localStorage.setItem(ROBOTS_STORAGE_KEY, JSON.stringify(robotsData));
+    } catch (error) {
+        console.error('Error saving robots to localStorage:', error);
+    }
+}
 
 /**
  * Get all robots from storage
  * @returns {Array} Array of robot objects
  */
 function getAllRobots() {
-    // Always include the predefined robots from data.js
-    const allRobots = [...ROBOTS_DATA];
-    
     // Return enhanced robots
-    return allRobots.map(enhanceRobotData);
+    return robotsData.map(enhanceRobotData);
 }
 
 /**
@@ -37,6 +79,18 @@ function enhanceRobotData(robot) {
     if (!enhancedRobot.gallery) enhancedRobot.gallery = [];
     if (!enhancedRobot.videos) enhancedRobot.videos = [];
     if (!enhancedRobot.specifications) enhancedRobot.specifications = {};
+    
+    // Process image paths to get proper URLs
+    if (enhancedRobot.mainImage) {
+        enhancedRobot.mainImageUrl = getFileUrl(enhancedRobot.mainImage);
+    }
+    
+    // Process gallery images
+    if (enhancedRobot.gallery && enhancedRobot.gallery.length > 0) {
+        enhancedRobot.galleryUrls = enhancedRobot.gallery.map(imagePath => getFileUrl(imagePath));
+    } else {
+        enhancedRobot.galleryUrls = [];
+    }
     
     // Extract video IDs from content if they exist
     if (enhancedRobot.content) {
@@ -82,8 +136,8 @@ function enhanceRobotData(robot) {
  * @returns {Object|null} Robot object or null if not found
  */
 function getRobotById(id) {
-    const robots = getAllRobots();
-    return robots.find(robot => robot.id === id) || null;
+    const robot = robotsData.find(robot => robot.id === id);
+    return robot ? enhanceRobotData(robot) : null;
 }
 
 /**
@@ -92,8 +146,8 @@ function getRobotById(id) {
  * @returns {Object|null} Robot object or null if not found
  */
 function getRobotBySlug(slug) {
-    const robots = getAllRobots();
-    return robots.find(robot => robot.slug === slug) || null;
+    const robot = robotsData.find(robot => robot.slug === slug);
+    return robot ? enhanceRobotData(robot) : null;
 }
 
 /**
@@ -102,9 +156,6 @@ function getRobotBySlug(slug) {
  * @returns {Object} Created robot with ID
  */
 function createRobot(robotData) {
-    // Get existing robots
-    const robots = getAllRobots();
-    
     // Generate ID and slug if not provided
     const newRobot = {
         ...robotData,
@@ -112,13 +163,14 @@ function createRobot(robotData) {
         slug: robotData.slug || createSlug(robotData.name)
     };
     
-    // Enhance the robot data
-    const enhancedRobot = enhanceRobotData(newRobot);
+    // Add to robots data
+    robotsData.push(newRobot);
     
-    // Update default robots data to include this new robot
-    ROBOTS_DATA.push(enhancedRobot);
+    // Save to localStorage
+    saveRobots();
     
-    return enhancedRobot;
+    // Return enhanced robot
+    return enhanceRobotData(newRobot);
 }
 
 /**
@@ -128,8 +180,7 @@ function createRobot(robotData) {
  * @returns {Object|null} Updated robot or null if not found
  */
 function updateRobot(id, robotData) {
-    const robots = getAllRobots();
-    const index = robots.findIndex(robot => robot.id === id);
+    const index = robotsData.findIndex(robot => robot.id === id);
     
     if (index === -1) {
         return null;
@@ -137,23 +188,24 @@ function updateRobot(id, robotData) {
     
     // Update robot data
     const updatedRobot = {
-        ...robots[index],
+        ...robotsData[index],
         ...robotData,
-        // Ensure ID and slug remain the same
-        id: robots[index].id,
-        slug: robotData.slug || robots[index].slug
+        // Ensure ID remains the same
+        id: robotsData[index].id,
+        // Update the slug only if name changed
+        slug: robotData.name !== robotsData[index].name ? 
+              createSlug(robotData.name) : 
+              robotData.slug || robotsData[index].slug
     };
     
-    // Enhance the robot data
-    const enhancedRobot = enhanceRobotData(updatedRobot);
+    // Update in array
+    robotsData[index] = updatedRobot;
     
-    // Update in the default data array
-    const dataIndex = ROBOTS_DATA.findIndex(robot => robot.id === id);
-    if (dataIndex !== -1) {
-        ROBOTS_DATA[dataIndex] = enhancedRobot;
-    }
+    // Save to localStorage
+    saveRobots();
     
-    return enhancedRobot;
+    // Return enhanced robot
+    return enhanceRobotData(updatedRobot);
 }
 
 /**
@@ -162,15 +214,17 @@ function updateRobot(id, robotData) {
  * @returns {boolean} Success status
  */
 function deleteRobot(id) {
-    // Find the robot in the default data
-    const index = ROBOTS_DATA.findIndex(robot => robot.id === id);
+    const index = robotsData.findIndex(robot => robot.id === id);
     
     if (index === -1) {
         return false;
     }
     
     // Remove from array
-    ROBOTS_DATA.splice(index, 1);
+    robotsData.splice(index, 1);
+    
+    // Save to localStorage
+    saveRobots();
     
     return true;
 }
@@ -238,33 +292,6 @@ function extractVimeoID(url) {
     return null;
 }
 
-/**
- * Helper function to get the URL for a file
- * @param {string} path - File path
- * @returns {string} Complete URL
- */
-function getFileUrl(path) {
-    // If it's already an absolute URL, return it
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-        return path;
-    }
-    
-    // If it's a placeholder, return the default image
-    if (!path) {
-        return '../images/robots/placeholder.jpg';
-    }
-    
-    // Otherwise, prefix with the base path
-    // If we're in a robot detail page, we need to add '../'
-    const isInRobotDetail = window.location.pathname.includes('/robots/');
-    
-    if (isInRobotDetail && !path.startsWith('../')) {
-        return '../' + path;
-    }
-    
-    return path;
-}
-
 // Export functions
 export {
     getAllRobots,
@@ -275,6 +302,5 @@ export {
     deleteRobot,
     createSlug,
     extractYouTubeID,
-    extractVimeoID,
-    getFileUrl
+    extractVimeoID
 };
