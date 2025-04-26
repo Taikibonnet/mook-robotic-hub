@@ -3,31 +3,36 @@
  * 
  * This file contains functions for managing robot data,
  * including creating, updating, and retrieving robot information.
- * It uses localStorage for data persistence across sessions.
+ * It uses the GitHub Storage Service for permanent data storage.
  */
 
 import { ROBOTS_DATA } from './data.js';
-import { getFileUrl } from './file-upload-service.js';
+import { loadRobots, saveRobots, isAuthenticated } from './github-storage-service.js';
 
-// Use a consistent storage key for better cross-session compatibility
-const ROBOTS_STORAGE_KEY = 'mook_robotics_hub_robots';
-
-// Initialize with base data
+// In-memory cache of robot data
 let robotsData = [...ROBOTS_DATA];
+let dataLoaded = false;
 
-// Load stored robots from localStorage
-(function loadStoredRobots() {
+/**
+ * Initialize robot data from GitHub or localStorage
+ * @returns {Promise<void>}
+ */
+async function initRobotData() {
+    if (dataLoaded) return;
+    
     try {
-        const storedRobots = localStorage.getItem(ROBOTS_STORAGE_KEY);
-        if (storedRobots) {
-            // Merge static data with stored data (prefer stored data for duplicates)
-            const storedRobotsArray = JSON.parse(storedRobots);
-            
+        // Load data from GitHub or localStorage (handled in the storage service)
+        const storedRobots = await loadRobots();
+        
+        if (storedRobots && storedRobots.length > 0) {
             // Create a map of static robots by ID for quick lookup
             const staticRobotsMap = new Map(ROBOTS_DATA.map(robot => [robot.id, robot]));
             
+            // Start with the static data
+            robotsData = [...ROBOTS_DATA];
+            
             // Add or update robots from storage
-            storedRobotsArray.forEach(robot => {
+            storedRobots.forEach(robot => {
                 // If this is a new robot, add it
                 if (!staticRobotsMap.has(robot.id)) {
                     robotsData.push(robot);
@@ -40,27 +45,20 @@ let robotsData = [...ROBOTS_DATA];
                 }
             });
         }
+        
+        dataLoaded = true;
     } catch (error) {
-        console.error('Error loading robots from localStorage:', error);
-    }
-})();
-
-/**
- * Save robots to localStorage
- */
-function saveRobots() {
-    try {
-        localStorage.setItem(ROBOTS_STORAGE_KEY, JSON.stringify(robotsData));
-    } catch (error) {
-        console.error('Error saving robots to localStorage:', error);
+        console.error('Error initializing robot data:', error);
     }
 }
 
 /**
- * Get all robots from storage
- * @returns {Array} Array of robot objects
+ * Get all robots
+ * @returns {Promise<Array>} Array of robot objects
  */
-function getAllRobots() {
+async function getAllRobots() {
+    await initRobotData();
+    
     // Return enhanced robots
     return robotsData.map(enhanceRobotData);
 }
@@ -82,12 +80,12 @@ function enhanceRobotData(robot) {
     
     // Process image paths to get proper URLs
     if (enhancedRobot.mainImage) {
-        enhancedRobot.mainImageUrl = getFileUrl(enhancedRobot.mainImage);
+        enhancedRobot.mainImageUrl = getFullImageUrl(enhancedRobot.mainImage);
     }
     
     // Process gallery images
     if (enhancedRobot.gallery && enhancedRobot.gallery.length > 0) {
-        enhancedRobot.galleryUrls = enhancedRobot.gallery.map(imagePath => getFileUrl(imagePath));
+        enhancedRobot.galleryUrls = enhancedRobot.gallery.map(imagePath => getFullImageUrl(imagePath));
     } else {
         enhancedRobot.galleryUrls = [];
     }
@@ -131,11 +129,38 @@ function enhanceRobotData(robot) {
 }
 
 /**
+ * Get the full URL for an image path
+ * @param {string} path - Image path
+ * @returns {string} Full URL
+ */
+function getFullImageUrl(path) {
+    // If path is already a complete URL or data URL, return it
+    if (path && (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:'))) {
+        return path;
+    }
+    
+    // Handle empty or undefined paths
+    if (!path) {
+        return 'images/robots/placeholder.jpg';
+    }
+    
+    // For images in the GitHub repository, construct the raw URL
+    if (path.startsWith('images/')) {
+        return `https://raw.githubusercontent.com/TaikiBonnet/mook-robotic-hub/main/${path}`;
+    }
+    
+    // Otherwise, return the path as is
+    return path;
+}
+
+/**
  * Get a robot by ID
  * @param {string} id - Robot ID
- * @returns {Object|null} Robot object or null if not found
+ * @returns {Promise<Object|null>} Robot object or null if not found
  */
-function getRobotById(id) {
+async function getRobotById(id) {
+    await initRobotData();
+    
     const robot = robotsData.find(robot => robot.id === id);
     return robot ? enhanceRobotData(robot) : null;
 }
@@ -143,9 +168,11 @@ function getRobotById(id) {
 /**
  * Get a robot by slug
  * @param {string} slug - Robot slug (URL-friendly name)
- * @returns {Object|null} Robot object or null if not found
+ * @returns {Promise<Object|null>} Robot object or null if not found
  */
-function getRobotBySlug(slug) {
+async function getRobotBySlug(slug) {
+    await initRobotData();
+    
     const robot = robotsData.find(robot => robot.slug === slug);
     return robot ? enhanceRobotData(robot) : null;
 }
@@ -153,9 +180,11 @@ function getRobotBySlug(slug) {
 /**
  * Create a new robot
  * @param {Object} robotData - Robot data object
- * @returns {Object} Created robot with ID
+ * @returns {Promise<Object>} Created robot with ID
  */
-function createRobot(robotData) {
+async function createRobot(robotData) {
+    await initRobotData();
+    
     // Generate ID and slug if not provided
     const newRobot = {
         ...robotData,
@@ -166,8 +195,8 @@ function createRobot(robotData) {
     // Add to robots data
     robotsData.push(newRobot);
     
-    // Save to localStorage
-    saveRobots();
+    // Save to GitHub or localStorage
+    await saveRobots(robotsData);
     
     // Return enhanced robot
     return enhanceRobotData(newRobot);
@@ -177,9 +206,11 @@ function createRobot(robotData) {
  * Update an existing robot
  * @param {string} id - Robot ID
  * @param {Object} robotData - Updated robot data
- * @returns {Object|null} Updated robot or null if not found
+ * @returns {Promise<Object|null>} Updated robot or null if not found
  */
-function updateRobot(id, robotData) {
+async function updateRobot(id, robotData) {
+    await initRobotData();
+    
     const index = robotsData.findIndex(robot => robot.id === id);
     
     if (index === -1) {
@@ -201,8 +232,8 @@ function updateRobot(id, robotData) {
     // Update in array
     robotsData[index] = updatedRobot;
     
-    // Save to localStorage
-    saveRobots();
+    // Save to GitHub or localStorage
+    await saveRobots(robotsData);
     
     // Return enhanced robot
     return enhanceRobotData(updatedRobot);
@@ -211,9 +242,11 @@ function updateRobot(id, robotData) {
 /**
  * Delete a robot
  * @param {string} id - Robot ID
- * @returns {boolean} Success status
+ * @returns {Promise<boolean>} Success status
  */
-function deleteRobot(id) {
+async function deleteRobot(id) {
+    await initRobotData();
+    
     const index = robotsData.findIndex(robot => robot.id === id);
     
     if (index === -1) {
@@ -223,8 +256,8 @@ function deleteRobot(id) {
     // Remove from array
     robotsData.splice(index, 1);
     
-    // Save to localStorage
-    saveRobots();
+    // Save to GitHub or localStorage
+    await saveRobots(robotsData);
     
     return true;
 }
@@ -302,5 +335,6 @@ export {
     deleteRobot,
     createSlug,
     extractYouTubeID,
-    extractVimeoID
+    extractVimeoID,
+    getFullImageUrl
 };
