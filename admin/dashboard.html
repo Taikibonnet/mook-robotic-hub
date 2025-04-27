@@ -8,7 +8,180 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/theme.css">
     <link rel="stylesheet" href="../css/admin.css">
-    <link rel="stylesheet" href="../css/admin-fix.css">
+    <style>
+        /* Additional custom styles for futuristic dashboard */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-color);
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+            border-color: var(--primary-color);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            background-color: rgba(0, 180, 216, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+        
+        .panel-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+        
+        .admin-table th {
+            background-color: rgba(0, 180, 216, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .admin-table tr:hover {
+            background-color: rgba(0, 180, 216, 0.05);
+        }
+        
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--background-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-right: 5px;
+        }
+        
+        .btn-icon:hover {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 180, 216, 0.7);
+        }
+        
+        .activity-item {
+            display: flex;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .activity-add {
+            background-color: rgba(0, 180, 216, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .activity-edit {
+            background-color: rgba(94, 96, 206, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .activity-user {
+            background-color: rgba(114, 9, 183, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .activity-news {
+            background-color: rgba(240, 136, 62, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .activity-content {
+            flex-grow: 1;
+        }
+        
+        .activity-text {
+            margin-bottom: 0.3rem;
+        }
+        
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Glowing effect on elements */
+        .admin-panel {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+            opacity: 0.7;
+        }
+    </style>
 </head>
 <body class="admin-body">
     <div class="admin-container">
@@ -99,134 +272,205 @@
             </header>
 
             <div class="admin-content">
-                <!-- Stats Cards -->
-                <section class="stats-cards">
+                <!-- Stats Overview -->
+                <section class="stats-overview">
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-robot"></i>
                         </div>
-                        <div class="stat-info">
+                        <div class="stat-content">
                             <h3>Total Robots</h3>
-                            <p id="total-robots">Loading...</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Registered Users</h3>
-                            <p id="registered-users">Loading...</p>
+                            <p class="stat-number">5</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-eye"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3>Page Views</h3>
-                            <p id="page-views">Loading...</p>
+                        <div class="stat-content">
+                            <h3>Total Visits</h3>
+                            <p class="stat-number">845</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Registered Users</h3>
+                            <p class="stat-number">12</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <div class="stat-info">
+                        <div class="stat-content">
                             <h3>News Articles</h3>
-                            <p id="news-articles">Loading...</p>
+                            <p class="stat-number">3</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Robots -->
+                <section class="admin-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Robots</h2>
+                        <div class="panel-actions">
+                            <a href="add-robot.html" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Robot
+                            </a>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <div class="table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Manufacturer</th>
+                                        <th>Category</th>
+                                        <th>Year</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Atlas</td>
+                                        <td>Boston Dynamics</td>
+                                        <td>Humanoid</td>
+                                        <td>2013</td>
+                                        <td>
+                                            <div style="display: flex;">
+                                                <button class="btn-icon" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Spot</td>
+                                        <td>Boston Dynamics</td>
+                                        <td>Quadruped</td>
+                                        <td>2015</td>
+                                        <td>
+                                            <div style="display: flex;">
+                                                <button class="btn-icon" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Sophia</td>
+                                        <td>Hanson Robotics</td>
+                                        <td>Humanoid</td>
+                                        <td>2016</td>
+                                        <td>
+                                            <div style="display: flex;">
+                                                <button class="btn-icon" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Pepper</td>
+                                        <td>SoftBank Robotics</td>
+                                        <td>Humanoid</td>
+                                        <td>2014</td>
+                                        <td>
+                                            <div style="display: flex;">
+                                                <button class="btn-icon" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>NAO</td>
+                                        <td>SoftBank Robotics</td>
+                                        <td>Humanoid</td>
+                                        <td>2008</td>
+                                        <td>
+                                            <div style="display: flex;">
+                                                <button class="btn-icon" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
 
                 <!-- Recent Activity -->
-                <section class="admin-panel recent-activity">
-                    <h2 class="panel-title">Recent Activity</h2>
+                <section class="admin-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Recent Activity</h2>
+                    </div>
                     <div class="panel-content">
-                        <ul class="activity-list" id="activity-list">
-                            <li class="activity-item loading-message">
-                                <div class="loading-spinner"></div>
-                                <p>Loading recent activity...</p>
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon activity-add">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">New robot <strong>Atlas</strong> was added</p>
+                                    <p class="activity-time">2 days ago</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon activity-edit">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">Robot <strong>Sophia</strong> was updated</p>
+                                    <p class="activity-time">3 days ago</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon activity-user">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">New user registered</p>
+                                    <p class="activity-time">5 days ago</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon activity-news">
+                                    <i class="fas fa-newspaper"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">New article <strong>Robots in Healthcare</strong> was published</p>
+                                    <p class="activity-time">1 week ago</p>
+                                </div>
                             </li>
                         </ul>
-                    </div>
-                </section>
-
-                <!-- Admin Panels Row -->
-                <div class="admin-panels-row">
-                    <!-- Popular Robots -->
-                    <section class="admin-panel popular-robots">
-                        <h2 class="panel-title">Popular Robots</h2>
-                        <div class="panel-content">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Robot</th>
-                                        <th>Views</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="popular-robots-list">
-                                    <tr>
-                                        <td colspan="3" class="loading-message">
-                                            <div class="loading-spinner"></div>
-                                            <p>Loading popular robots...</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="robots.html" class="view-all-link">View All Robots</a>
-                        </div>
-                    </section>
-
-                    <!-- Recent Users -->
-                    <section class="admin-panel recent-users">
-                        <h2 class="panel-title">Recent Users</h2>
-                        <div class="panel-content">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Joined</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recent-users-list">
-                                    <tr>
-                                        <td colspan="3" class="loading-message">
-                                            <div class="loading-spinner"></div>
-                                            <p>Loading recent users...</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="manage-users.html" class="view-all-link">View All Users</a>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- Quick Actions -->
-                <section class="admin-panel quick-actions">
-                    <h2 class="panel-title">Quick Actions</h2>
-                    <div class="panel-content">
-                        <div class="action-buttons">
-                            <a href="add-robot.html" class="action-button">
-                                <i class="fas fa-robot"></i>
-                                <span>Add Robot</span>
-                            </a>
-                            <a href="add-news.html" class="action-button">
-                                <i class="fas fa-newspaper"></i>
-                                <span>Add News</span>
-                            </a>
-                            <a href="settings.html" class="action-button">
-                                <i class="fas fa-cog"></i>
-                                <span>Settings</span>
-                            </a>
-                            <button class="action-button" id="export-data-btn">
-                                <i class="fas fa-download"></i>
-                                <span>Export Data</span>
-                            </button>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -235,7 +479,5 @@
 
     <script src="../js/admin.js"></script>
     <script src="../js/auth.js"></script>
-    <script src="js/dashboard.js" type="module"></script>
-    <script src="js/dashboard-fix.js"></script>
 </body>
 </html>
